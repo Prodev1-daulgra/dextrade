@@ -81,9 +81,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       setState(() => _loading = false);
       if (err != null) {
         setState(() => _error = err);
-        DexToast.show(context, err, type: ToastType.error);
+        DexToast.showPushNotification(context, title: 'Error', body: err);
       } else {
-        DexToast.show(context, 'Authentication Successful. Syncing Node...', type: ToastType.success);
+        DexToast.showPushNotification(context, title: 'Success', body: 'Authentication Successful. Syncing Node...');
       }
     }
   }
@@ -297,10 +297,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          DexToast.show(
+                                          DexToast.showPushNotification(
                                             context,
-                                            'Node key recovery system triggered. Check configured notification pathways.',
-                                            type: ToastType.info,
+                                            title: 'Recovery Initiated',
+                                            body: 'Node key recovery system triggered. Check configured notification pathways.',
                                           );
                                         },
                                         child: Text(

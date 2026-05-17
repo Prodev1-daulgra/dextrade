@@ -23,6 +23,10 @@ class AuthRepository {
     );
   }
 
+  Future<void> resetPassword(String email) async {
+    await _client.auth.resetPasswordForEmail(email);
+  }
+
   Future<void> logout() async {
     await _client.auth.signOut();
   }

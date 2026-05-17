@@ -8,6 +8,11 @@ import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/custom_toast.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/providers.dart';
+import '../../data/models/crypto_model.dart';
+import '../../widgets/crypto_icon.dart';
+
 // Candlestick model representing volatile price action
 class CandleData {
   final double open;
@@ -60,14 +65,14 @@ class ActivePosition {
   }
 }
 
-class TradeScreen extends StatefulWidget {
+class TradeScreen extends ConsumerStatefulWidget {
   const TradeScreen({super.key});
 
   @override
-  State<TradeScreen> createState() => _TradeScreenState();
+  ConsumerState<TradeScreen> createState() => _TradeScreenState();
 }
 
-class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin {
+class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderStateMixin {
   // Tab controller for order forms
   int _orderTab = 0; // 0 = Market, 1 = Limit
   int _sideTab = 0; // 0 = Buy (Long), 1 = Sell (Short)
@@ -90,6 +95,8 @@ class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin
   final List<Map<String, dynamic>> _bids = [];
   double _currentPrice = 97240.00;
   double _priceChangePercent = 2.45;
+  CryptoModel? _selectedCrypto;
+  bool _cryptoLoaded = false;
 
   // Active positions & logs
   final List<ActivePosition> _positions = [];
@@ -272,7 +279,7 @@ class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin
     final amount = double.tryParse(_amountCtrl.text) ?? 0.0;
 
     if (amount <= 0) {
-      DexToast.show(context, "Invalid order size format.", type: ToastType.error);
+      DexToast.showPushNotification(context, title: 'Error', body: 'Invalid order size format.');
       return;
     }
 
@@ -288,7 +295,7 @@ class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin
         final side = _sideTab == 0 ? "LONG" : "SHORT";
         _positions.add(
           ActivePosition(
-            symbol: "BTC/USDT",
+            symbol: "${_selectedCrypto?.symbol ?? 'BTC'}/USDT",
             side: side,
             entryPrice: price,
             markPrice: _currentPrice,
@@ -300,7 +307,7 @@ class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin
       });
 
       _addLog("ORDER EXECUTED: Added new position side ${_sideTab == 0 ? 'LONG' : 'SHORT'} sizing $amount BTC.");
-      DexToast.show(context, "Order matching completed instantly!", type: ToastType.success);
+      DexToast.showPushNotification(context, title: 'Order Executed', body: 'Order matching completed instantly!');
     }
   }
 
@@ -311,13 +318,31 @@ class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin
       _positions.removeAt(idx);
     });
     _addLog("POSITION RESOLVED: Closed ${pos.symbol} ${pos.side} sizing ${pos.size} with P&L: \$${pos.unrealizedPnL.toStringAsFixed(2)}");
-    DexToast.show(context, "Position cleared from terminal.", type: ToastType.success);
+    DexToast.showPushNotification(context, title: 'Position Closed', body: 'Position cleared from terminal.');
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final isDesktop = screenSize.width > 900;
+    
+    final cryptosAsync = ref.watch(cryptosProvider);
+
+    // Initial setup of real crypto data
+    if (cryptosAsync.value != null && cryptosAsync.value!.isNotEmpty && !_cryptoLoaded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() {
+          _selectedCrypto = cryptosAsync.value!.first;
+          _currentPrice = _selectedCrypto!.price;
+          _priceChangePercent = _selectedCrypto!.change24h;
+          _priceCtrl.text = _currentPrice.toStringAsFixed(2);
+          _cryptoLoaded = true;
+          _generateMockChartData();
+          _generateMockOrderBook();
+        });
+      });
+    }
 
     return Scaffold(
       backgroundColor: Colors.black, // Dark obsidian canvas
@@ -328,7 +353,7 @@ class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // ─── Header: Real-Time Price Statistics Bar ───
-              _buildTerminalHeader(isDesktop),
+              _buildTerminalHeader(isDesktop, cryptosAsync.value ?? []),
               const SizedBox(height: 16),
 
               // ─── Main Terminal Screen Layout ───
@@ -401,7 +426,7 @@ class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin
   }
 
   // ─── Terminal Header Widget ───
-  Widget _buildTerminalHeader(bool isDesktop) {
+  Widget _buildTerminalHeader(bool isDesktop, List<CryptoModel> cryptos) {
     final bool isUp = _priceChangePercent >= 0;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -414,43 +439,80 @@ class _TradeScreenState extends State<TradeScreen> with TickerProviderStateMixin
         direction: isDesktop ? Axis.horizontal : Axis.vertical,
         crossAxisAlignment: isDesktop ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: DexColors.primary.withOpacity(0.12),
-                ),
-                child: const Center(
-                  child: Icon(Icons.flash_on_rounded, color: DexColors.primary, size: 16),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          PopupMenuButton<CryptoModel>(
+            position: PopupMenuPosition.under,
+            color: DexColors.surfaceLight,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            onSelected: (crypto) {
+              setState(() {
+                _selectedCrypto = crypto;
+                _currentPrice = crypto.price;
+                _priceChangePercent = crypto.change24h;
+                if (_orderTab == 0) {
+                  _priceCtrl.text = _currentPrice.toStringAsFixed(2);
+                }
+                _generateMockChartData();
+                _generateMockOrderBook();
+              });
+              _addLog("MARKET SWITCHED: Connected to ${crypto.symbol} node.");
+            },
+            itemBuilder: (context) => cryptos.map((c) => PopupMenuItem(
+              value: c,
+              child: Row(
                 children: [
-                  Text(
-                    'BTC/USDT',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    'DEXTRADE NODE ACTIVE',
-                    style: GoogleFonts.orbitron(
-                      fontSize: 7,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.0,
-                      color: DexColors.accent,
-                    ),
-                  ),
+                  CryptoIcon(symbol: c.symbol, colorHex: c.iconColor, size: 24),
+                  const SizedBox(width: 12),
+                  Text(c.symbol, style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold)),
                 ],
               ),
-            ],
+            )).toList(),
+            child: Row(
+              children: [
+                if (_selectedCrypto != null)
+                  CryptoIcon(symbol: _selectedCrypto!.symbol, colorHex: _selectedCrypto!.iconColor, size: 32)
+                else
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: DexColors.primary.withOpacity(0.12),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.flash_on_rounded, color: DexColors.primary, size: 16),
+                    ),
+                  ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          _selectedCrypto != null ? '${_selectedCrypto!.symbol}/USDT' : 'LOADING...',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white54, size: 16),
+                      ],
+                    ),
+                    Text(
+                      'DEXTRADE NODE ACTIVE',
+                      style: GoogleFonts.orbitron(
+                        fontSize: 7,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.0,
+                        color: DexColors.accent,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           if (isDesktop) const Spacer() else const SizedBox(height: 12),
           _buildHeaderStat(

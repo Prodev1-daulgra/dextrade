@@ -97,9 +97,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
       setState(() => _loading = false);
       if (err != null) {
         setState(() => _error = err);
-        DexToast.show(context, err, type: ToastType.error);
+        DexToast.showPushNotification(context, title: 'Error', body: err);
       } else {
-        DexToast.show(context, 'Terminal node acquired! Syncing credentials...', type: ToastType.success);
+        DexToast.showPushNotification(context, title: 'Success', body: 'Terminal node acquired! Syncing credentials...');
       }
     }
   }

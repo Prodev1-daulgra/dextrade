@@ -40,6 +40,32 @@ class TransactionRepository {
     return TransactionModel.fromJson(res);
   }
 
+  Future<TransactionModel> createBuyOrder(String email, double amountUsd, String cryptoSymbol, double cryptoAmount) async {
+    final res = await _client.from('transactions').insert({
+      'user_email': email,
+      'type': 'buy',
+      'amount': amountUsd,
+      'crypto_symbol': cryptoSymbol,
+      'crypto_amount': cryptoAmount,
+      'status': 'pending',
+      'notes': 'Buy \$${amountUsd.toStringAsFixed(2)} $cryptoSymbol',
+    }).select().single();
+    return TransactionModel.fromJson(res);
+  }
+
+  Future<TransactionModel> createSellOrder(String email, double amountUsd, String cryptoSymbol, double cryptoAmount) async {
+    final res = await _client.from('transactions').insert({
+      'user_email': email,
+      'type': 'sell',
+      'amount': amountUsd,
+      'crypto_symbol': cryptoSymbol,
+      'crypto_amount': cryptoAmount,
+      'status': 'pending',
+      'notes': 'Sell $cryptoAmount $cryptoSymbol',
+    }).select().single();
+    return TransactionModel.fromJson(res);
+  }
+
   /// State Admin Portal: Approve transaction and update balance
   Future<void> approveTransaction(String txId) async {
     // 1. Fetch & validate
@@ -70,11 +96,68 @@ class TransactionRepository {
     } else if (tx['type'] == 'withdrawal') {
       if (newBalance < amount) throw Exception('Insufficient funds');
       newBalance -= amount;
-    } else if (tx['type'] == 'buy' || tx['type'] == 'stock_buy') {
+    } else if (tx['type'] == 'buy') {
       if (newBalance < amount) throw Exception('Insufficient balance');
       newBalance -= amount;
-    } else if (tx['type'] == 'sell' || tx['type'] == 'stock_sell') {
+      newInvested += amount;
+      
+      // Update or insert portfolio
+      final cryptoSymbol = tx['crypto_symbol'];
+      final cryptoAmount = (tx['crypto_amount'] as num).toDouble();
+      
+      final currentPortfolio = await _client
+          .from('portfolio')
+          .select()
+          .eq('user_email', tx['user_email'])
+          .eq('crypto_symbol', cryptoSymbol)
+          .maybeSingle();
+          
+      if (currentPortfolio != null) {
+        final currentAmount = (currentPortfolio['amount'] as num).toDouble();
+        final currentAvgPrice = (currentPortfolio['avg_buy_price'] as num).toDouble();
+        
+        final newTotalAmount = currentAmount + cryptoAmount;
+        final newAvgPrice = ((currentAmount * currentAvgPrice) + amount) / newTotalAmount;
+        
+        await _client.from('portfolio').update({
+          'amount': newTotalAmount,
+          'avg_buy_price': newAvgPrice,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', currentPortfolio['id']);
+      } else {
+        await _client.from('portfolio').insert({
+          'user_email': tx['user_email'],
+          'crypto_symbol': cryptoSymbol,
+          'amount': cryptoAmount,
+          'avg_buy_price': amount / cryptoAmount,
+        });
+      }
+    } else if (tx['type'] == 'sell') {
       newBalance += amount;
+      
+      final cryptoSymbol = tx['crypto_symbol'];
+      final cryptoAmountToSell = (tx['crypto_amount'] as num).toDouble();
+      
+      final currentPortfolio = await _client
+          .from('portfolio')
+          .select()
+          .eq('user_email', tx['user_email'])
+          .eq('crypto_symbol', cryptoSymbol)
+          .maybeSingle();
+          
+      if (currentPortfolio == null || (currentPortfolio['amount'] as num).toDouble() < cryptoAmountToSell) {
+        throw Exception('Insufficient crypto balance');
+      }
+      
+      final newAmount = (currentPortfolio['amount'] as num).toDouble() - cryptoAmountToSell;
+      if (newAmount <= 0) {
+        await _client.from('portfolio').delete().eq('id', currentPortfolio['id']);
+      } else {
+        await _client.from('portfolio').update({
+          'amount': newAmount,
+          'updated_at': DateTime.now().toIso8601String(),
+        }).eq('id', currentPortfolio['id']);
+      }
     }
 
     // 4. Write new balance

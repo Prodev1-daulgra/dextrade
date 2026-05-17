@@ -14,6 +14,13 @@ import '../data/repositories/transaction_repository.dart';
 import '../data/repositories/copy_trade_repository.dart';
 import '../data/repositories/crypto_repository.dart';
 import '../data/repositories/user_repository.dart';
+import '../data/repositories/portfolio_repository.dart';
+import '../data/repositories/platform_settings_repository.dart';
+import '../data/models/portfolio_model.dart';
+import '../data/models/stock_model.dart';
+import '../data/models/futures_model.dart';
+import '../data/models/options_model.dart';
+import '../data/models/stock_portfolio_model.dart';
 
 // ─── Repository Providers ───
 final supabaseProvider = Provider<SupabaseClient>((_) => SupabaseConfig.client);
@@ -24,6 +31,8 @@ final txRepoProvider = Provider((ref) => TransactionRepository(ref.read(supabase
 final copyTradeRepoProvider = Provider((ref) => CopyTradeRepository(ref.read(supabaseProvider)));
 final cryptoRepoProvider = Provider((ref) => CryptoRepository(ref.read(supabaseProvider)));
 final userRepoProvider = Provider((ref) => UserRepository(ref.read(supabaseProvider)));
+final portfolioRepoProvider = Provider((ref) => PortfolioRepository(ref.read(supabaseProvider)));
+final platformSettingsRepoProvider = Provider((ref) => PlatformSettingsRepository(ref.read(supabaseProvider)));
 
 // ─── Auth State ───
 class AuthState {
@@ -160,8 +169,31 @@ final copyTradersProvider = FutureProvider<List<CopyTraderModel>>((ref) async {
   return ref.read(copyTradeRepoProvider).getActiveTraders();
 });
 
-final userCopyTradesProvider = FutureProvider.family<List<CopyTradeModel>, String>((ref, email) async {
-  return ref.read(copyTradeRepoProvider).getUserCopyTrades(email);
+final userCopyTradesProvider = StreamProvider.family<List<CopyTradeModel>, String>((ref, email) {
+  final client = ref.read(supabaseProvider);
+  return client
+      .from('copy_trades')
+      .stream(primaryKey: ['id'])
+      .eq('user_email', email)
+      .order('created_at', ascending: false)
+      .map((list) => list.map((e) => CopyTradeModel.fromJson(e)).toList());
+});
+
+// ─── Portfolio Providers ───
+final portfolioProvider = StreamProvider.family<List<PortfolioModel>, String>((ref, email) {
+  return ref.read(portfolioRepoProvider).watchCryptoPortfolio(email);
+});
+
+final futuresProvider = FutureProvider.family<List<FuturesPositionModel>, String>((ref, email) async {
+  return ref.read(portfolioRepoProvider).getFuturesPositions(email);
+});
+
+final optionsProvider = FutureProvider.family<List<OptionsPositionModel>, String>((ref, email) async {
+  return ref.read(portfolioRepoProvider).getOptionsPositions(email);
+});
+
+final stockPortfolioProvider = FutureProvider.family<List<StockPortfolioModel>, String>((ref, email) async {
+  return ref.read(portfolioRepoProvider).getStockPortfolio(email);
 });
 
 // ─── Superadmin: All Users ───

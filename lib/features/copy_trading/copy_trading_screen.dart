@@ -207,7 +207,7 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                           : () async {
                               final double amt = double.tryParse(allocCtrl.text) ?? 0.0;
                               if (amt < trader.minAllocation) {
-                                DexToast.show(context, 'Allocation is below the trader\'s minimum limit.', type: ToastType.error);
+                                DexToast.showPushNotification(context, title: 'Error', body: 'Allocation is below the trader\'s minimum limit.');
                                 return;
                               }
 
@@ -217,12 +217,12 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                                 ref.invalidate(userCopyTradesProvider(email));
                                 if (context.mounted) {
                                   Navigator.pop(context);
-                                  DexToast.show(context, 'Mirror sync initialized!', type: ToastType.success);
+                                  DexToast.showPushNotification(context, title: 'Success', body: 'Mirror sync initialized!');
                                 }
                               } catch (e) {
                                 if (context.mounted) {
                                   setModalState(() => processing = false);
-                                  DexToast.show(context, e.toString(), type: ToastType.error);
+                                  DexToast.showPushNotification(context, title: 'Error', body: e.toString());
                                 }
                               }
                             },

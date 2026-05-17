@@ -419,401 +419,282 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   // ─── Hero Section ───
   Widget _buildHeroSection(BuildContext context, bool isDesktop) {
     final screenSize = MediaQuery.of(context).size;
-    final columnWidgets = [
-      // Left Column: Elite Left-Aligned Typography & CTAs
-      Expanded(
-        flex: isDesktop ? 5 : 0,
-        child: Column(
-          crossAxisAlignment: isDesktop ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-          children: [
-            // Operational Badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.03),
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(color: Colors.white.withOpacity(0.06)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: DexColors.success,
-                      boxShadow: [
-                        BoxShadow(
-                          color: DexColors.success,
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'SYSTEM PROTOCOL V4.0: OPERATIONAL',
-                    style: GoogleFonts.orbitron(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-            ).animate().fade(duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOutCubic),
-
-            const SizedBox(height: 36),
-
-            // Left-Aligned God-Level Asymmetric Heading
-            RichText(
-              textAlign: isDesktop ? TextAlign.left : TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'CORTEX\nMATCHING\n',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: isDesktop ? 76 : 42,
-                      fontWeight: FontWeight.w900,
-                      height: 0.9,
-                      color: Colors.white,
-                      letterSpacing: -1,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'ENGINE.',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: isDesktop ? 76 : 42,
-                      fontWeight: FontWeight.w900,
-                      height: 0.9,
-                      color: DexColors.primary,
-                      shadows: [
-                        Shadow(
-                          color: DexColors.primary.withOpacity(0.4),
-                          blurRadius: 40,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ).animate().fade(delay: 200.ms, duration: 800.ms).scale(begin: const Offset(0.96, 0.96), curve: Curves.easeOutCubic),
-
-            const SizedBox(height: 24),
-
-            // Subtitle within a high-tech border callout panel
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.01),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.04)),
-              ),
-              constraints: const BoxConstraints(maxWidth: 580),
-              child: Text(
-                'Inject capital directly into institutional execution streams through the sovereign Dextrade Matching Engine. Fully synchronized, microsecond execution, absolute vault custody protection.',
-                textAlign: isDesktop ? TextAlign.left : TextAlign.center,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: DexColors.textSecondary,
-                  height: 1.5,
-                ),
-              ),
-            ).animate().fade(delay: 400.ms, duration: 800.ms),
-
-            const SizedBox(height: 36),
-
-            // Main Action CTAs
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              alignment: isDesktop ? WrapAlignment.start : WrapAlignment.center,
-              children: [
-                GlowButton(
-                  label: 'ACQUIRE SOVEREIGN NODE',
-                  onPressed: () => context.push('/register'),
-                ),
-                OutlinedButton(
-                  onPressed: () => context.push('/trade'),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.white.withOpacity(0.12)),
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'TERMINAL CONSOLE',
-                        style: GoogleFonts.spaceGrotesk(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 12,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 14),
-                    ],
-                  ),
-                ),
-              ],
-            ).animate().fade(delay: 500.ms, duration: 800.ms).slideY(begin: 0.15, end: 0, curve: Curves.easeOutCubic),
-          ],
-        ),
-      ),
-
-      if (isDesktop) const SizedBox(width: 48) else const SizedBox(height: 48),
-
-      // Right Column: Gorgeous 3D Perspective Tilting Command Console Sandbox
-      Expanded(
-        flex: isDesktop ? 6 : 0,
-        child: MouseRegion(
-          onEnter: (_) => setState(() => _isConsoleHovered = true),
-          onExit: (_) => setState(() {
-            _isConsoleHovered = false;
-            _consoleTiltX = 0.0;
-            _consoleTiltY = 0.0;
-          }),
-          onHover: (event) {
-            setState(() {
-              _consoleTiltX = (event.localPosition.dy - 200) / 200; // normalized Y offset (-1.0 to 1.0)
-              _consoleTiltY = (event.localPosition.dx - 280) / 280; // normalized X offset (-1.0 to 1.0)
-            });
-          },
-          child: AnimatedRotation(
-            turns: 0,
-            duration: const Duration(milliseconds: 100),
-            child: Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001) // perspective coefficient
-                ..rotateX(_isConsoleHovered ? -_consoleTiltX * 0.15 : 0.0)
-                ..rotateY(_isConsoleHovered ? _consoleTiltY * 0.15 : 0.0),
-              alignment: Alignment.center,
-              child: Container(
-                height: 420,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(
-                    color: _isConsoleHovered 
-                        ? DexColors.primary.withOpacity(0.3)
-                        : Colors.white.withOpacity(0.04),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _isConsoleHovered 
-                          ? DexColors.primary.withOpacity(0.08)
-                          : Colors.black.withOpacity(0.4),
-                      blurRadius: 40,
-                      offset: const Offset(0, 16),
-                    ),
-                  ],
-                ),
-                child: GlassCard(
-                  padding: const EdgeInsets.all(0),
-                  borderRadius: 28,
-                  borderColor: Colors.white.withOpacity(0.04),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(28),
-                    child: Stack(
-                      children: [
-                        // Console matrix background mesh lines
-                        const Positioned.fill(child: GridPainterWidget()),
-
-                        // Console Header bar
-                        Positioned(
-                          top: 0, left: 0, right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.015),
-                              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(width: 8, height: 8, decoration: const BoxDecoration(shape: BoxShape.circle, color: DexColors.primaryGlow)),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      'ALPHA CORTEX CENTRAL TELEMETRY',
-                                      style: GoogleFonts.orbitron(fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1.0, color: Colors.white60),
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: DexColors.success.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text('LIVE FEED', style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: DexColors.successGlow)),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        // Console active modules
-                        Positioned.fill(
-                          top: 45,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Top row: simulated latency speed + node addresses
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.008),
-                                          borderRadius: BorderRadius.circular(16),
-                                          border: Border.all(color: Colors.white.withOpacity(0.03)),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('ENGINE LATENCY', style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: Colors.white38)),
-                                            const SizedBox(height: 6),
-                                            Text(
-                                              '${_simulatedLatency.toStringAsFixed(2)} ms',
-                                              style: GoogleFonts.jetBrainsMono(fontSize: 22, fontWeight: FontWeight.w900, color: DexColors.primaryGlow),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.008),
-                                          borderRadius: BorderRadius.circular(16),
-                                          border: Border.all(color: Colors.white.withOpacity(0.03)),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('ACTIVE ROUTING CORE', style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: Colors.white38)),
-                                            const SizedBox(height: 6),
-                                            Text(
-                                              'NODE: 0x4F8A',
-                                              style: GoogleFonts.orbitron(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 16),
-
-                                // Center Console: Flashing Verification Logs & Hashes
-                                Expanded(
-                                  child: Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF020205),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(color: Colors.white.withOpacity(0.03)),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text('REAL-TIME MATCH VERIFICATIONS', style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: Colors.white38)),
-                                            Text('SECURED BY SHA-256', style: GoogleFonts.orbitron(fontSize: 6, fontWeight: FontWeight.w900, color: DexColors.accent)),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Expanded(
-                                          child: ListView.builder(
-                                            physics: const NeverScrollableScrollPhysics(),
-                                            itemCount: _simulatedHashes.length,
-                                            itemBuilder: (context, idx) {
-                                              return Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 4),
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      width: 4, height: 4,
-                                                      decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color: idx == 0 ? DexColors.primary : Colors.white24,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 10),
-                                                    Expanded(
-                                                      child: Text(
-                                                        _simulatedHashes[idx],
-                                                        style: GoogleFonts.jetBrainsMono(fontSize: 10.5, fontWeight: FontWeight.w800, color: idx == 0 ? DexColors.successGlow : Colors.white54, letterSpacing: 0.5),
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      'CONFIRMED',
-                                                      style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: idx == 0 ? DexColors.successGlow : Colors.white24),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ];
-
+    
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            constraints: const BoxConstraints(maxWidth: 1200),
-            child: Flex(
-              direction: isDesktop ? Axis.horizontal : Axis.vertical,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: columnWidgets,
-            ),
+            constraints: const BoxConstraints(maxWidth: 1400), // Wider for editorial
+            child: isDesktop ? _buildDesktopHero() : _buildMobileHero(),
           ),
 
-          const SizedBox(height: 80),
+          const SizedBox(height: 100),
 
           // Ticker Tape widget
           _buildTickerTape(),
         ],
       ),
     );
+  }
+
+  Widget _buildDesktopHero() {
+    return SizedBox(
+      height: 650,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Background abstract accent
+          Positioned(
+            right: 100,
+            top: 50,
+            child: Container(
+              width: 400,
+              height: 500,
+              decoration: BoxDecoration(
+                border: Border.all(color: DexColors.primary.withValues(alpha: 0.1)),
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(100), bottomRight: Radius.circular(100)),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [DexColors.primary.withValues(alpha: 0.05), Colors.transparent],
+                ),
+              ),
+            ),
+          ).animate().fade(delay: 600.ms).slideX(begin: 0.1),
+
+          // Massive Editorial Typography
+          Positioned(
+            left: 0,
+            top: 40,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'INSTITUTIONAL',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 120,
+                    fontWeight: FontWeight.w900,
+                    height: 0.85,
+                    color: Colors.white,
+                    letterSpacing: -4,
+                  ),
+                ).animate().fade(delay: 100.ms).slideY(begin: 0.2),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'LIQUIDITY',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 120,
+                        fontWeight: FontWeight.w900,
+                        height: 0.85,
+                        color: DexColors.primary,
+                        letterSpacing: -4,
+                        shadows: [Shadow(color: DexColors.primary.withValues(alpha: 0.4), blurRadius: 40)],
+                      ),
+                    ).animate().fade(delay: 200.ms).slideY(begin: 0.2),
+                    const SizedBox(width: 24),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Container(
+                        width: 200,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.03),
+                          border: Border(left: BorderSide(color: DexColors.primary, width: 2)),
+                        ),
+                        child: Text(
+                          'Bypassing heuristic algorithms. Direct matching engine access for high-frequency algorithmic routing.',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 11,
+                            color: DexColors.textSecondary,
+                            height: 1.6,
+                          ),
+                        ),
+                      ).animate().fade(delay: 500.ms),
+                    ),
+                  ],
+                ),
+                Text(
+                  'PROTOCOL.',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 120,
+                    fontWeight: FontWeight.w900,
+                    height: 0.85,
+                    color: Colors.transparent,
+                    letterSpacing: -4,
+                    shadows: [Shadow(color: Colors.white.withValues(alpha: 0.3), offset: const Offset(0, 0), blurRadius: 2)],
+                  ),
+                ).animate().fade(delay: 300.ms).slideY(begin: 0.2),
+              ],
+            ),
+          ),
+
+          // Floating Command Deck (Interactive Sandbox)
+          Positioned(
+            right: 0,
+            top: 140,
+            width: 480,
+            child: _buildPerspectiveConsole(),
+          ),
+
+          // CTAs & Stats at bottom left
+          Positioned(
+            left: 0,
+            bottom: 0,
+            child: Row(
+              children: [
+                GlowButton(
+                  label: 'INITIALIZE NODE',
+                  onPressed: () {},
+                  width: 220,
+                ),
+                const SizedBox(width: 24),
+                _buildEditorialStat('LATENCY', '14.2ms'),
+                const SizedBox(width: 32),
+                _buildEditorialStat('CUSTODY', 'COLD'),
+              ],
+            ).animate().fade(delay: 700.ms),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileHero() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'INSTITUTIONAL\nLIQUIDITY\nPROTOCOL.',
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 64,
+            fontWeight: FontWeight.w900,
+            height: 0.9,
+            color: Colors.white,
+            letterSpacing: -2,
+          ),
+        ).animate().fade().slideY(begin: 0.1),
+        const SizedBox(height: 24),
+        Text(
+          'Direct matching engine access for high-frequency algorithmic routing.',
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 14,
+            color: DexColors.textSecondary,
+            height: 1.6,
+          ),
+        ).animate().fade(delay: 200.ms),
+        const SizedBox(height: 40),
+        SizedBox(height: 400, child: _buildPerspectiveConsole()),
+        const SizedBox(height: 40),
+        GlowButton(
+          label: 'INITIALIZE NODE',
+          onPressed: () {},
+          width: double.infinity,
+        ).animate().fade(delay: 400.ms),
+      ],
+    );
+  }
+
+  Widget _buildEditorialStat(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: GoogleFonts.orbitron(fontSize: 10, fontWeight: FontWeight.w800, color: DexColors.primary)),
+        const SizedBox(height: 4),
+        Text(value, style: GoogleFonts.spaceGrotesk(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white)),
+      ],
+    );
+  }
+
+  Widget _buildPerspectiveConsole() {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isConsoleHovered = true),
+      onExit: (_) => setState(() {
+        _isConsoleHovered = false;
+        _consoleTiltX = 0.0;
+        _consoleTiltY = 0.0;
+      }),
+      onHover: (event) {
+        setState(() {
+          _consoleTiltX = (event.localPosition.dy - 200) / 200;
+          _consoleTiltY = (event.localPosition.dx - 240) / 240;
+        });
+      },
+      child: AnimatedRotation(
+        turns: 0,
+        duration: const Duration(milliseconds: 100),
+        child: Transform(
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.001)
+            ..rotateX(_isConsoleHovered ? -_consoleTiltX * 0.15 : 0.0)
+            ..rotateY(_isConsoleHovered ? _consoleTiltY * 0.15 : 0.0),
+          alignment: Alignment.center,
+          child: Container(
+            height: 420,
+            decoration: BoxDecoration(
+              color: const Color(0xFF020205),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: _isConsoleHovered 
+                    ? DexColors.primary.withValues(alpha: 0.3)
+                    : Colors.white.withValues(alpha: 0.05),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: DexColors.primary.withValues(alpha: 0.1),
+                  blurRadius: 50,
+                  offset: const Offset(0, 20),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Stack(
+                children: [
+                  const Positioned.fill(child: GridPainterWidget()),
+                  Positioned.fill(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('ALPHA CORTEX', style: GoogleFonts.orbitron(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white54)),
+                              const PulseDot(color: DexColors.success, size: 8),
+                            ],
+                          ),
+                          const Spacer(),
+                          Text('LATENCY', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: DexColors.textMuted)),
+                          Text('${_simulatedLatency.toStringAsFixed(2)}ms', style: GoogleFonts.spaceGrotesk(fontSize: 48, fontWeight: FontWeight.w900, color: DexColors.primaryGlow, height: 1.0)),
+                          const SizedBox(height: 24),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            color: Colors.white.withValues(alpha: 0.02),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: _simulatedHashes.map((h) => Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Text(h, style: GoogleFonts.jetBrainsMono(fontSize: 11, color: Colors.white38)),
+                              )).toList(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ).animate().fade(delay: 500.ms).slideX(begin: 0.1);
   }
 
   // Infinite Horizontal Ticker Tape

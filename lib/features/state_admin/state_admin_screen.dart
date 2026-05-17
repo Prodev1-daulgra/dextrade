@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../core/theme/dex_typography.dart';
 import '../../providers/providers.dart';
@@ -34,41 +36,77 @@ class _StateAdminScreenState extends ConsumerState<StateAdminScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // Console Header
             Row(
               children: [
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Row(children: [
-                    Icon(Icons.tune_rounded, size: 22, color: DexColors.primary),
-                    const SizedBox(width: 10),
-                    Text('State Admin Portal', style: DexTypography.h1),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: DexColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: DexColors.primary.withValues(alpha: 0.3)),
+                      ),
+                      child: const Icon(Icons.terminal_rounded, size: 20, color: DexColors.primary),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'DIAGNOSTIC CONSOLE',
+                      style: GoogleFonts.orbitron(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
                   ]),
-                  const SizedBox(height: 6),
-                  Text('Manipulate UI states for your account data. Changes propagate in real-time across all devices.', style: DexTypography.bodySmall),
+                  const SizedBox(height: 8),
+                  Text(
+                    'INFRASTRUCTURE HEALTH & STATE MANIPULATION',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                      color: DexColors.primary,
+                    ),
+                  ),
                 ])),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: DexColors.primary.withValues(alpha: 0.08),
-                    border: Border.all(color: DexColors.primary.withValues(alpha: 0.2)),
+                    color: DexColors.success.withValues(alpha: 0.08),
+                    border: Border.all(color: DexColors.success.withValues(alpha: 0.2)),
                   ),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    const PulseDot(color: DexColors.primary, size: 6),
+                    const PulseDot(color: DexColors.success, size: 6),
                     const SizedBox(width: 8),
-                    Text('DATA STREAM ACTIVE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1, color: DexColors.primary)),
+                    Text(
+                      'SYS: ONLINE',
+                      style: GoogleFonts.orbitron(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                        color: DexColors.success,
+                      ),
+                    ),
                   ]),
                 ),
               ],
-            ),
-            const SizedBox(height: 16),
+            ).animate().fade().slideY(begin: -0.1),
+            const SizedBox(height: 24),
+            
             // Simulation Banner
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: DexColors.warning.withValues(alpha: 0.1),
-                border: Border.all(color: DexColors.warning.withValues(alpha: 0.3)),
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.black,
+                border: Border.all(color: DexColors.warning.withValues(alpha: 0.5)),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(color: DexColors.warning.withValues(alpha: 0.1), blurRadius: 10, spreadRadius: 1),
+                ],
               ),
               child: Row(
                 children: [
@@ -78,52 +116,55 @@ class _StateAdminScreenState extends ConsumerState<StateAdminScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('SIMULATION MODE: Pretend you are the backend logic', style: DexTypography.bodyMedium.copyWith(color: DexColors.warning, fontWeight: FontWeight.bold)),
+                        Text('SIMULATION MODE ACTIVE', style: GoogleFonts.jetBrainsMono(fontSize: 12, color: DexColors.warning, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text('Use this portal to test UI/UX states that depend on external data (e.g. approving deposits or tracking portfolio updates) to see how the app reacts in real-time.', style: DexTypography.bodySmall),
+                        Text('Terminal connected directly to backend routing. Use this interface to force state mutations and resolve pending execution nodes in real-time.', style: DexTypography.bodySmall),
                       ],
                     ),
                   ),
                 ],
               ),
-            ),
+            ).animate().fade(delay: 100.ms),
             const SizedBox(height: 16),
+            
             // User scope indicator
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: DexColors.surfaceLight,
-                border: Border.all(color: DexColors.border),
+                color: Colors.white.withValues(alpha: 0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
               ),
               child: Row(children: [
-                Icon(Icons.person_outline, size: 14, color: DexColors.textMuted),
-                const SizedBox(width: 8),
-                Text('SCOPE: ', style: DexTypography.label),
-                Text(email, style: DexTypography.label.copyWith(color: DexColors.primary)),
+                Icon(Icons.radar_rounded, size: 16, color: DexColors.primary),
+                const SizedBox(width: 10),
+                Text('TARGET SCOPE: ', style: GoogleFonts.jetBrainsMono(fontSize: 11, color: Colors.white54)),
+                Text(email, style: GoogleFonts.jetBrainsMono(fontSize: 11, color: DexColors.primary, fontWeight: FontWeight.bold)),
                 const Spacer(),
-                Text('OWN ACCOUNT ONLY', style: DexTypography.label.copyWith(color: DexColors.warning)),
+                Text('[ LOCAL NODE ]', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: DexColors.accent, fontWeight: FontWeight.bold)),
               ]),
-            ),
-            const SizedBox(height: 24),
+            ).animate().fade(delay: 200.ms),
+            const SizedBox(height: 32),
 
             // Tab selector
             Row(children: [
-              _TabChip('transactions', 'Transaction States', Icons.receipt_long_rounded, _tab == 'transactions', () => setState(() => _tab = 'transactions')),
+              Expanded(child: _TabChip('transactions', 'Execution Queue', Icons.account_tree_rounded, _tab == 'transactions', () => setState(() => _tab = 'transactions'))),
               const SizedBox(width: 10),
-              _TabChip('balance', 'Balance State', Icons.account_balance_wallet_rounded, _tab == 'balance', () => setState(() => _tab = 'balance')),
+              Expanded(child: _TabChip('balance', 'Ledger State', Icons.memory_rounded, _tab == 'balance', () => setState(() => _tab = 'balance'))),
               const SizedBox(width: 10),
-              _TabChip('sync', 'Data Sync', Icons.sync_rounded, _tab == 'sync', () => setState(() => _tab = 'sync')),
-            ]),
+              Expanded(child: _TabChip('sync', 'Telemetry', Icons.podcasts_rounded, _tab == 'sync', () => setState(() => _tab = 'sync'))),
+            ]).animate().fade(delay: 300.ms),
             const SizedBox(height: 24),
 
             // Content
-            if (_tab == 'transactions')
-              _TransactionStates(email: email, txAsync: txAsync, ref: ref),
-            if (_tab == 'balance')
-              _BalanceState(balAsync: balAsync, ref: ref),
-            if (_tab == 'sync')
-              _DataSync(email: email),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: _tab == 'transactions'
+                  ? _TransactionStates(email: email, txAsync: txAsync, ref: ref)
+                  : _tab == 'balance'
+                      ? _BalanceState(balAsync: balAsync, ref: ref)
+                      : _DataSync(email: email),
+            ),
           ],
         ),
       ),
@@ -227,9 +268,9 @@ class _TransactionStates extends StatelessWidget {
                         try {
                           await ref.read(txRepoProvider).approveTransaction(tx.id);
                           // It's a StreamProvider so it updates automatically
-                          if (context.mounted) DexToast.show(context, 'Transaction Approved', type: ToastType.success);
+                          if (context.mounted) DexToast.showPushNotification(context, title: 'State Admin', body: 'Transaction explicitly approved.');
                         } catch (e) {
-                          if (context.mounted) DexToast.show(context, e.toString(), type: ToastType.error);
+                          if (context.mounted) DexToast.showPushNotification(context, title: 'Error', body: e.toString());
                         }
                       },
                     )),
@@ -241,9 +282,9 @@ class _TransactionStates extends StatelessWidget {
                         try {
                           await ref.read(txRepoProvider).rejectTransaction(tx.id);
                           // StreamProvider auto updates
-                          if (context.mounted) DexToast.show(context, 'Transaction Failed', type: ToastType.success);
+                          if (context.mounted) DexToast.showPushNotification(context, title: 'State Admin', body: 'Transaction explicitly failed.');
                         } catch (e) {
-                          if (context.mounted) DexToast.show(context, e.toString(), type: ToastType.error);
+                          if (context.mounted) DexToast.showPushNotification(context, title: 'Error', body: e.toString());
                         }
                       },
                     )),
