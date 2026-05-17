@@ -6,6 +6,7 @@ import '../../core/theme/dex_typography.dart';
 import '../../providers/providers.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -43,6 +44,33 @@ class SettingsScreen extends ConsumerWidget {
                   child: Text(auth.user?.role.toUpperCase() ?? 'USER', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: DexColors.primary, letterSpacing: 1)),
                 ),
               ])),
+            ]),
+          ),
+          const SizedBox(height: 24),
+          // Mobile Terminal Download Card
+          GlassCard(
+            borderRadius: 22, padding: const EdgeInsets.all(20),
+            borderColor: DexColors.primary.withValues(alpha: 0.2),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                const Icon(Icons.phone_android_rounded, color: DexColors.primary, size: 24),
+                const SizedBox(width: 12),
+                Text('Mobile Terminal', style: DexTypography.h3.copyWith(fontSize: 16)),
+              ]),
+              const SizedBox(height: 8),
+              Text('Access institutional copytrading, futures, and spot markets directly from your Android device.', style: DexTypography.caption),
+              const SizedBox(height: 16),
+              GlowButton(
+                label: 'Download APK',
+                icon: Icons.download_rounded,
+                width: double.infinity,
+                onPressed: () async {
+                  final url = Uri.parse('/app-release.apk');
+                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                    debugPrint('Could not launch $url');
+                  }
+                },
+              ),
             ]),
           ),
           const SizedBox(height: 32),

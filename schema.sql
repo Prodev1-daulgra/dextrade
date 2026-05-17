@@ -316,6 +316,6 @@ ON CONFLICT (symbol) DO NOTHING;
 
 -- Copy Traders
 INSERT INTO public.copy_traders (trader_name, specialty, total_profit_pct, win_rate, total_trades, followers, profit_split_pct, min_allocation, is_approved, risk_level, avatar_color) VALUES
-('Quantum Alpha', 'Derivatives', 142.5, 84.5, 1250, 450, 20.0, 100.0, TRUE, 'Medium', '#A855F7'),
-('Apex Yield', 'DeFi / Stocks', 88.4, 92.1, 840, 120, 15.0, 50.0, TRUE, 'Low', '#7C3AED')
+('Quantum Alpha', 'Derivatives', 142.5, 84.5, 1250, 450, 20.0, 100.0, TRUE, 'medium', '#A855F7'),
+('Apex Yield', 'DeFi / Stocks', 88.4, 92.1, 840, 120, 15.0, 50.0, TRUE, 'low', '#7C3AED')
 ON CONFLICT DO NOTHING;
