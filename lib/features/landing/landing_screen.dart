@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -227,113 +228,124 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   // ─── Navigation Bar Widget ───
   Widget _buildNavBar(BuildContext context, bool isDesktop) {
     final navOpacity = math.min(1.0, _scrollOffset / 120.0);
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 40 : 20,
-        vertical: isDesktop ? 20 - (navOpacity * 6) : 14,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.4 * navOpacity),
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.white.withOpacity(0.05 * navOpacity),
-            width: 1.0,
-          ),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: 18.0 * navOpacity,
+          sigmaY: 18.0 * navOpacity,
         ),
-      ),
-      child: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 1200),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Logo & Branding
-              GestureDetector(
-                onTap: () => context.go('/'),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: DexColors.primaryGradient,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: DexColors.primary.withOpacity(0.4),
-                            blurRadius: 15,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.flash_on, color: Colors.white, size: 18),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          padding: EdgeInsets.symmetric(
+            horizontal: isDesktop ? 40 : 20,
+            vertical: isDesktop ? 20 - (navOpacity * 6) : 14,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.35 * navOpacity + 0.05),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.white.withOpacity(0.06 * navOpacity),
+                width: 1.0,
+              ),
+            ),
+          ),
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Logo & Branding
+                  GestureDetector(
+                    onTap: () => context.go('/'),
+                    child: Row(
                       children: [
-                        Text(
-                          'DEXTRADE',
-                          style: GoogleFonts.orbitron(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
-                            color: Colors.white,
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: DexColors.primaryGradient,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: DexColors.primary.withOpacity(0.4),
+                                blurRadius: 15,
+                                spreadRadius: 1,
+                              ),
+                            ],
                           ),
+                          child: const Icon(Icons.flash_on, color: Colors.white, size: 18),
                         ),
-                        Text(
-                          'ALPHA CORTEX SYSTEM',
-                          style: GoogleFonts.spaceGrotesk(
-                            fontSize: 7,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2.0,
-                            color: DexColors.accent,
-                          ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'DEXTRADE',
+                              style: GoogleFonts.orbitron(
+                                fontSize: isDesktop ? 18 : 14,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.5,
+                                color: Colors.white,
+                              ),
+                            ),
+                            if (isDesktop)
+                              Text(
+                                'ALPHA CORTEX SYSTEM',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 7,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 2.0,
+                                  color: DexColors.accent,
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-
-              // Nav Links (Desktop)
-              if (isDesktop)
-                Row(
-                  children: [
-                    _buildNavLink('Cortex Routing'),
-                    _buildNavLink('Match Engine'),
-                    _buildNavLink('Cold Custody'),
-                    _buildNavLink('Mirror Index'),
-                  ],
-                ),
-
-              // Auth Actions
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: () => context.push('/login'),
-                    child: Text(
-                      'LOG IN',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white70,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
                   ),
-                  const SizedBox(width: 16),
-                  GlowButton(
-                    label: 'ACQUIRE NODE',
-                    onPressed: () => context.push('/register'),
+
+                  // Nav Links (Desktop)
+                  if (isDesktop)
+                    Row(
+                      children: [
+                        _buildNavLink('Cortex Routing'),
+                        _buildNavLink('Match Engine'),
+                        _buildNavLink('Cold Custody'),
+                        _buildNavLink('Mirror Index'),
+                      ],
+                    ),
+
+                  // Auth Actions
+                  Row(
+                    children: [
+                      if (isDesktop) ...[
+                        TextButton(
+                          onPressed: () => context.push('/login'),
+                          child: Text(
+                            'LOG IN',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white70,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                      ],
+                      GlowButton(
+                        label: isDesktop ? 'ACQUIRE NODE' : 'ACQUIRE',
+                        onPressed: () => context.push('/register'),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -661,75 +673,83 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
       padding: const EdgeInsets.all(32),
       borderRadius: 28,
       borderColor: Colors.white.withOpacity(0.04),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: iconColor.withOpacity(0.15)),
-            ),
-            child: Icon(icon, color: iconColor, size: 20),
+          Positioned.fill(
+            child: CardAmbientShaderWidget(themeColor: iconColor),
           ),
-          const SizedBox(height: 24),
-          Text(
-            title,
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            desc,
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: DexColors.textSecondary,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Container(height: 1, color: Colors.white.withOpacity(0.06)),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: iconColor.withOpacity(0.15)),
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                title,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                desc,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: DexColors.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Container(height: 1, color: Colors.white.withOpacity(0.06)),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    statLabel,
-                    style: GoogleFonts.orbitron(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.0,
-                      color: Colors.white30,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        statLabel,
+                        style: GoogleFonts.orbitron(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                          color: Colors.white30,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        statValue,
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    statValue,
-                    style: GoogleFonts.jetBrainsMono(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.04),
+                      border: Border.all(color: Colors.white.withOpacity(0.06)),
                     ),
+                    child: const Icon(Icons.arrow_outward_rounded, color: Colors.white70, size: 14),
                   ),
                 ],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.04),
-                  border: Border.all(color: Colors.white.withOpacity(0.06)),
-                ),
-                child: const Icon(Icons.arrow_outward_rounded, color: Colors.white70, size: 14),
               ),
             ],
           ),
@@ -906,6 +926,11 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
               color: DexColors.textSecondary,
               height: 1.45,
             ),
+          ),
+          const SizedBox(height: 18),
+          AnimatedTechGraphicWidget(
+            step: step,
+            themeColor: color,
           ),
         ],
       ),
@@ -1510,6 +1535,8 @@ class _AnimatedNodesWidgetState extends State<AnimatedNodesWidget>
   final math.Random _random = math.Random(1337); // Seeded random for consistency
   Offset _localPointerPos = Offset.zero;
   bool _isHovering = false;
+  double _lastWidth = 0;
+  double _lastHeight = 0;
 
   // Active ripples from user clicks
   final List<_ClickRipple> _ripples = [];
@@ -1521,20 +1548,6 @@ class _AnimatedNodesWidgetState extends State<AnimatedNodesWidget>
       vsync: this,
       duration: const Duration(seconds: 10),
     )..repeat();
-
-    // Populate high fidelity drifting nodes
-    for (int i = 0; i < 28; i++) {
-      _nodes.add(
-        _DriftingNode(
-          posX: _random.nextDouble() * 450,
-          posY: _random.nextDouble() * 480,
-          velX: (_random.nextDouble() - 0.5) * 0.4,
-          velY: (_random.nextDouble() - 0.5) * 0.4,
-          baseRadius: 3 + _random.nextDouble() * 4,
-          glowPhaseOffset: _random.nextDouble() * 2 * math.pi,
-        ),
-      );
-    }
   }
 
   @override
@@ -1568,46 +1581,102 @@ class _AnimatedNodesWidgetState extends State<AnimatedNodesWidget>
     });
   }
 
+  void _onPointerMove(PointerMoveEvent event) {
+    setState(() {
+      _localPointerPos = event.localPosition;
+      _isHovering = true;
+    });
+  }
+
+  void _onPointerUp(PointerUpEvent event) {
+    setState(() {
+      _isHovering = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onHover: _onPointerHover,
-      onExit: _onPointerExit,
-      child: Listener(
-        onPointerDown: _onPointerDown,
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            _updateParticlePositions();
-            _updateRipples();
-            return CustomPaint(
-              painter: _HifiNodesPainter(
-                nodes: _nodes,
-                ripples: _ripples,
-                pointerPos: _localPointerPos,
-                isHovering: _isHovering,
-                primaryColor: DexColors.primary,
-                accentColor: DexColors.accent,
-                animationVal: _controller.value,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final height = constraints.maxHeight;
+
+        // Initialize or adjust nodes dynamically if size changes
+        if (_nodes.isEmpty || _lastWidth != width || _lastHeight != height) {
+          _lastWidth = width;
+          _lastHeight = height;
+          _nodes.clear();
+          // High performance: fewer nodes on mobile browsers to keep performance lightning fast
+          final particleCount = width < 600 ? 12 : 28;
+          for (int i = 0; i < particleCount; i++) {
+            _nodes.add(
+              _DriftingNode(
+                posX: _random.nextDouble() * width,
+                posY: _random.nextDouble() * height,
+                velX: (_random.nextDouble() - 0.5) * 0.4,
+                velY: (_random.nextDouble() - 0.5) * 0.4,
+                baseRadius: 3 + _random.nextDouble() * 4,
+                glowPhaseOffset: _random.nextDouble() * 2 * math.pi,
               ),
             );
-          },
-        ),
-      ),
+          }
+        }
+
+        return MouseRegion(
+          onHover: _onPointerHover,
+          onExit: _onPointerExit,
+          child: Listener(
+            onPointerDown: _onPointerDown,
+            onPointerMove: _onPointerMove,
+            onPointerUp: _onPointerUp,
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                _updateParticlePositions(width, height);
+                _updateRipples();
+                return CustomPaint(
+                  painter: _HifiNodesPainter(
+                    nodes: _nodes,
+                    ripples: _ripples,
+                    pointerPos: _localPointerPos,
+                    isHovering: _isHovering,
+                    primaryColor: DexColors.primary,
+                    accentColor: DexColors.accent,
+                    animationVal: _controller.value,
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
-  void _updateParticlePositions() {
+  void _updateParticlePositions(double width, double height) {
     // Update drifting math logic per frame trigger
     for (var node in _nodes) {
       node.posX += node.velX;
       node.posY += node.velY;
 
-      // Bounce nodes inside bounds
-      if (node.posX < 0 || node.posX > 500) node.velX *= -1;
-      if (node.posY < 0 || node.posY > 480) node.velY *= -1;
+      // Bounce nodes inside actual responsive bounds
+      if (node.posX < 0) {
+        node.posX = 0;
+        node.velX *= -1;
+      } else if (node.posX > width) {
+        node.posX = width;
+        node.velX *= -1;
+      }
 
-      // Mouse attraction
+      if (node.posY < 0) {
+        node.posY = 0;
+        node.velY *= -1;
+      } else if (node.posY > height) {
+        node.posY = height;
+        node.velY *= -1;
+      }
+
+      // Pointer attraction / repulsion dynamics
       if (_isHovering) {
         final dist = (Offset(node.posX, node.posY) - _localPointerPos).distance;
         if (dist < 150) {
@@ -1767,4 +1836,301 @@ class _HifiNodesPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class AnimatedTechGraphicWidget extends StatefulWidget {
+  final String step;
+  final Color themeColor;
+
+  const AnimatedTechGraphicWidget({
+    super.key,
+    required this.step,
+    required this.themeColor,
+  });
+
+  @override
+  State<AnimatedTechGraphicWidget> createState() => _AnimatedTechGraphicWidgetState();
+}
+
+class _AnimatedTechGraphicWidgetState extends State<AnimatedTechGraphicWidget>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 70,
+      width: double.infinity,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return CustomPaint(
+            painter: _TechGraphicPainter(
+              step: widget.step,
+              color: widget.themeColor,
+              animationVal: _controller.value,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _TechGraphicPainter extends CustomPainter {
+  final String step;
+  final Color color;
+  final double animationVal;
+
+  _TechGraphicPainter({
+    required this.step,
+    required this.color,
+    required this.animationVal,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Background capsule border
+    final bgPaint = Paint()
+      ..color = Colors.white.withOpacity(0.02)
+      ..style = PaintingStyle.fill;
+    final rrect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      const Radius.circular(12),
+    );
+    canvas.drawRRect(rrect, bgPaint);
+
+    final borderPaint = Paint()
+      ..color = Colors.white.withOpacity(0.04)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+    canvas.drawRRect(rrect, borderPaint);
+
+    if (step == '01') {
+      // Radiating WebSocket Sync ping
+      final center = Offset(size.width / 2, size.height / 2);
+      final beaconPaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.fill;
+      
+      // Draw static background waves
+      for (int i = 0; i < 3; i++) {
+        final progress = (animationVal + i / 3.0) % 1.0;
+        final wavePaint = Paint()
+          ..color = color.withOpacity((1.0 - progress) * 0.4)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5;
+        canvas.drawCircle(center, progress * 40, wavePaint);
+      }
+      canvas.drawCircle(center, 4, beaconPaint);
+      canvas.drawCircle(center, 10, Paint()..color = color.withOpacity(0.2)..style = PaintingStyle.stroke..strokeWidth = 1.0);
+    } else if (step == '02') {
+      // Neural branching path routing
+      final startY = size.height / 2;
+      final startX = 30.0;
+      final endX = size.width - 30.0;
+      
+      final linePaint = Paint()
+        ..color = Colors.white.withOpacity(0.06)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+
+      final targetsY = [15.0, size.height / 2, size.height - 15.0];
+      
+      for (final targetY in targetsY) {
+        final path = Path()
+          ..moveTo(startX, startY)
+          ..cubicTo(startX + (endX - startX) / 2, startY, startX + (endX - startX) / 2, targetY, endX, targetY);
+        canvas.drawPath(path, linePaint);
+        
+        // Draw traveling glowing packet
+        final progress = animationVal;
+        final t = progress;
+        // Cubic bezier interpolation formula
+        final p0 = Offset(startX, startY);
+        final p1 = Offset(startX + (endX - startX) / 2, startY);
+        final p2 = Offset(startX + (endX - startX) / 2, targetY);
+        final p3 = Offset(endX, targetY);
+        
+        final x = (1-t)*(1-t)*(1-t)*p0.dx + 3*(1-t)*(1-t)*t*p1.dx + 3*(1-t)*t*t*p2.dx + t*t*t*p3.dx;
+        final y = (1-t)*(1-t)*(1-t)*p0.dy + 3*(1-t)*(1-t)*t*p1.dy + 3*(1-t)*t*t*p2.dy + t*t*t*p3.dy;
+        
+        final packetPaint = Paint()
+          ..color = color
+          ..style = PaintingStyle.fill;
+        canvas.drawCircle(Offset(x, y), 3, packetPaint);
+        canvas.drawCircle(Offset(x, y), 8, Paint()..color = color.withOpacity(0.25)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3));
+      }
+    } else if (step == '03') {
+      // Overlapping lock keys (Sovereign MPC Custody)
+      final center = Offset(size.width / 2, size.height / 2);
+      final radius = 20.0;
+      
+      final ringPaint = Paint()
+        ..color = Colors.white.withOpacity(0.06)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0;
+      canvas.drawCircle(center, radius, ringPaint);
+      
+      // Orbiting key nodes
+      final angleStep = 2 * math.pi / 3;
+      for (int i = 0; i < 3; i++) {
+        final currentAngle = animationVal * 2 * math.pi + i * angleStep;
+        final nodePos = Offset(
+          center.dx + radius * math.cos(currentAngle),
+          center.dy + radius * math.sin(currentAngle),
+        );
+        final keyPaint = Paint()
+          ..color = color
+          ..style = PaintingStyle.fill;
+        canvas.drawCircle(nodePos, 3.5, keyPaint);
+        canvas.drawCircle(nodePos, 8, Paint()..color = color.withOpacity(0.25)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2));
+      }
+      
+      // Core vault shield node
+      final corePaint = Paint()
+        ..color = color.withOpacity(0.12)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(center, 8, corePaint);
+      canvas.drawCircle(center, 8, Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = 1.0);
+    } else if (step == '04') {
+      // High frequency settlement sparkline (Instant Yield Settlement)
+      final points = <Offset>[];
+      const count = 15;
+      final stepX = (size.width - 20) / (count - 1);
+      final timeOffset = animationVal * 2 * math.pi;
+      
+      for (int i = 0; i < count; i++) {
+        final x = 10.0 + i * stepX;
+        final waveVal = math.sin(i * 0.8 - timeOffset) * math.cos(i * 0.4 + timeOffset);
+        final y = size.height / 2 + waveVal * 16.0;
+        points.add(Offset(x, y));
+      }
+      
+      final chartPaint = Paint()
+        ..color = color.withOpacity(0.25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+      
+      final glowPaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0;
+      
+      final path = Path()..moveTo(points[0].dx, points[0].dy);
+      for (int i = 1; i < points.length; i++) {
+        path.lineTo(points[i].dx, points[i].dy);
+      }
+      
+      canvas.drawPath(path, chartPaint);
+      
+      // Draw glowing sliding bullet node on the wave
+      final index = ((animationVal * points.length).floor()) % points.length;
+      final bulletPos = points[index];
+      
+      canvas.drawPath(path, glowPaint);
+      canvas.drawCircle(bulletPos, 4.5, Paint()..color = Colors.white..style = PaintingStyle.fill);
+      canvas.drawCircle(bulletPos, 9, Paint()..color = color.withOpacity(0.4)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _TechGraphicPainter oldDelegate) =>
+      oldDelegate.animationVal != animationVal || oldDelegate.color != color || oldDelegate.step != step;
+}
+
+class CardAmbientShaderWidget extends StatefulWidget {
+  final Color themeColor;
+  const CardAmbientShaderWidget({super.key, required this.themeColor});
+
+  @override
+  State<CardAmbientShaderWidget> createState() => _CardAmbientShaderWidgetState();
+}
+
+class _CardAmbientShaderWidgetState extends State<CardAmbientShaderWidget>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 12),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        return CustomPaint(
+          painter: _CardAmbientShaderPainter(
+            color: widget.themeColor,
+            animationVal: _controller.value,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CardAmbientShaderPainter extends CustomPainter {
+  final Color color;
+  final double animationVal;
+
+  _CardAmbientShaderPainter({required this.color, required this.animationVal});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color.withOpacity(0.015)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.5;
+
+    // Subtle cyber grid lines drifting slowly
+    final double step = 24.0;
+    final double offset = animationVal * step;
+    
+    for (double x = offset; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = offset; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+
+    // Glowing subtle neon aura at the top right of the card boundary
+    final center = Offset(size.width * 0.85, size.height * 0.25);
+    final glowPaint = Paint()
+      ..color = color.withOpacity(0.05)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 28.0)
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center, 45, glowPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _CardAmbientShaderPainter oldDelegate) =>
+      oldDelegate.animationVal != animationVal || oldDelegate.color != color;
 }

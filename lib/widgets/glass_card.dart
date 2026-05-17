@@ -53,13 +53,16 @@ class _GlassCardState extends State<GlassCard> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(widget.borderRadius),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: widget.blurAmount, sigmaY: widget.blurAmount),
+            filter: ImageFilter.blur(
+              sigmaX: widget.blurAmount + 6.0, // extra soft premium frosting blur
+              sigmaY: widget.blurAmount + 6.0,
+            ),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 color: _isHovered 
-                    ? DexColors.surfaceGlass.withValues(alpha: 0.3)
-                    : DexColors.surfaceGlass,
+                    ? DexColors.surfaceGlass.withValues(alpha: 0.25)
+                    : DexColors.surfaceGlass.withValues(alpha: 0.45),
                 border: Border.all(
                   color: activeBorder,
                   width: 1,
@@ -68,11 +71,11 @@ class _GlassCardState extends State<GlassCard> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: _isHovered ? [
-                    const Color(0x22FFFFFF),
-                    const Color(0x0AFFFFFF),
+                    Colors.white.withValues(alpha: 0.16),
+                    Colors.white.withValues(alpha: 0.04),
                   ] : [
-                    const Color(0x12FFFFFF),
-                    const Color(0x05FFFFFF),
+                    Colors.white.withValues(alpha: 0.08),
+                    Colors.white.withValues(alpha: 0.02),
                   ],
                 ),
               ),
