@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme/dex_colors.dart';
 
-class GlassCard extends StatelessWidget {
+class GlassCard extends StatefulWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final double borderRadius;
@@ -21,37 +21,76 @@ class GlassCard extends StatelessWidget {
   });
 
   @override
+  State<GlassCard> createState() => _GlassCardState();
+}
+
+class _GlassCardState extends State<GlassCard> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    final card = ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blurAmount, sigmaY: blurAmount),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
-            color: DexColors.surfaceGlass,
-            border: Border.all(
-              color: borderColor ?? DexColors.border,
-              width: 1,
+    final defaultBorder = widget.borderColor ?? DexColors.border;
+    final activeBorder = _isHovered 
+        ? DexColors.primary.withValues(alpha: 0.6) 
+        : defaultBorder;
+
+    final card = AnimatedScale(
+      scale: _isHovered ? 1.02 : 1.0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          boxShadow: _isHovered ? [
+            BoxShadow(
+              color: DexColors.primary.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0x12FFFFFF),
-                Color(0x05FFFFFF),
-              ],
+          ] : [],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: widget.blurAmount, sigmaY: widget.blurAmount),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                color: _isHovered 
+                    ? DexColors.surfaceGlass.withValues(alpha: 0.3)
+                    : DexColors.surfaceGlass,
+                border: Border.all(
+                  color: activeBorder,
+                  width: 1,
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: _isHovered ? [
+                    const Color(0x22FFFFFF),
+                    const Color(0x0AFFFFFF),
+                  ] : [
+                    const Color(0x12FFFFFF),
+                    const Color(0x05FFFFFF),
+                  ],
+                ),
+              ),
+              padding: widget.padding ?? const EdgeInsets.all(20),
+              child: widget.child,
             ),
           ),
-          padding: padding ?? const EdgeInsets.all(20),
-          child: child,
         ),
       ),
     );
 
-    if (onTap != null) {
-      return GestureDetector(onTap: onTap, child: card);
-    }
-    return card;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      child: widget.onTap != null 
+          ? GestureDetector(onTap: widget.onTap, child: card)
+          : card,
+    );
   }
 }
