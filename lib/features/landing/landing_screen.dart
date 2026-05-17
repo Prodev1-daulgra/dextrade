@@ -42,6 +42,20 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   // Interactive hover tracking for parallax background
   Offset _hoverPosition = Offset.zero;
 
+  // 3D Parallax Tilt state for the command deck console
+  double _consoleTiltX = 0.0;
+  double _consoleTiltY = 0.0;
+  bool _isConsoleHovered = false;
+
+  // Active Selected Telemetry Cluster for the Cluster Control Sandbox
+  int _activeClusterIndex = 0;
+
+  // Simulated live fluctuating matching clock values
+  double _simulatedLatency = 14.24;
+  late final Timer _latencyTimer;
+  List<String> _simulatedHashes = [];
+  late final Timer _hashTimer;
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +66,36 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
       vsync: this,
       duration: const Duration(seconds: 12),
     )..repeat(reverse: true);
+
+    // Initial mock hashes
+    final r = math.Random();
+    _simulatedHashes = List.generate(4, (idx) {
+      final prefix = ['SHA', 'MD5', 'KECCAK', 'MPC'][r.nextInt(4)];
+      final hex = List.generate(8, (i) => '0123456789ABCDEF'[r.nextInt(16)]).join();
+      return '[$prefix: $hex]';
+    });
+
+    // Fluctuating matching clock
+    _latencyTimer = Timer.periodic(const Duration(milliseconds: 800), (timer) {
+      if (mounted) {
+        setState(() {
+          _simulatedLatency = 14.1 + math.Random().nextDouble() * 0.3;
+        });
+      }
+    });
+
+    // Flashing verification log hashes
+    _hashTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (mounted) {
+        setState(() {
+          _simulatedHashes = List.generate(4, (idx) {
+            final prefix = ['SHA', 'MD5', 'KECCAK', 'MPC'][r.nextInt(4)];
+            final hex = List.generate(8, (i) => '0123456789ABCDEF'[r.nextInt(16)]).join();
+            return '[$prefix: $hex]';
+          });
+        });
+      }
+    });
 
     // Infinite scroll for the ticker tape
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -85,6 +129,8 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     _glowController.dispose();
     _tapeController.dispose();
     _tapeTimer?.cancel();
+    _latencyTimer.cancel();
+    _hashTimer.cancel();
     super.dispose();
   }
 
@@ -372,144 +418,396 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
 
   // ─── Hero Section ───
   Widget _buildHeroSection(BuildContext context, bool isDesktop) {
+    final screenSize = MediaQuery.of(context).size;
+    final columnWidgets = [
+      // Left Column: Elite Left-Aligned Typography & CTAs
+      Expanded(
+        flex: isDesktop ? 5 : 0,
+        child: Column(
+          crossAxisAlignment: isDesktop ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+          children: [
+            // Operational Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: Colors.white.withOpacity(0.06)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: DexColors.success,
+                      boxShadow: [
+                        BoxShadow(
+                          color: DexColors.success,
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'SYSTEM PROTOCOL V4.0: OPERATIONAL',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ).animate().fade(duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOutCubic),
+
+            const SizedBox(height: 36),
+
+            // Left-Aligned God-Level Asymmetric Heading
+            RichText(
+              textAlign: isDesktop ? TextAlign.left : TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'CORTEX\nMATCHING\n',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: isDesktop ? 76 : 42,
+                      fontWeight: FontWeight.w900,
+                      height: 0.9,
+                      color: Colors.white,
+                      letterSpacing: -1,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'ENGINE.',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: isDesktop ? 76 : 42,
+                      fontWeight: FontWeight.w900,
+                      height: 0.9,
+                      color: DexColors.primary,
+                      shadows: [
+                        Shadow(
+                          color: DexColors.primary.withOpacity(0.4),
+                          blurRadius: 40,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ).animate().fade(delay: 200.ms, duration: 800.ms).scale(begin: const Offset(0.96, 0.96), curve: Curves.easeOutCubic),
+
+            const SizedBox(height: 24),
+
+            // Subtitle within a high-tech border callout panel
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.01),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withOpacity(0.04)),
+              ),
+              constraints: const BoxConstraints(maxWidth: 580),
+              child: Text(
+                'Inject capital directly into institutional execution streams through the sovereign Dextrade Matching Engine. Fully synchronized, microsecond execution, absolute vault custody protection.',
+                textAlign: isDesktop ? TextAlign.left : TextAlign.center,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: DexColors.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+            ).animate().fade(delay: 400.ms, duration: 800.ms),
+
+            const SizedBox(height: 36),
+
+            // Main Action CTAs
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              alignment: isDesktop ? WrapAlignment.start : WrapAlignment.center,
+              children: [
+                GlowButton(
+                  label: 'ACQUIRE SOVEREIGN NODE',
+                  onPressed: () => context.push('/register'),
+                ),
+                OutlinedButton(
+                  onPressed: () => context.push('/trade'),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.white.withOpacity(0.12)),
+                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'TERMINAL CONSOLE',
+                        style: GoogleFonts.spaceGrotesk(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 14),
+                    ],
+                  ),
+                ),
+              ],
+            ).animate().fade(delay: 500.ms, duration: 800.ms).slideY(begin: 0.15, end: 0, curve: Curves.easeOutCubic),
+          ],
+        ),
+      ),
+
+      if (isDesktop) const SizedBox(width: 48) else const SizedBox(height: 48),
+
+      // Right Column: Gorgeous 3D Perspective Tilting Command Console Sandbox
+      Expanded(
+        flex: isDesktop ? 6 : 0,
+        child: MouseRegion(
+          onEnter: (_) => setState(() => _isConsoleHovered = true),
+          onExit: (_) => setState(() {
+            _isConsoleHovered = false;
+            _consoleTiltX = 0.0;
+            _consoleTiltY = 0.0;
+          }),
+          onHover: (event) {
+            setState(() {
+              _consoleTiltX = (event.localPosition.dy - 200) / 200; // normalized Y offset (-1.0 to 1.0)
+              _consoleTiltY = (event.localPosition.dx - 280) / 280; // normalized X offset (-1.0 to 1.0)
+            });
+          },
+          child: AnimatedRotation(
+            turns: 0,
+            duration: const Duration(milliseconds: 100),
+            child: Transform(
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.001) // perspective coefficient
+                ..rotateX(_isConsoleHovered ? -_consoleTiltX * 0.15 : 0.0)
+                ..rotateY(_isConsoleHovered ? _consoleTiltY * 0.15 : 0.0),
+              alignment: Alignment.center,
+              child: Container(
+                height: 420,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(
+                    color: _isConsoleHovered 
+                        ? DexColors.primary.withOpacity(0.3)
+                        : Colors.white.withOpacity(0.04),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _isConsoleHovered 
+                          ? DexColors.primary.withOpacity(0.08)
+                          : Colors.black.withOpacity(0.4),
+                      blurRadius: 40,
+                      offset: const Offset(0, 16),
+                    ),
+                  ],
+                ),
+                child: GlassCard(
+                  padding: const EdgeInsets.all(0),
+                  borderRadius: 28,
+                  borderColor: Colors.white.withOpacity(0.04),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(28),
+                    child: Stack(
+                      children: [
+                        // Console matrix background mesh lines
+                        const Positioned.fill(child: GridPainterWidget()),
+
+                        // Console Header bar
+                        Positioned(
+                          top: 0, left: 0, right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.015),
+                              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(width: 8, height: 8, decoration: const BoxDecoration(shape: BoxShape.circle, color: DexColors.primaryGlow)),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'ALPHA CORTEX CENTRAL TELEMETRY',
+                                      style: GoogleFonts.orbitron(fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1.0, color: Colors.white60),
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: DexColors.success.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text('LIVE FEED', style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: DexColors.successGlow)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Console active modules
+                        Positioned.fill(
+                          top: 45,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Top row: simulated latency speed + node addresses
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.008),
+                                          borderRadius: BorderRadius.circular(16),
+                                          border: Border.all(color: Colors.white.withOpacity(0.03)),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('ENGINE LATENCY', style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: Colors.white38)),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              '${_simulatedLatency.toStringAsFixed(2)} ms',
+                                              style: GoogleFonts.jetBrainsMono(fontSize: 22, fontWeight: FontWeight.w900, color: DexColors.primaryGlow),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.008),
+                                          borderRadius: BorderRadius.circular(16),
+                                          border: Border.all(color: Colors.white.withOpacity(0.03)),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('ACTIVE ROUTING CORE', style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: Colors.white38)),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              'NODE: 0x4F8A',
+                                              style: GoogleFonts.orbitron(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Center Console: Flashing Verification Logs & Hashes
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF020205),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(color: Colors.white.withOpacity(0.03)),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text('REAL-TIME MATCH VERIFICATIONS', style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: Colors.white38)),
+                                            Text('SECURED BY SHA-256', style: GoogleFonts.orbitron(fontSize: 6, fontWeight: FontWeight.w900, color: DexColors.accent)),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Expanded(
+                                          child: ListView.builder(
+                                            physics: const NeverScrollableScrollPhysics(),
+                                            itemCount: _simulatedHashes.length,
+                                            itemBuilder: (context, idx) {
+                                              return Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                      width: 4, height: 4,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: idx == 0 ? DexColors.primary : Colors.white24,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Expanded(
+                                                      child: Text(
+                                                        _simulatedHashes[idx],
+                                                        style: GoogleFonts.jetBrainsMono(fontSize: 10.5, fontWeight: FontWeight.w800, color: idx == 0 ? DexColors.successGlow : Colors.white54, letterSpacing: 0.5),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      'CONFIRMED',
+                                                      style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: idx == 0 ? DexColors.successGlow : Colors.white24),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ];
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Operational Badge
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.03),
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(color: Colors.white.withOpacity(0.06)),
+            constraints: const BoxConstraints(maxWidth: 1200),
+            child: Flex(
+              direction: isDesktop ? Axis.horizontal : Axis.vertical,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: columnWidgets,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: DexColors.success,
-                    boxShadow: [
-                      BoxShadow(
-                        color: DexColors.success,
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'SYSTEM PROTOCOL V4.0: OPERATIONAL',
-                  style: GoogleFonts.orbitron(
-                    fontSize: 8,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.5,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
-            ),
-          ).animate().fade(duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOutCubic),
+          ),
 
-          const SizedBox(height: 40),
-
-          // God-Level Heading
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'MIRROR\n',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: isDesktop ? 110 : 56,
-                    fontWeight: FontWeight.w900,
-                    height: 0.9,
-                    color: Colors.white,
-                  ),
-                ),
-                TextSpan(
-                  text: 'LEGENDS.',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: isDesktop ? 110 : 56,
-                    fontWeight: FontWeight.w900,
-                    height: 0.9,
-                    color: DexColors.primary,
-                    shadows: [
-                      Shadow(
-                        color: DexColors.primary.withOpacity(0.4),
-                        blurRadius: 40,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ).animate().fade(delay: 200.ms, duration: 800.ms).scale(begin: const Offset(0.96, 0.96), curve: Curves.easeOutCubic),
-
-          const SizedBox(height: 28),
-
-          // Subtitle description
-          Container(
-            constraints: const BoxConstraints(maxWidth: 640),
-            child: Text(
-              'Inject your capital directly into institutional flows through the sovereign Dextrade Matching Engine. Fully synchronized, microsecond execution, absolute vault custody protection.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: isDesktop ? 18 : 14,
-                fontWeight: FontWeight.w500,
-                color: DexColors.textSecondary,
-                height: 1.6,
-              ),
-            ),
-          ).animate().fade(delay: 400.ms, duration: 800.ms),
-
-          const SizedBox(height: 48),
-
-          // Main CTAs
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GlowButton(
-                label: 'ACQUIRE SOVEREIGN NODE',
-                onPressed: () => context.push('/register'),
-              ),
-              const SizedBox(width: 20),
-              OutlinedButton(
-                onPressed: () => context.push('/trade'),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.white.withOpacity(0.12)),
-                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 22),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'TERMINAL CONSOLE',
-                      style: GoogleFonts.spaceGrotesk(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 16),
-                  ],
-                ),
-              ),
-            ],
-          ).animate().fade(delay: 500.ms, duration: 800.ms).slideY(begin: 0.15, end: 0, curve: Curves.easeOutCubic),
-
-          const SizedBox(height: 72),
+          const SizedBox(height: 80),
 
           // Ticker Tape widget
           _buildTickerTape(),
@@ -591,35 +889,8 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     );
   }
 
-  // ─── Stats Grid ───
+  // ─── Honeycomb Telemetry Grid ───
   Widget _buildStatsGrid(bool isDesktop) {
-    final widgets = [
-      _buildGlassCard(
-        icon: Icons.flash_on_rounded,
-        title: 'Microsecond Execution',
-        desc: 'Distributed synchronization pipelines copy master positions instantly, completely neutralizing execution slippage loops.',
-        statLabel: 'ALPHA SYNC DELAY',
-        statValue: '14.2ms',
-        iconColor: DexColors.primary,
-      ),
-      _buildGlassCard(
-        icon: Icons.stacked_line_chart_rounded,
-        title: 'Verifiable Ledger Index',
-        desc: 'All trader allocation histories are secured in public cryptographic ledgers, providing 100% backtesting proof validity.',
-        statLabel: 'PLATFORM VALUE',
-        statValue: '\$1.42B',
-        iconColor: DexColors.accent,
-      ),
-      _buildGlassCard(
-        icon: Icons.gpp_good_rounded,
-        title: 'MPC Vault Protection',
-        desc: 'Asset custody is strictly managed via air-gapped multi-party computation security grids under sovereign hardware control.',
-        statLabel: 'TRANSACTION SUCCESS',
-        statValue: '99.8%',
-        iconColor: DexColors.success,
-      ),
-    ];
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
       child: Container(
@@ -647,13 +918,68 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
               ),
             ),
             const SizedBox(height: 56),
+
+            // High-End Asymmetric Layout Deck
             if (isDesktop)
               Row(
-                children: widgets.map((w) => Expanded(child: Padding(padding: const EdgeInsets.all(12), child: w))).toList(),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Massive Primary Widescreen Core Monitor (55% width)
+                  Expanded(
+                    flex: 6,
+                    child: _buildTelemetryCoreCard(),
+                  ),
+                  const SizedBox(width: 24),
+                  // Stacked Nested Sub-Telemetry Channels (45% width)
+                  Expanded(
+                    flex: 5,
+                    child: Column(
+                      children: [
+                        _buildSubTelemetryCard(
+                          icon: Icons.stacked_line_chart_rounded,
+                          title: 'Verifiable Ledger Index',
+                          desc: 'All trader allocation histories are secured in public cryptographic ledgers.',
+                          statLabel: 'PLATFORM VALUE',
+                          statValue: '\$1.42B',
+                          iconColor: DexColors.accent,
+                        ),
+                        const SizedBox(height: 24),
+                        _buildSubTelemetryCard(
+                          icon: Icons.gpp_good_rounded,
+                          title: 'MPC Vault Protection',
+                          desc: 'Asset custody is strictly managed via air-gapped multi-party computation security grids.',
+                          statLabel: 'TRANSACTION SUCCESS',
+                          statValue: '99.8%',
+                          iconColor: DexColors.success,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               )
             else
               Column(
-                children: widgets.map((w) => Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: w)).toList(),
+                children: [
+                  _buildTelemetryCoreCard(),
+                  const SizedBox(height: 24),
+                  _buildSubTelemetryCard(
+                    icon: Icons.stacked_line_chart_rounded,
+                    title: 'Verifiable Ledger Index',
+                    desc: 'All trader allocation histories are secured in public cryptographic ledgers.',
+                    statLabel: 'PLATFORM VALUE',
+                    statValue: '\$1.42B',
+                    iconColor: DexColors.accent,
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSubTelemetryCard(
+                    icon: Icons.gpp_good_rounded,
+                    title: 'MPC Vault Protection',
+                    desc: 'Asset custody is strictly managed via air-gapped multi-party computation security grids.',
+                    statLabel: 'TRANSACTION SUCCESS',
+                    statValue: '99.8%',
+                    iconColor: DexColors.success,
+                  ),
+                ],
               ),
           ],
         ),
@@ -661,59 +987,86 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildGlassCard({
-    required IconData icon,
-    required String title,
-    required String desc,
-    required String statLabel,
-    required String statValue,
-    required Color iconColor,
-  }) {
+  // Widescreen Core Monitor Widget (Bespoke design)
+  Widget _buildTelemetryCoreCard() {
     return GlassCard(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(36),
       borderRadius: 28,
-      borderColor: Colors.white.withOpacity(0.04),
+      borderColor: DexColors.primary.withOpacity(0.12),
       child: Stack(
-        clipBehavior: Clip.none,
         children: [
           Positioned.fill(
-            child: CardAmbientShaderWidget(themeColor: iconColor),
+            child: CardAmbientShaderWidget(themeColor: DexColors.primary),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: iconColor.withOpacity(0.15)),
-                ),
-                child: Icon(icon, color: iconColor, size: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: DexColors.primary.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(color: DexColors.primary.withOpacity(0.15)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.flash_on_rounded, color: DexColors.primary, size: 12),
+                        const SizedBox(width: 6),
+                        Text(
+                          'PRIMARY CORE MONITOR',
+                          style: GoogleFonts.orbitron(fontSize: 8, fontWeight: FontWeight.w900, color: DexColors.primary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    'LATENCY INDEX',
+                    style: GoogleFonts.orbitron(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.white24),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              Text(
-                title,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  letterSpacing: -0.5,
-                ),
+              const SizedBox(height: 36),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Microsecond Execution',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Distributed synchronization pipelines copy master positions instantly, completely neutralizing execution slippage loops.',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: DexColors.textSecondary,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  // Glowing Pulsing Speed Dial Gauge Widget
+                  const MatchingSpeedGaugeWidget(),
+                ],
               ),
-              const SizedBox(height: 12),
-              Text(
-                desc,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: DexColors.textSecondary,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 36),
               Container(height: 1, color: Colors.white.withOpacity(0.06)),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -721,33 +1074,30 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        statLabel,
-                        style: GoogleFonts.orbitron(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0,
-                          color: Colors.white30,
-                        ),
+                        'ALPHA SYNC DELAY',
+                        style: GoogleFonts.orbitron(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.white30),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        statValue,
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                        ),
+                        '14.2ms',
+                        style: GoogleFonts.jetBrainsMono(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white),
                       ),
                     ],
                   ),
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(12),
                       color: Colors.white.withOpacity(0.04),
                       border: Border.all(color: Colors.white.withOpacity(0.06)),
                     ),
-                    child: const Icon(Icons.arrow_outward_rounded, color: Colors.white70, size: 14),
+                    child: Row(
+                      children: [
+                        Text('VERIFY ENGINE', style: GoogleFonts.spaceGrotesk(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white70)),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.arrow_outward_rounded, color: Colors.white70, size: 12),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -758,181 +1108,399 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     );
   }
 
-  // ─── BRAND-NEW CONTEXT SECTION: ARCHITECTURE FLOW MAP stepper ───
+  // Stacked Nested Sub-Telemetry Channel
+  Widget _buildSubTelemetryCard({
+    required IconData icon,
+    required String title,
+    required String desc,
+    required String statLabel,
+    required String statValue,
+    required Color iconColor,
+  }) {
+    return GlassCard(
+      padding: const EdgeInsets.all(24),
+      borderRadius: 22,
+      borderColor: Colors.white.withOpacity(0.03),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: CardAmbientShaderWidget(themeColor: iconColor),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: iconColor.withOpacity(0.15)),
+                ),
+                child: Icon(icon, color: iconColor, size: 18),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      desc,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                        color: DexColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              statLabel,
+                              style: GoogleFonts.orbitron(fontSize: 7, fontWeight: FontWeight.w900, color: Colors.white30),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              statValue,
+                              style: GoogleFonts.jetBrainsMono(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
+                            ),
+                          ],
+                        ),
+                        const Icon(Icons.arrow_forward_rounded, color: Colors.white24, size: 14),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── BRAND-NEW CONTEXT SECTION: INTERACTIVE CORTEX CLUSTER SANDBOX ───
   Widget _buildArchitectureStepper(bool isDesktop) {
-    final stages = [
-      _buildStepCard(
-        step: '01',
-        title: 'Atomic WebSocket Sync',
-        desc: 'Link direct WebSocket tunnels with master node pings, capturing trading intents at institutional inception.',
-        color: DexColors.primary,
-      ),
-      _buildStepCard(
-        step: '02',
-        title: 'Alpha Cortex Routing',
-        desc: 'Advanced predictive evaluation models paths down high-performance execution pools instantly.',
-        color: DexColors.accent,
-      ),
-      _buildStepCard(
-        step: '03',
-        title: 'Sovereign MPC Custody',
-        desc: 'Cryptographic multi-party segregation seals credentials behind high-security air-gapped vaults.',
-        color: DexColors.success,
-      ),
-      _buildStepCard(
-        step: '04',
-        title: 'Instant Yield Settlement',
-        desc: 'Matching nodes clear ledgers and dispatch yields in under 15 milliseconds back to vault balances.',
-        color: Colors.cyan,
-      ),
+    final clusters = [
+      {
+        'title': 'Atomic WebSocket Sync',
+        'desc': 'Directly link execution tunnels with matching node pings, capturing intent at institutional inception.',
+        'color': DexColors.primary,
+        'icon': Icons.cable_rounded,
+        'metric': '1.2ms PING',
+      },
+      {
+        'title': 'Alpha Cortex Routing',
+        'desc': 'Advanced predictive evaluation models paths down high-performance execution pools instantly.',
+        'color': DexColors.accent,
+        'icon': Icons.hub_rounded,
+        'metric': '5M TPS',
+      },
+      {
+        'title': 'Sovereign MPC Custody',
+        'desc': 'Cryptographic multi-party segregation seals credentials behind high-security air-gapped vaults.',
+        'color': DexColors.success,
+        'icon': Icons.shield_moon_rounded,
+        'metric': 'AIR-GAPPED',
+      },
+      {
+        'title': 'Instant Yield Settlement',
+        'desc': 'Matching nodes clear ledgers and dispatch yields in under 15 milliseconds back to vault balances.',
+        'color': Colors.cyan,
+        'icon': Icons.auto_graph_rounded,
+        'metric': '<15ms CLEAR',
+      },
     ];
+
+    Widget buildSandboxDisplay() {
+      final active = clusters[_activeClusterIndex];
+      final color = active['color'] as Color;
+      return GlassCard(
+        padding: const EdgeInsets.all(32),
+        borderRadius: 28,
+        borderColor: color.withOpacity(0.15),
+        child: Stack(
+          children: [
+            Positioned.fill(child: CardAmbientShaderWidget(themeColor: color)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: color.withOpacity(0.2)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(active['icon'] as IconData, color: color, size: 14),
+                          const SizedBox(width: 8),
+                          Text(
+                            'CLUSTER STAGE 0${_activeClusterIndex + 1} ACTIVE',
+                            style: GoogleFonts.orbitron(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: color),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      active['metric'] as String,
+                      style: GoogleFonts.jetBrainsMono(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                Text(
+                  active['title'] as String,
+                  style: GoogleFonts.spaceGrotesk(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  active['desc'] as String,
+                  style: GoogleFonts.spaceGrotesk(fontSize: 16, fontWeight: FontWeight.w500, color: DexColors.textSecondary, height: 1.5),
+                ),
+                const SizedBox(height: 40),
+                
+                // Active Interactive Terminal Logs for Sandbox
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF020205),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withOpacity(0.04)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('CLUSTER DIAGNOSTICS & TELEMETRY', style: GoogleFonts.orbitron(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.white30)),
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 4,
+                            itemBuilder: (context, idx) {
+                              // We use the existing mock hashes just to simulate live terminal activity
+                              final hash = _simulatedHashes.length > idx ? _simulatedHashes[idx] : '[SYSOK: READY]';
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                child: Row(
+                                  children: [
+                                    Text('>', style: GoogleFonts.jetBrainsMono(fontSize: 12, fontWeight: FontWeight.w900, color: color)),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        'Validating constraint matrix... $hash',
+                                        style: GoogleFonts.jetBrainsMono(fontSize: 11.5, fontWeight: FontWeight.w500, color: Colors.white60),
+                                      ),
+                                    ),
+                                    Text(
+                                      '${(_simulatedLatency + idx * 0.1).toStringAsFixed(2)}ms',
+                                      style: GoogleFonts.jetBrainsMono(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white38),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 1200),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                'EXECUTION TIMELINE',
-                style: GoogleFonts.orbitron(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
-                  color: DexColors.primaryGlow,
-                ),
+            Text(
+              'CORTEX CLUSTER SANDBOX',
+              style: GoogleFonts.orbitron(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2,
+                color: DexColors.primaryGlow,
               ),
             ),
             const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Real-Time Sovereign Routing Pipeline',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: isDesktop ? 42 : 28,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  letterSpacing: -0.5,
-                ),
+            Text(
+              'Interactive Execution Protocol',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: isDesktop ? 42 : 28,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: -0.5,
               ),
             ),
             const SizedBox(height: 56),
 
-            // Responsive Horizontal Stepper
+            // Asymmetric Interactive Layout
             if (isDesktop)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(stages.length, (idx) {
-                  return Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: stages[idx]),
-                        if (idx < stages.length - 1)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 48, left: 8, right: 8),
-                            child: Icon(
-                              Icons.arrow_forward_rounded,
-                              color: DexColors.primary.withOpacity(0.3),
-                              size: 20,
+              SizedBox(
+                height: 540,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Left Side: Vertical Selector List
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        children: List.generate(clusters.length, (idx) {
+                          final isActive = _activeClusterIndex == idx;
+                          final color = clusters[idx]['color'] as Color;
+                          return Expanded(
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () => setState(() => _activeClusterIndex = idx),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: isActive ? color.withOpacity(0.08) : Colors.white.withOpacity(0.01),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isActive ? color.withOpacity(0.3) : Colors.white.withOpacity(0.03),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: isActive ? color.withOpacity(0.15) : Colors.white.withOpacity(0.05),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(clusters[idx]['icon'] as IconData, color: isActive ? color : Colors.white54, size: 20),
+                                      ),
+                                      const SizedBox(width: 20),
+                                      Expanded(
+                                        child: Text(
+                                          clusters[idx]['title'] as String,
+                                          style: GoogleFonts.spaceGrotesk(
+                                            fontSize: 18,
+                                            fontWeight: isActive ? FontWeight.w900 : FontWeight.w700,
+                                            color: isActive ? Colors.white : Colors.white60,
+                                          ),
+                                        ),
+                                      ),
+                                      if (isActive)
+                                        const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 14),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                      ],
+                          );
+                        }),
+                      ),
                     ),
-                  );
-                }),
+                    const SizedBox(width: 32),
+                    // Right Side: Sandbox Preview Window
+                    Expanded(
+                      flex: 6,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        transitionBuilder: (child, animation) => FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(begin: const Offset(0.0, 0.05), end: Offset.zero).animate(animation),
+                            child: child,
+                          ),
+                        ),
+                        child: KeyedSubtree(
+                          key: ValueKey(_activeClusterIndex),
+                          child: buildSandboxDisplay(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               )
             else
               Column(
-                children: List.generate(stages.length, (idx) {
-                  return Column(
-                    children: [
-                      stages[idx],
-                      if (idx < stages.length - 1)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Icon(
-                            Icons.arrow_downward_rounded,
-                            color: DexColors.primary.withOpacity(0.3),
-                            size: 20,
+                children: [
+                  // Selectors
+                  Column(
+                    children: List.generate(clusters.length, (idx) {
+                      final isActive = _activeClusterIndex == idx;
+                      final color = clusters[idx]['color'] as Color;
+                      return GestureDetector(
+                        onTap: () => setState(() => _activeClusterIndex = idx),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: isActive ? color.withOpacity(0.08) : Colors.white.withOpacity(0.01),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isActive ? color.withOpacity(0.3) : Colors.white.withOpacity(0.03),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(clusters[idx]['icon'] as IconData, color: isActive ? color : Colors.white54, size: 20),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Text(
+                                  clusters[idx]['title'] as String,
+                                  style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 16,
+                                    fontWeight: isActive ? FontWeight.w900 : FontWeight.w700,
+                                    color: isActive ? Colors.white : Colors.white60,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                    ],
-                  );
-                }),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    height: 480,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      child: KeyedSubtree(
+                        key: ValueKey(_activeClusterIndex),
+                        child: buildSandboxDisplay(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildStepCard({
-    required String step,
-    required String title,
-    required String desc,
-    required Color color,
-  }) {
-    return GlassCard(
-      padding: const EdgeInsets.all(28),
-      borderRadius: 24,
-      borderColor: Colors.white.withOpacity(0.03),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                step,
-                style: GoogleFonts.orbitron(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  color: color.withOpacity(0.8),
-                ),
-              ),
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color,
-                  boxShadow: [
-                    BoxShadow(color: color, blurRadius: 6),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            title,
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            desc,
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w500,
-              color: DexColors.textSecondary,
-              height: 1.45,
-            ),
-          ),
-          const SizedBox(height: 18),
-          AnimatedTechGraphicWidget(
-            step: step,
-            themeColor: color,
-          ),
-        ],
       ),
     );
   }
@@ -2133,4 +2701,74 @@ class _CardAmbientShaderPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _CardAmbientShaderPainter oldDelegate) =>
       oldDelegate.animationVal != animationVal || oldDelegate.color != color;
+}
+
+class MatchingSpeedGaugeWidget extends StatefulWidget {
+  const MatchingSpeedGaugeWidget({super.key});
+
+  @override
+  State<MatchingSpeedGaugeWidget> createState() => _MatchingSpeedGaugeWidgetState();
+}
+
+class _MatchingSpeedGaugeWidgetState extends State<MatchingSpeedGaugeWidget> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return SizedBox(
+          width: 120,
+          height: 120,
+          child: CustomPaint(
+            painter: _GaugePainter(value: _controller.value),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _GaugePainter extends CustomPainter {
+  final double value;
+  _GaugePainter({required this.value});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 8;
+
+    final basePaint = Paint()
+      ..color = Colors.white.withOpacity(0.04)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -math.pi, math.pi * 2, false, basePaint);
+
+    final fillPaint = Paint()
+      ..shader = const LinearGradient(colors: DexColors.primaryGradient).createShader(Rect.fromCircle(center: center, radius: radius))
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.solid, 4.0);
+    
+    // Animate arc from 30% to 90% filling
+    final sweepAngle = math.pi * 2 * (0.3 + value * 0.6);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -math.pi / 2, sweepAngle, false, fillPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _GaugePainter oldDelegate) => oldDelegate.value != value;
 }
