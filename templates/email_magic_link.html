@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Dextrade Sign-in Link</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #05050A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #ffffff; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+    .logo-icon { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, #00E5FF, #00B3CC); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24px; color: #05050A; }
+    .logo-name { font-size: 22px; font-weight: 900; color: #ffffff; letter-spacing: 1px; }
+    .card { background: #0A0A12; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 100px; padding: 4px 12px; margin-bottom: 24px; }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #00E5FF; box-shadow: 0 0 8px #00E5FF; }
+    .badge-text { font-size: 11px; font-weight: 600; color: #00E5FF; text-transform: uppercase; letter-spacing: 0.5px; }
+    h1 { font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 12px; line-height: 1.2; }
+    .subtitle { font-size: 15px; color: #8A8A9E; line-height: 1.6; margin-bottom: 32px; }
+    .btn { display: block; text-align: center; background: linear-gradient(135deg, #00E5FF, #00B3CC); color: #05050A; text-decoration: none; font-weight: 800; font-size: 15px; padding: 16px 32px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 8px 20px rgba(0, 229, 255, 0.2); }
+    .divider { border: none; border-top: 1px solid rgba(255,255,255,0.05); margin: 28px 0; }
+    .link-fallback { font-size: 12px; color: #8A8A9E; line-height: 1.6; }
+    .link-fallback a { color: #00E5FF; word-break: break-all; }
+    .expires { font-size: 13px; color: #8A8A9E; text-align: center; margin-bottom: 24px; }
+    .expires strong { color: #A855F7; }
+    .footer { margin-top: 32px; text-align: center; font-size: 12px; color: #525266; line-height: 1.6; }
+    .footer a { color: #8A8A9E; text-decoration: none; }
+    .security-note { background: #05050A; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px; margin-top: 20px; font-size: 13px; color: #8A8A9E; }
+    .security-note strong { color: #ffffff; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="logo-row">
+      <div class="logo-icon">D</div>
+      <span class="logo-name">DEXTRADE</span>
+    </div>
+
+    <div class="card">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">Magic Link</span>
+      </div>
+
+      <h1>Sign in to Dextrade</h1>
+      <p class="subtitle">
+        Click the button below to instantly authenticate your Dextrade terminal. No password required.
+      </p>
+
+      <p class="expires">This link expires in <strong>1 hour</strong></p>
+
+      <a href="{{ .ConfirmationURL }}" class="btn">Authenticate Session &rarr;</a>
+
+      <hr class="divider" />
+
+      <p class="link-fallback">
+        If the button doesn't work, copy and paste this URL into your browser:<br />
+        <a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a>
+      </p>
+
+      <div class="security-note">
+        <strong>Security notice:</strong> If you didn't request this sign-in link, someone may have entered your email address by mistake. You can safely ignore this email — your account remains secure.
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2026 Dextrade Institutional Network. All rights reserved.</p>
+      <p style="margin-top: 6px;">
+        <a href="mailto:support@dextrade.com">Contact Support</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

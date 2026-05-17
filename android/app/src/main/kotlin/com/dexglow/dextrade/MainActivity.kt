@@ -1,0 +1,5 @@
+package com.dexglow.dextrade
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

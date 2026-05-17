@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dextrade Transaction Notification</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0A0A12;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #FFFFFF;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #12121E;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .header {
+            padding: 30px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(124, 58, 237, 0.05));
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #A855F7;
+            letter-spacing: 2px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        p {
+            line-height: 1.6;
+            color: #A0A0B0;
+            font-size: 16px;
+        }
+        .transaction-box {
+            background-color: #0A0A12;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        .stat-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .stat-label {
+            color: #A0A0B0;
+            font-size: 14px;
+        }
+        .stat-value {
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: #A855F7;
+            color: #FFFFFF;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            width: calc(100% - 56px);
+            margin-top: 20px;
+        }
+        .footer {
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: #0A0A12;
+        }
+        .footer p {
+            font-size: 12px;
+            margin: 0;
+        }
+        .footer-links {
+            margin-top: 10px;
+        }
+        .footer-links a {
+            color: #7C3AED;
+            text-decoration: none;
+            font-size: 12px;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">DEXTRADE</div>
+        </div>
+        <div class="content">
+            <h1>Transaction Confirmed</h1>
+            <p>Your recent deposit request has been successfully processed and verified on the blockchain. The funds have been credited to your portfolio balance.</p>
+            
+            <div class="transaction-box">
+                <div class="stat-row">
+                    <span class="stat-label">Transaction ID</span>
+                    <span class="stat-value">{{tx_id}}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Type</span>
+                    <span class="stat-value">Deposit</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Amount</span>
+                    <span class="stat-value" style="color: #FFFFFF;">${{amount}}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Network Status</span>
+                    <span class="status-badge status-success">Approved</span>
+                </div>
+            </div>
+
+            <p>You can now use these funds to initialize mirror copy-trades or execute manual trades via the terminal.</p>
+
+            <a href="https://app.dextrade.com/dashboard" class="btn">View Portfolio</a>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 Dextrade Institutional Network. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Support</a> | <a href="#">Terms of Service</a> | <a href="#">Security</a>
+            </div>
+            <p style="margin-top: 15px; color: #555;">This is an automated transactional message. Please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>
