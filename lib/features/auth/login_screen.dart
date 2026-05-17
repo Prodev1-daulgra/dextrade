@@ -59,7 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     final isDesktop = width > 900;
 
     return Scaffold(
-      backgroundColor: DexColors.background,
+      backgroundColor: Colors.black,
       body: Row(
         children: [
           // Left Pane: Form (Responsive sizing)
@@ -67,7 +67,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             flex: isDesktop ? 11 : 20,
             child: Stack(
               children: [
-                // Animated background glow
+                // Animated background glow (Enhanced for pure black backdrop)
                 AnimatedBuilder(
                   animation: _bgController,
                   builder: (_, __) => Container(
@@ -76,8 +76,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         center: Alignment(_bgController.value * 0.4 - 0.2, -0.3),
                         radius: 1.4,
                         colors: [
-                          DexColors.primary.withValues(alpha: 0.08),
-                          DexColors.background,
+                          DexColors.primary.withValues(alpha: 0.16),
+                          Colors.black,
                         ],
                       ),
                     ),
@@ -86,116 +86,129 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 // Form layout
                 Center(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 420),
+                      constraints: const BoxConstraints(maxWidth: 440),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Brand Watermark (Left-aligned)
-                          Row(
-                            children: [
-                              Container(
-                                width: 36, height: 36,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  gradient: const LinearGradient(colors: DexColors.primaryGradient),
-                                ),
-                                child: const Center(
-                                  child: Text('D', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18)),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text('DEXTRADE', style: DexTypography.h2.copyWith(letterSpacing: 2, fontSize: 18)),
-                            ],
-                          ),
-                          const SizedBox(height: 54),
-                          
-                          // Form title
-                          Text('Welcome Back', style: DexTypography.h1.copyWith(fontSize: 32, fontWeight: FontWeight.w900)),
-                          const SizedBox(height: 8),
-                          Text('Unlock your high-performance trading terminal.', style: DexTypography.bodySmall),
-                          const SizedBox(height: 36),
-
-                          // Email Input
-                          Text('USERNAME OR EMAIL', style: DexTypography.label.copyWith(fontSize: 10, letterSpacing: 1)),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _emailCtrl,
-                            keyboardType: TextInputType.emailAddress,
-                            style: DexTypography.bodyMedium.copyWith(color: DexColors.textPrimary),
-                            decoration: const InputDecoration(
-                              hintText: 'Enter your email address',
-                              prefixIcon: Icon(Icons.email_outlined, size: 20, color: DexColors.textMuted),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-
-                          // Password Input
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('PASSWORD', style: DexTypography.label.copyWith(fontSize: 10, letterSpacing: 1)),
-                              GestureDetector(
-                                onTap: () => DexToast.show(context, 'Password recovery link sent via your configured authentication pipeline.', type: ToastType.info),
-                                child: Text('Forgot Password?', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: DexColors.primary)),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _passCtrl,
-                            obscureText: _obscure,
-                            style: DexTypography.bodyMedium.copyWith(color: DexColors.textPrimary),
-                            decoration: InputDecoration(
-                              hintText: 'Enter password',
-                              prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: DexColors.textMuted),
-                              suffixIcon: IconButton(
-                                icon: Icon(_obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20, color: DexColors.textMuted),
-                                onPressed: () => setState(() => _obscure = !_obscure),
-                              ),
-                            ),
-                            onSubmitted: (_) => _login(),
-                          ),
-
-                          if (_error != null) ...[
-                            const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: DexColors.error.withValues(alpha: 0.1),
-                                border: Border.all(color: DexColors.error.withValues(alpha: 0.3)),
-                              ),
-                              child: Text(_error!, style: DexTypography.caption.copyWith(color: DexColors.error)),
-                            ),
-                          ],
-
-                          const SizedBox(height: 32),
-                          GlowButton(
-                            label: 'Sign In',
-                            onPressed: _loading ? null : _login,
-                            isLoading: _loading,
-                            width: double.infinity,
-                          ),
-                          const SizedBox(height: 24),
-                          
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("New to Dextrade? ", style: DexTypography.bodySmall),
-                              GestureDetector(
-                                onTap: () => context.go('/register'),
-                                child: Text(
-                                  'Sign Up Here!',
-                                  style: DexTypography.bodySmall.copyWith(
-                                    color: DexColors.primary,
-                                    fontWeight: FontWeight.bold,
+                          // Brand Watermark (Left-aligned, outside card for breathing room)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12, bottom: 28),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 36, height: 36,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    gradient: const LinearGradient(colors: DexColors.primaryGradient),
+                                  ),
+                                  child: const Center(
+                                    child: Text('D', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18)),
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 12),
+                                Text('DEXTRADE', style: DexTypography.h2.copyWith(letterSpacing: 2, fontSize: 18)),
+                              ],
+                            ),
+                          ),
+                          
+                          // Custom blended Dribbble-style glass card
+                          GlassCard(
+                            padding: const EdgeInsets.all(32),
+                            borderRadius: 28,
+                            borderColor: Colors.white.withValues(alpha: 0.08),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Form title
+                                Text('Welcome Back', style: DexTypography.h1.copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white)),
+                                const SizedBox(height: 8),
+                                Text('Unlock your high-performance trading terminal.', style: DexTypography.bodySmall.copyWith(color: DexColors.textSecondary)),
+                                const SizedBox(height: 32),
+
+                                // Email Input
+                                Text('USERNAME OR EMAIL', style: DexTypography.label.copyWith(fontSize: 9, letterSpacing: 1, color: DexColors.primaryGlow)),
+                                const SizedBox(height: 10),
+                                TextField(
+                                  controller: _emailCtrl,
+                                  keyboardType: TextInputType.emailAddress,
+                                  style: DexTypography.bodyMedium.copyWith(color: DexColors.textPrimary),
+                                  decoration: const InputDecoration(
+                                    hintText: 'Enter your email address',
+                                    prefixIcon: Icon(Icons.email_outlined, size: 20, color: DexColors.textMuted),
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+
+                                // Password Input
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('PASSWORD', style: DexTypography.label.copyWith(fontSize: 9, letterSpacing: 1, color: DexColors.primaryGlow)),
+                                    GestureDetector(
+                                      onTap: () => DexToast.show(context, 'Password recovery link sent via your configured authentication pipeline.', type: ToastType.info),
+                                      child: Text('Forgot Password?', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: DexColors.accent)),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                TextField(
+                                  controller: _passCtrl,
+                                  obscureText: _obscure,
+                                  style: DexTypography.bodyMedium.copyWith(color: DexColors.textPrimary),
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter password',
+                                    prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: DexColors.textMuted),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20, color: DexColors.textMuted),
+                                      onPressed: () => setState(() => _obscure = !_obscure),
+                                    ),
+                                  ),
+                                  onSubmitted: (_) => _login(),
+                                ),
+
+                                if (_error != null) ...[
+                                  const SizedBox(height: 16),
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: DexColors.error.withValues(alpha: 0.1),
+                                      border: Border.all(color: DexColors.error.withValues(alpha: 0.3)),
+                                    ),
+                                    child: Text(_error!, style: DexTypography.caption.copyWith(color: DexColors.error)),
+                                  ),
+                                ],
+
+                                const SizedBox(height: 32),
+                                GlowButton(
+                                  label: 'Sign In',
+                                  onPressed: _loading ? null : _login,
+                                  isLoading: _loading,
+                                  width: double.infinity,
+                                ),
+                                const SizedBox(height: 28),
+                                
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("New to Dextrade? ", style: DexTypography.bodySmall),
+                                    GestureDetector(
+                                      onTap: () => context.go('/register'),
+                                      child: Text(
+                                        'Sign Up Here!',
+                                        style: DexTypography.bodySmall.copyWith(
+                                          color: DexColors.accent,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

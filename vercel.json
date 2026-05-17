@@ -6,16 +6,32 @@
       "dest": "/build/web/app-release.apk"
     },
     {
+      "src": "/app/assets/(.*)",
+      "dest": "/build/web/app/assets/$1"
+    },
+    {
+      "src": "/app/canvaskit/(.*)",
+      "dest": "/build/web/app/canvaskit/$1"
+    },
+    {
+      "src": "/app/icons/(.*)",
+      "dest": "/build/web/app/icons/$1"
+    },
+    {
+      "src": "/app/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|json|wasm|xml|txt|ttf|otf)",
+      "dest": "/build/web/app/$1.$2"
+    },
+    {
+      "src": "/app",
+      "dest": "/build/web/app/index.html"
+    },
+    {
+      "src": "/app/(.*)",
+      "dest": "/build/web/app/index.html"
+    },
+    {
       "src": "/assets/(.*)",
       "dest": "/build/web/assets/$1"
-    },
-    {
-      "src": "/canvaskit/(.*)",
-      "dest": "/build/web/canvaskit/$1"
-    },
-    {
-      "src": "/icons/(.*)",
-      "dest": "/build/web/icons/$1"
     },
     {
       "src": "/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|json|wasm|xml|txt|ttf|otf)",

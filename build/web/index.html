@@ -1,46 +1,171 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dextrade | Next-Gen Institutional Trading Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index-BE2NXqpX.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BX2AvN76.css">
+  </head>
+  <body>
+    <!-- 3D WebGL Background -->
+    <canvas id="webgl-canvas"></canvas>
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    <!-- Overlay noise for texture -->
+    <div class="noise-overlay"></div>
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+    <nav class="navbar glass">
+      <div class="nav-container">
+        <div class="logo">
+          <div class="logo-mark">D</div>
+          <span class="logo-text">DEXTRADE</span>
+        </div>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#copytrading">Copy Trading</a>
+          <a href="#pricing">Pricing</a>
+        </div>
+        <div class="nav-actions">
+          <a href="/app-release.apk" class="btn btn-outline" download>Download App</a>
+          <a href="https://app.dextrade.com/login" class="btn btn-outline">Sign In</a>
+          <a href="https://app.dextrade.com/register" class="btn btn-primary">Initialize Terminal</a>
+        </div>
+      </div>
+    </nav>
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="/">
+    <main>
+      <!-- Hero Section -->
+      <section class="hero" id="home">
+        <div class="hero-content">
+          <div class="hero-badge fade-up">
+            <div class="pulse-dot"></div>
+            <span>NETWORK ACTIVE — LATENCY: 12ms</span>
+          </div>
+          <h1 class="hero-title fade-up">
+            Institutional Execution.<br />
+            <span class="text-gradient">Retail Access.</span>
+          </h1>
+          <p class="hero-subtitle fade-up">
+            Experience lightning-fast trades, deep liquidity, and elite copy trading nodes all powered by our proprietary matching engine.
+          </p>
+          <div class="hero-cta fade-up">
+            <a href="https://app.dextrade.com/register" class="btn btn-primary btn-large">Start Trading</a>
+            <a href="/app-release.apk" class="btn btn-outline btn-large" download>Download APK (Android)</a>
+            <a href="#features" class="btn btn-outline btn-large">Explore Platform</a>
+          </div>
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Dextrade Copytrading Platform MVP">
+          <!-- Glass Floating Elements (Decorative) -->
+          <div class="floating-glass-card card-1" data-speed="0.8">
+            <div class="card-header">
+              <span class="ticker">BTC/USD</span>
+              <span class="price positive">+4.2%</span>
+            </div>
+            <div class="price-big">$64,230.50</div>
+          </div>
+          <div class="floating-glass-card card-2" data-speed="1.2">
+            <div class="card-header">
+              <span class="ticker">ETH/USD</span>
+              <span class="price negative">-1.1%</span>
+            </div>
+            <div class="price-big">$3,450.20</div>
+          </div>
+        </div>
+      </section>
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="dextrade">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+      <!-- Features Section -->
+      <section class="features" id="features">
+        <div class="container">
+          <div class="section-header fade-up">
+            <h2 class="section-title">Engineered for <span class="text-gradient">Performance</span></h2>
+            <p class="section-subtitle">Our platform architecture is designed to eliminate slippage and maximize your profit potential.</p>
+          </div>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+          <div class="bento-grid">
+            <div class="bento-item glass fade-up col-span-2">
+              <div class="bento-content">
+                <div class="bento-icon">⚡</div>
+                <h3>Zero-Latency Execution</h3>
+                <p>Execute trades directly against institutional liquidity pools without the retail spread markup.</p>
+              </div>
+            </div>
+            <div class="bento-item glass fade-up">
+              <div class="bento-content">
+                <div class="bento-icon">🔒</div>
+                <h3>Bank-Grade Security</h3>
+                <p>Multi-signature cold storage and strict adherence to CCSS standards.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-  <title>dextrade</title>
-  <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+      <!-- Copy Trading Section -->
+      <section class="copytrading" id="copytrading">
+        <div class="container">
+          <div class="split-layout">
+            <div class="split-content fade-up">
+              <h2 class="section-title">Mirror the <span class="text-gradient">Elite</span></h2>
+              <p class="section-subtitle">
+                Access a curated network of institutional-grade traders. Allocate your capital and automatically mirror their execution logic directly to your portfolio.
+              </p>
+              <ul class="feature-list">
+                <li><span class="check">✓</span> Automatic position sizing</li>
+                <li><span class="check">✓</span> Real-time P&L tracking</li>
+                <li><span class="check">✓</span> 1-click risk management</li>
+              </ul>
+              <a href="https://app.dextrade.com/register" class="btn btn-primary" style="margin-top: 2rem;">Browse Traders</a>
+            </div>
+            <div class="split-visual fade-up">
+              <div class="glass-mockup">
+                <div class="mockup-header">
+                  <div class="avatar">T</div>
+                  <div class="mockup-title">Top Trader Node</div>
+                  <div class="badge success">Active</div>
+                </div>
+                <div class="mockup-stats">
+                  <div class="stat"><label>Return</label><span>+142.5%</span></div>
+                  <div class="stat"><label>Win Rate</label><span>84%</span></div>
+                </div>
+                <div class="mockup-btn">Initialize Mirror</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Footer -->
+      <footer class="glass">
+        <div class="container">
+          <div class="footer-grid">
+            <div class="footer-brand">
+              <div class="logo">
+                <div class="logo-mark">D</div>
+                <span class="logo-text">DEXTRADE</span>
+              </div>
+              <p>Next-generation institutional trading infrastructure.</p>
+            </div>
+            <div class="footer-links">
+              <h4>Platform</h4>
+              <a href="#features">Features</a>
+              <a href="#copytrading">Copy Trading</a>
+              <a href="#pricing">Pricing</a>
+            </div>
+            <div class="footer-links">
+              <h4>Legal</h4>
+              <a href="#">Terms of Service</a>
+              <a href="#">Privacy Policy</a>
+              <a href="#">Risk Disclosure</a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p>&copy; 2026 Dextrade Network. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </main>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
-</body>
+  </body>
 </html>
