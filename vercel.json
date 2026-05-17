@@ -1,0 +1,29 @@
+{
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/app-release.apk",
+      "dest": "/build/web/app-release.apk"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/build/web/assets/$1"
+    },
+    {
+      "src": "/canvaskit/(.*)",
+      "dest": "/build/web/canvaskit/$1"
+    },
+    {
+      "src": "/icons/(.*)",
+      "dest": "/build/web/icons/$1"
+    },
+    {
+      "src": "/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|json|wasm|xml|txt|ttf|otf)",
+      "dest": "/build/web/$1.$2"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/build/web/index.html"
+    }
+  ]
+}
