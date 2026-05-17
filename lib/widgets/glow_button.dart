@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'glow_morph_loader.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../core/theme/dex_typography.dart';
 
@@ -120,14 +121,10 @@ class _GlowButtonState extends State<GlowButton>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (widget.isLoading) ...[
-                SizedBox(
-                  width: 16, height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation(
-                      widget.isPrimary ? DexColors.background : DexColors.primary,
-                    ),
-                  ),
+                GlowMorphLoader(
+                  size: 20,
+                  color: widget.isPrimary ? DexColors.background : DexColors.primary,
+                  glowStrength: 4,
                 ),
                 const SizedBox(width: 12),
               ] else if (widget.icon != null) ...[

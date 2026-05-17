@@ -7,6 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../core/theme/dex_typography.dart';
+import '../../widgets/smooth_scroll_wrapper.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glow_button.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -25,15 +28,18 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     {'sym': 'BTC/USDT', 'price': '97,240', 'chg': '+2.4%', 'pos': true},
     {'sym': 'ETH/USDT', 'price': '3,842.50', 'chg': '+1.8%', 'pos': true},
     {'sym': 'SOL/USDT', 'price': '198.12', 'chg': '+5.2%', 'pos': true},
-    {'sym': 'AAPL', 'price': '224.50', 'chg': '+1.2%', 'pos': true},
-    {'sym': 'NVDA', 'price': '145.82', 'chg': '+3.1%', 'pos': true},
-    {'sym': 'TSLA', 'price': '342.10', 'chg': '-0.8%', 'pos': false},
     {'sym': 'AVAX/USDT', 'price': '38.45', 'chg': '+4.1%', 'pos': true},
     {'sym': 'LINK/USDT', 'price': '18.92', 'chg': '-1.5%', 'pos': false},
+    {'sym': 'NEAR/USDT', 'price': '7.24', 'chg': '+6.8%', 'pos': true},
+    {'sym': 'RENDER/USDT', 'price': '9.82', 'chg': '+8.3%', 'pos': true},
+    {'sym': 'SUI/USDT', 'price': '3.14', 'chg': '-2.1%', 'pos': false},
   ];
 
   late final ScrollController _tapeController;
   Timer? _tapeTimer;
+
+  // Interactive hover tracking for parallax background
+  Offset _hoverPosition = Offset.zero;
 
   @override
   void initState() {
@@ -43,7 +49,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
 
     _glowController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 12),
     )..repeat(reverse: true);
 
     // Infinite scroll for the ticker tape
@@ -87,214 +93,247 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     final isDesktop = screenSize.width > 900;
 
     return Scaffold(
-      backgroundColor: Colors.black, // Obsidian deep pitch black
-      body: Stack(
-        children: [
-          // ─── Ambient Pulsing Glowing Orbs ───
-          AnimatedBuilder(
-            animation: _glowController,
-            builder: (context, child) {
-              final val = _glowController.value;
-              return Stack(
-                children: [
-                  Positioned(
-                    top: -100 + (val * 100),
-                    left: -150 + (val * 120),
-                    child: Container(
-                      width: 500,
-                      height: 500,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: DexColors.primary.withOpacity(0.08 + (val * 0.05)),
+      backgroundColor: Colors.black, // Deep pitch obsidian black
+      body: MouseRegion(
+        onHover: (event) {
+          setState(() {
+            _hoverPosition = event.localPosition;
+          });
+        },
+        child: Stack(
+          children: [
+            // ─── 1. Parallax Ambient Glowing Orbs ───
+            AnimatedBuilder(
+              animation: _glowController,
+              builder: (context, child) {
+                final val = _glowController.value;
+                // Parallax shifts orbs slightly based on scroll offset and mouse hover
+                final scrollShiftY = _scrollOffset * 0.4;
+                final mouseShiftX = (_hoverPosition.dx - screenSize.width / 2) * 0.03;
+                final mouseShiftY = (_hoverPosition.dy - screenSize.height / 2) * 0.03;
+
+                return Stack(
+                  children: [
+                    // Top-Left Primary Orb
+                    Positioned(
+                      top: -150 + (val * 80) - scrollShiftY + mouseShiftY,
+                      left: -200 + (val * 100) + mouseShiftX,
+                      child: Container(
+                        width: 600,
+                        height: 600,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              DexColors.primary.withOpacity(0.12 + (val * 0.06)),
+                              DexColors.primary.withOpacity(0.01),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 100 - (val * 80),
-                    right: -100 + (val * 150),
-                    child: Container(
-                      width: 600,
-                      height: 600,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: DexColors.accent.withOpacity(0.05 + (val * 0.05)),
+                    // Center-Right Accent Orb
+                    Positioned(
+                      top: screenSize.height * 0.45 - (scrollShiftY * 0.6) + mouseShiftY * 0.5,
+                      right: -250 + (val * 120) - mouseShiftX,
+                      child: Container(
+                        width: 700,
+                        height: 700,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              DexColors.accent.withOpacity(0.08 + (val * 0.04)),
+                              DexColors.accent.withOpacity(0.01),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
-
-          // ─── Main Content Scroll View ───
-          SingleChildScrollView(
-            controller: _scrollController,
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                // Spacer for Sticky Navigation Bar
-                const SizedBox(height: 100),
-
-                // ─── Hero Section ───
-                _buildHeroSection(context, isDesktop),
-
-                // ─── Stats Grid ───
-                _buildStatsGrid(isDesktop),
-
-                // ─── Alpha Cortex WebGL Canvas Node Graph ───
-                _buildCortexSection(isDesktop),
-
-                // ─── Execution Pipeline Net-Flow & Live Tape ───
-                _buildPipelineSection(isDesktop),
-
-                // ─── Vault Custody Section ───
-                _buildVaultSection(isDesktop),
-
-                // ─── Footer ───
-                _buildFooter(isDesktop),
-              ],
+                    // Bottom-Left Success Orb (Node Vault)
+                    Positioned(
+                      bottom: -200 + scrollShiftY * 0.3 + mouseShiftY * 0.4,
+                      left: -150 - mouseShiftX * 0.6,
+                      child: Container(
+                        width: 550,
+                        height: 550,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              DexColors.success.withOpacity(0.06 + (val * 0.04)),
+                              DexColors.success.withOpacity(0.00),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-          ),
 
-          // ─── Frosted Floating Glass Navigation Bar ───
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: _buildNavBar(context, isDesktop),
-          ),
-        ],
+            // ─── 2. Smooth Scroll Wrapper & Main Scroll Column ───
+            SmoothScrollWrapper(
+              controller: _scrollController,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const ClampingScrollPhysics(), // Use clamping to let smooth scroll work nicely
+                child: Column(
+                  children: [
+                    const SizedBox(height: 120),
+
+                    // Hero section
+                    _buildHeroSection(context, isDesktop),
+
+                    // Stats Grid
+                    _buildStatsGrid(isDesktop),
+
+                    // Brand-New Context Section: Architecture Flow Map (Horizontal Stepper)
+                    _buildArchitectureStepper(isDesktop),
+
+                    // Alpha Cortex WebGL Canvas Node Graph
+                    _buildCortexSection(isDesktop),
+
+                    // Execution Pipeline Net-Flow & Live Tape
+                    _buildPipelineSection(isDesktop),
+
+                    // Vault Custody Section
+                    _buildVaultSection(isDesktop),
+
+                    // Footer
+                    _buildFooter(isDesktop),
+                  ],
+                ),
+              ),
+            ),
+
+            // ─── 3. Frosted Floating Glass Navigation Bar ───
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildNavBar(context, isDesktop),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // ─── Navigation Bar Widget ───
   Widget _buildNavBar(BuildContext context, bool isDesktop) {
-    final navOpacity = math.min(1.0, _scrollOffset / 200.0);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+    final navOpacity = math.min(1.0, _scrollOffset / 120.0);
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      padding: EdgeInsets.symmetric(
+        horizontal: isDesktop ? 40 : 20,
+        vertical: isDesktop ? 20 - (navOpacity * 6) : 14,
+      ),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.4 * navOpacity),
         border: Border(
           bottom: BorderSide(
-            color: Colors.white.withOpacity(0.08 * navOpacity),
+            color: Colors.white.withOpacity(0.05 * navOpacity),
             width: 1.0,
           ),
         ),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(100),
-        child: BackdropFilter(
-          filter: ColorFilter.mode(
-            Colors.black.withOpacity(0.3 * navOpacity),
-            BlendMode.srcOver,
-          ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.03),
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Logo & Branding
-                GestureDetector(
-                  onTap: () => context.go('/'),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: DexColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: DexColors.primary.withOpacity(0.4),
-                              blurRadius: 15,
-                              spreadRadius: 1,
-                            ),
-                          ],
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Logo & Branding
+              GestureDetector(
+                onTap: () => context.go('/'),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: DexColors.primaryGradient,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        child: const Icon(Icons.flash_on, color: Colors.white, size: 18),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'DEXTRADE',
-                            style: GoogleFonts.outfit(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              fontStyle: FontStyle.italic,
-                              letterSpacing: -0.5,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            'HIGH-PERFORMANCE TERMINAL',
-                            style: GoogleFonts.inter(
-                              fontSize: 7,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
-                              color: DexColors.primary,
-                            ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: DexColors.primary.withOpacity(0.4),
+                            blurRadius: 15,
+                            spreadRadius: 1,
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-
-                // Nav Links (Desktop)
-                if (isDesktop)
-                  Row(
-                    children: [
-                      _buildNavLink('Technology'),
-                      _buildNavLink('Assets'),
-                      _buildNavLink('Security'),
-                      _buildNavLink('Institutional'),
-                    ],
-                  ),
-
-                // Auth Actions
-                Row(
-                  children: [
-                    TextButton(
-                      onPressed: () => context.push('/login'),
-                      child: Text(
-                        'LOG IN',
-                        style: DexTypography.button.copyWith(color: Colors.white70),
-                      ),
+                      child: const Icon(Icons.flash_on, color: Colors.white, size: 18),
                     ),
                     const SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: () => context.push('/register'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: DexColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'DEXTRADE',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
+                            color: Colors.white,
+                          ),
                         ),
-                        elevation: 0,
-                      ).copyWith(
-                        elevation: WidgetStateProperty.all(0),
-                      ),
-                      child: Text(
-                        'CLAIM ACCESS',
-                        style: DexTypography.button.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
+                        Text(
+                          'ALPHA CORTEX SYSTEM',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 7,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2.0,
+                            color: DexColors.accent,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+
+              // Nav Links (Desktop)
+              if (isDesktop)
+                Row(
+                  children: [
+                    _buildNavLink('Cortex Routing'),
+                    _buildNavLink('Match Engine'),
+                    _buildNavLink('Cold Custody'),
+                    _buildNavLink('Mirror Index'),
+                  ],
+                ),
+
+              // Auth Actions
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () => context.push('/login'),
+                    child: Text(
+                      'LOG IN',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white70,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  GlowButton(
+                    label: 'ACQUIRE NODE',
+                    onPressed: () => context.push('/register'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -303,14 +342,17 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
 
   Widget _buildNavLink(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(
-        title.toUpperCase(),
-        style: GoogleFonts.inter(
-          fontSize: 10,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.5,
-          color: Colors.white60,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Text(
+          title.toUpperCase(),
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.0,
+            color: Colors.white54,
+          ),
         ),
       ),
     );
@@ -320,7 +362,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   Widget _buildHeroSection(BuildContext context, bool isDesktop) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -328,9 +370,9 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withOpacity(0.03),
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: Colors.white.withOpacity(0.06)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -351,19 +393,19 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'ALPHA STREAM: OPERATIONAL',
-                  style: GoogleFonts.inter(
-                    fontSize: 9,
+                  'SYSTEM PROTOCOL V4.0: OPERATIONAL',
+                  style: GoogleFonts.orbitron(
+                    fontSize: 8,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
+                    letterSpacing: 1.5,
                     color: Colors.white70,
                   ),
                 ),
               ],
             ),
-          ).animate().fade(duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOut),
+          ).animate().fade(duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOutCubic),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 40),
 
           // God-Level Heading
           RichText(
@@ -372,108 +414,90 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
               children: [
                 TextSpan(
                   text: 'MIRROR\n',
-                  style: GoogleFonts.outfit(
-                    fontSize: isDesktop ? 120 : 64,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: isDesktop ? 110 : 56,
                     fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    height: 0.8,
+                    height: 0.9,
                     color: Colors.white,
                   ),
                 ),
                 TextSpan(
                   text: 'LEGENDS.',
-                  style: GoogleFonts.outfit(
-                    fontSize: isDesktop ? 120 : 64,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: isDesktop ? 110 : 56,
                     fontWeight: FontWeight.w900,
-                    fontStyle: FontStyle.italic,
-                    height: 0.8,
+                    height: 0.9,
                     color: DexColors.primary,
                     shadows: [
                       Shadow(
-                        color: DexColors.primary.withOpacity(0.6),
-                        blurRadius: 50,
+                        color: DexColors.primary.withOpacity(0.4),
+                        blurRadius: 40,
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          ).animate().fade(delay: 200.ms, duration: 800.ms).scale(begin: const Offset(0.95, 0.95), curve: Curves.easeOut),
+          ).animate().fade(delay: 200.ms, duration: 800.ms).scale(begin: const Offset(0.96, 0.96), curve: Curves.easeOutCubic),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
 
           // Subtitle description
           Container(
-            constraints: const BoxConstraints(maxWidth: 600),
+            constraints: const BoxConstraints(maxWidth: 640),
             child: Text(
-              'Institutional capital flows, now accessible via the Dextrade matching engine. Stop chasing charts. Execute Alpha.',
+              'Inject your capital directly into institutional flows through the sovereign Dextrade Matching Engine. Fully synchronized, microsecond execution, absolute vault custody protection.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.spaceGrotesk(
                 fontSize: isDesktop ? 18 : 14,
                 fontWeight: FontWeight.w500,
-                color: Colors.white54,
+                color: DexColors.textSecondary,
                 height: 1.6,
               ),
             ),
           ).animate().fade(delay: 400.ms, duration: 800.ms),
 
-          const SizedBox(height: 40),
+          const SizedBox(height: 48),
 
           // Main CTAs
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
+              GlowButton(
+                label: 'ACQUIRE SOVEREIGN NODE',
                 onPressed: () => context.push('/register'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DexColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  shadowColor: DexColors.primary,
-                  elevation: 20,
-                ),
-                child: Text(
-                  'INITIALIZE TERMINAL',
-                  style: DexTypography.buttonLarge.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
-                  ),
-                ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 20),
               OutlinedButton(
-                onPressed: () {},
+                onPressed: () => context.push('/trade'),
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+                  side: BorderSide(color: Colors.white.withOpacity(0.12)),
+                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 22),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'VIEW DECK',
-                      style: DexTypography.buttonLarge.copyWith(
+                      'TERMINAL CONSOLE',
+                      style: GoogleFonts.spaceGrotesk(
                         color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                        letterSpacing: 1.5,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
+                    const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 16),
                   ],
                 ),
               ),
             ],
-          ).animate().fade(delay: 600.ms, duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOut),
+          ).animate().fade(delay: 500.ms, duration: 800.ms).slideY(begin: 0.15, end: 0, curve: Curves.easeOutCubic),
 
-          const SizedBox(height: 80),
+          const SizedBox(height: 72),
 
           // Ticker Tape widget
           _buildTickerTape(),
@@ -486,15 +510,15 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   Widget _buildTickerTape() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 18),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.01),
+        color: Colors.white.withOpacity(0.005),
         border: Border.symmetric(
-          horizontal: BorderSide(color: Colors.white.withOpacity(0.05)),
+          horizontal: BorderSide(color: Colors.white.withOpacity(0.04)),
         ),
       ),
       child: SizedBox(
-        height: 35,
+        height: 30,
         child: ListView.builder(
           controller: _tapeController,
           scrollDirection: Axis.horizontal,
@@ -502,46 +526,45 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
           itemBuilder: (context, index) {
             final trade = _mockTrades[index % _mockTrades.length];
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 32),
+              margin: const EdgeInsets.symmetric(horizontal: 28),
               child: Row(
                 children: [
                   Text(
                     trade['sym'],
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
+                    style: GoogleFonts.orbitron(
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0,
+                      letterSpacing: 1.0,
                       color: Colors.white38,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Text(
                     '\$${trade['price']}',
                     style: GoogleFonts.jetBrainsMono(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      fontStyle: FontStyle.italic,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: trade['pos']
-                          ? DexColors.success.withOpacity(0.1)
-                          : DexColors.error.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
+                          ? DexColors.success.withOpacity(0.08)
+                          : DexColors.error.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(4),
                       border: Border.all(
                         color: trade['pos']
-                            ? DexColors.success.withOpacity(0.2)
-                            : DexColors.error.withOpacity(0.2),
+                            ? DexColors.success.withOpacity(0.15)
+                            : DexColors.error.withOpacity(0.15),
                       ),
                     ),
                     child: Text(
                       trade['chg'],
-                      style: GoogleFonts.inter(
-                        fontSize: 9,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 8,
                         fontWeight: FontWeight.w900,
                         color: trade['pos'] ? DexColors.successGlow : DexColors.errorGlow,
                       ),
@@ -560,26 +583,26 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   Widget _buildStatsGrid(bool isDesktop) {
     final widgets = [
       _buildGlassCard(
-        icon: Icons.flash_on,
-        title: '1-CLICK MIRROR',
-        desc: 'Instantly clone the performance of high-frequency Master Nodes. Your capital, their expertise, atomic synchronization.',
-        statLabel: 'AVG. LATENCY',
+        icon: Icons.flash_on_rounded,
+        title: 'Microsecond Execution',
+        desc: 'Distributed synchronization pipelines copy master positions instantly, completely neutralizing execution slippage loops.',
+        statLabel: 'ALPHA SYNC DELAY',
         statValue: '14.2ms',
         iconColor: DexColors.primary,
       ),
       _buildGlassCard(
-        icon: Icons.trending_up,
-        title: 'PROVEN ALPHA',
-        desc: 'Observe verified trader ledger indexes. Fully backtested performance metrics mapped directly on-chain for complete transparency.',
+        icon: Icons.stacked_line_chart_rounded,
+        title: 'Verifiable Ledger Index',
+        desc: 'All trader allocation histories are secured in public cryptographic ledgers, providing 100% backtesting proof validity.',
         statLabel: 'PLATFORM VALUE',
         statValue: '\$1.42B',
         iconColor: DexColors.accent,
       ),
       _buildGlassCard(
-        icon: Icons.shield,
-        title: 'ATOMIC SYNC',
-        desc: 'Distributed WebSocket feeds deploy capital in perfect synchronization, entirely neutralizing negative slippage windows.',
-        statLabel: 'SUCCESS RATE',
+        icon: Icons.gpp_good_rounded,
+        title: 'MPC Vault Protection',
+        desc: 'Asset custody is strictly managed via air-gapped multi-party computation security grids under sovereign hardware control.',
+        statLabel: 'TRANSACTION SUCCESS',
         statValue: '99.8%',
         iconColor: DexColors.success,
       ),
@@ -587,38 +610,41 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
-      child: Column(
-        children: [
-          Text(
-            'ENGINEERING EXCELLENCE',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 3,
-              color: DexColors.primary,
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 1200),
+        child: Column(
+          children: [
+            Text(
+              'ENGINEERING PARAMETERS',
+              style: GoogleFonts.orbitron(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2,
+                color: DexColors.primaryGlow,
+              ),
             ),
-          ).animate().fade(duration: 800.ms),
-          const SizedBox(height: 16),
-          Text(
-            'Built for institutional speeds.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: isDesktop ? 48 : 32,
-              fontWeight: FontWeight.w900,
-              fontStyle: FontStyle.italic,
-              color: Colors.white,
+            const SizedBox(height: 12),
+            Text(
+              'Designed for Sovereign Performance',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: isDesktop ? 42 : 28,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: -0.5,
+              ),
             ),
-          ).animate().fade(delay: 100.ms, duration: 800.ms),
-          const SizedBox(height: 64),
-          if (isDesktop)
-            Row(
-              children: widgets.map((w) => Expanded(child: Padding(padding: const EdgeInsets.all(12), child: w))).toList(),
-            )
-          else
-            Column(
-              children: widgets.map((w) => Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: w)).toList(),
-            ),
-        ],
+            const SizedBox(height: 56),
+            if (isDesktop)
+              Row(
+                children: widgets.map((w) => Expanded(child: Padding(padding: const EdgeInsets.all(12), child: w))).toList(),
+              )
+            else
+              Column(
+                children: widgets.map((w) => Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: w)).toList(),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -631,48 +657,45 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     required String statValue,
     required Color iconColor,
   }) {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
-        borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
+      borderRadius: 28,
+      borderColor: Colors.white.withOpacity(0.04),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: iconColor.withOpacity(0.2)),
+              color: iconColor.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: iconColor.withOpacity(0.15)),
             ),
-            child: Icon(icon, color: iconColor, size: 24),
+            child: Icon(icon, color: iconColor, size: 20),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
             title,
-            style: GoogleFonts.outfit(
-              fontSize: 24,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 22,
               fontWeight: FontWeight.w900,
-              fontStyle: FontStyle.italic,
               color: Colors.white,
+              letterSpacing: -0.5,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             desc,
-            style: GoogleFonts.inter(
-              fontSize: 14,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Colors.white38,
-              height: 1.6,
+              color: DexColors.textSecondary,
+              height: 1.5,
             ),
           ),
-          const SizedBox(height: 32),
-          const Divider(color: Colors.white10),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
+          Container(height: 1, color: Colors.white.withOpacity(0.06)),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -681,10 +704,10 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                 children: [
                   Text(
                     statLabel,
-                    style: GoogleFonts.inter(
-                      fontSize: 9,
+                    style: GoogleFonts.orbitron(
+                      fontSize: 8,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
+                      letterSpacing: 1.0,
                       color: Colors.white30,
                     ),
                   ),
@@ -692,30 +715,204 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                   Text(
                     statValue,
                     style: GoogleFonts.jetBrainsMono(
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: FontWeight.w900,
-                      fontStyle: FontStyle.italic,
                       color: Colors.white,
                     ),
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withOpacity(0.04),
+                  border: Border.all(color: Colors.white.withOpacity(0.06)),
                 ),
-                child: const Icon(Icons.arrow_outward, color: Colors.white, size: 16),
+                child: const Icon(Icons.arrow_outward_rounded, color: Colors.white70, size: 14),
               ),
             ],
           ),
         ],
       ),
-    ).animate().fade(duration: 800.ms).slideY(begin: 0.1, end: 0, curve: Curves.easeOut);
+    );
   }
 
-  // ─── Alpha Cortex Section with Animated Node Graph ───
+  // ─── BRAND-NEW CONTEXT SECTION: ARCHITECTURE FLOW MAP stepper ───
+  Widget _buildArchitectureStepper(bool isDesktop) {
+    final stages = [
+      _buildStepCard(
+        step: '01',
+        title: 'Atomic WebSocket Sync',
+        desc: 'Link direct WebSocket tunnels with master node pings, capturing trading intents at institutional inception.',
+        color: DexColors.primary,
+      ),
+      _buildStepCard(
+        step: '02',
+        title: 'Alpha Cortex Routing',
+        desc: 'Advanced predictive evaluation models paths down high-performance execution pools instantly.',
+        color: DexColors.accent,
+      ),
+      _buildStepCard(
+        step: '03',
+        title: 'Sovereign MPC Custody',
+        desc: 'Cryptographic multi-party segregation seals credentials behind high-security air-gapped vaults.',
+        color: DexColors.success,
+      ),
+      _buildStepCard(
+        step: '04',
+        title: 'Instant Yield Settlement',
+        desc: 'Matching nodes clear ledgers and dispatch yields in under 15 milliseconds back to vault balances.',
+        color: Colors.cyan,
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 1200),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                'EXECUTION TIMELINE',
+                style: GoogleFonts.orbitron(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                  color: DexColors.primaryGlow,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Real-Time Sovereign Routing Pipeline',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: isDesktop ? 42 : 28,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ),
+            const SizedBox(height: 56),
+
+            // Responsive Horizontal Stepper
+            if (isDesktop)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(stages.length, (idx) {
+                  return Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: stages[idx]),
+                        if (idx < stages.length - 1)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 48, left: 8, right: 8),
+                            child: Icon(
+                              Icons.arrow_forward_rounded,
+                              color: DexColors.primary.withOpacity(0.3),
+                              size: 20,
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                }),
+              )
+            else
+              Column(
+                children: List.generate(stages.length, (idx) {
+                  return Column(
+                    children: [
+                      stages[idx],
+                      if (idx < stages.length - 1)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Icon(
+                            Icons.arrow_downward_rounded,
+                            color: DexColors.primary.withOpacity(0.3),
+                            size: 20,
+                          ),
+                        ),
+                    ],
+                  );
+                }),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepCard({
+    required String step,
+    required String title,
+    required String desc,
+    required Color color,
+  }) {
+    return GlassCard(
+      padding: const EdgeInsets.all(28),
+      borderRadius: 24,
+      borderColor: Colors.white.withOpacity(0.03),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                step,
+                style: GoogleFonts.orbitron(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: color.withOpacity(0.8),
+                ),
+              ),
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color,
+                  boxShadow: [
+                    BoxShadow(color: color, blurRadius: 6),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            title,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            desc,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+              color: DexColors.textSecondary,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Alpha Cortex Section with Drifting Particle Node Graph ───
   Widget _buildCortexSection(bool isDesktop) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
@@ -725,7 +922,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
           direction: isDesktop ? Axis.horizontal : Axis.vertical,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Left features
+            // Left Features
             Expanded(
               flex: isDesktop ? 6 : 0,
               child: Column(
@@ -741,14 +938,14 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.memory, color: DexColors.primary, size: 14),
+                        const Icon(Icons.memory_rounded, color: DexColors.primary, size: 14),
                         const SizedBox(width: 8),
                         Text(
-                          'INTELLIGENCE PROTOCOL V4.0',
-                          style: GoogleFonts.inter(
-                            fontSize: 9,
+                          'CORTEX ALIGNMENT ENGINES',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 8,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 2,
+                            letterSpacing: 1.5,
                             color: DexColors.primary,
                           ),
                         ),
@@ -761,66 +958,62 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                       children: [
                         TextSpan(
                           text: 'THE ALPHA\n',
-                          style: GoogleFonts.outfit(
-                            fontSize: isDesktop ? 64 : 40,
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: isDesktop ? 56 : 36,
                             fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
                             color: Colors.white,
                           ),
                         ),
                         TextSpan(
-                          text: 'CORTEX.',
-                          style: GoogleFonts.outfit(
-                            fontSize: isDesktop ? 64 : 40,
+                          text: 'CORTEX DIAGRAM.',
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: isDesktop ? 56 : 36,
                             fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
                             color: DexColors.accent,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   Text(
-                    'Our proprietary matching engine constantly maps live sentiment data feeds, identifying elite risk-mitigation vectors to optimize allocations in real-time.',
-                    style: GoogleFonts.inter(
+                    'Our proprietary alpha cortex matching node continuously maps sentiment and liquidity fields, algorithmically routing copy orders into optimized vaults while enforcing institutional guardrails.',
+                    style: GoogleFonts.spaceGrotesk(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white54,
+                      color: DexColors.textSecondary,
                       height: 1.6,
                     ),
                   ),
-                  const SizedBox(height: 48),
-                  _buildCortexFeature(Icons.bubble_chart, 'SENTIMENT MAPPING', 'Global live data node sync.'),
+                  const SizedBox(height: 40),
+                  _buildCortexFeature(Icons.bubble_chart_rounded, 'NEURAL SENTIMENT ROUTING', 'Distributed WebSocket alignment of copy portfolios.'),
                   const SizedBox(height: 24),
-                  _buildCortexFeature(Icons.donut_large, 'PREDICTIVE ROI', 'Algorithmic probabilistic modeling.'),
+                  _buildCortexFeature(Icons.donut_large_rounded, 'PROBABILISTIC YIELD CURVE', 'Advanced mathematical modeling mapping yield targets.'),
                   const SizedBox(height: 24),
-                  _buildCortexFeature(Icons.gpp_good, 'RISK NEUTRALIZATION', 'Automated leverage controls.'),
+                  _buildCortexFeature(Icons.security_rounded, 'AUTOMATED LIQUIDITY SAFEGUARD', 'Direct MPC cold storage key integration.'),
                 ],
               ),
             ),
 
             if (isDesktop) const SizedBox(width: 80) else const SizedBox(height: 64),
 
-            // Right Pulsing Custom Node graph
+            // Right: Floating Drifting Particle Node System (WebGL-Style Interactive CustomPaint)
             Expanded(
               flex: isDesktop ? 6 : 0,
               child: Container(
-                height: 450,
+                height: 480,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.01),
-                  borderRadius: BorderRadius.circular(40),
-                  border: Border.all(color: Colors.white.withOpacity(0.03)),
+                  color: const Color(0xFF030308),
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(color: Colors.white.withOpacity(0.04)),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(32),
                   child: Stack(
                     children: [
-                      // Grid Matrix Background
                       const Positioned.fill(
                         child: GridPainterWidget(),
                       ),
-                      // Connecting Pulse Nodes
                       const Positioned.fill(
                         child: AnimatedNodesWidget(),
                       ),
@@ -841,33 +1034,34 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
+            color: Colors.white.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.white.withOpacity(0.06)),
           ),
-          child: Icon(icon, color: DexColors.primary, size: 20),
+          child: Icon(icon, color: DexColors.primary, size: 18),
         ),
-        const SizedBox(width: 20),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: GoogleFonts.outfit(
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                fontStyle: FontStyle.italic,
-                color: Colors.white,
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            Text(
-              desc,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: Colors.white38,
+              Text(
+                desc,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 12.5,
+                  color: DexColors.textSecondary,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -889,38 +1083,37 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'PORTFOLIO NET-FLOW',
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
+                      'FLOW MONITORING',
+                      style: GoogleFonts.orbitron(
+                        fontSize: 9,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 2,
-                        color: DexColors.primary,
+                        color: DexColors.primaryGlow,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Live Pipeline.',
-                      style: GoogleFonts.outfit(
-                        fontSize: isDesktop ? 48 : 32,
+                      'Mirror Pool Index',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: isDesktop ? 42 : 28,
                         fontWeight: FontWeight.w900,
-                        fontStyle: FontStyle.italic,
                         color: Colors.white,
                       ),
                     ),
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: DexColors.success.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: DexColors.success.withOpacity(0.2)),
+                    color: DexColors.success.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: DexColors.success.withOpacity(0.18)),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 8,
-                        height: 8,
+                        width: 6,
+                        height: 6,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: DexColors.success,
@@ -928,11 +1121,11 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'LIVE ENGINE',
-                        style: GoogleFonts.inter(
-                          fontSize: 9,
+                        'LIVE SIGNAL ENGINE',
+                        style: GoogleFonts.orbitron(
+                          fontSize: 8,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1.5,
+                          letterSpacing: 1.0,
                           color: DexColors.successGlow,
                         ),
                       ),
@@ -941,14 +1134,11 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                 ),
               ],
             ),
-            const SizedBox(height: 48),
-            Container(
+            const SizedBox(height: 40),
+            GlassCard(
               padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.02),
-                borderRadius: BorderRadius.circular(40),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
-              ),
+              borderRadius: 32,
+              borderColor: Colors.white.withOpacity(0.04),
               child: Flex(
                 direction: isDesktop ? Axis.horizontal : Axis.vertical,
                 children: [
@@ -958,58 +1148,58 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'MIRROR POOL INDEX',
-                          style: GoogleFonts.inter(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                          'TOTAL LIQUIDITY CONSOLIDATED',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
                             color: Colors.white30,
                             letterSpacing: 1,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '\$142,392.44',
+                          '\$142,392,448',
                           style: GoogleFonts.jetBrainsMono(
-                            fontSize: isDesktop ? 64 : 40,
+                            fontSize: isDesktop ? 52 : 36,
                             fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
                             color: Colors.white,
+                            letterSpacing: -1,
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // Mock Chart representation
+                        // Chart representation
                         _buildCustomBarChart(),
                       ],
                     ),
                   ),
-                  if (isDesktop) const SizedBox(width: 64) else const SizedBox(height: 64),
+                  if (isDesktop) const SizedBox(width: 48) else const SizedBox(height: 48),
                   Expanded(
                     flex: isDesktop ? 5 : 0,
                     child: Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(30),
+                        color: Colors.black.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(24),
                         border: Border.all(color: Colors.white.withOpacity(0.03)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'ORDER EXECUTION RECORD',
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
+                            'ACTIVE INTEGRATION STREAMS',
+                            style: GoogleFonts.orbitron(
+                              fontSize: 9,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 2,
+                              letterSpacing: 1.5,
                               color: DexColors.primary,
                             ),
                           ),
                           const SizedBox(height: 24),
-                          _buildTradeRow('BTC/USDT', 'MIRROR_ACQ_942', '\$97,240', '+12.4% APR', true),
+                          _buildTradeRow('SOL/USDT', 'MIRROR_ACQ_902', '\$198.12', '+15.2% APR', true),
                           const Divider(color: Colors.white10, height: 24),
-                          _buildTradeRow('ETH/USDT', 'MIRROR_ACQ_104', '\$3,842', '+9.8% APR', true),
+                          _buildTradeRow('ETH/USDT', 'MIRROR_ACQ_104', '\$3,842.50', '+9.8% APR', true),
                           const Divider(color: Colors.white10, height: 24),
-                          _buildTradeRow('SOL/USDT', 'MIRROR_ACQ_802', '\$198', '+15.2% APR', true),
+                          _buildTradeRow('BTC/USDT', 'MIRROR_ACQ_942', '\$97,240.00', '+12.4% APR', true),
                         ],
                       ),
                     ),
@@ -1032,17 +1222,16 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
           children: [
             Text(
               sym,
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.spaceGrotesk(
                 fontSize: 16,
-                fontWeight: FontWeight.w900,
-                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w800,
                 color: Colors.white,
               ),
             ),
             Text(
               node,
               style: GoogleFonts.jetBrainsMono(
-                fontSize: 11,
+                fontSize: 10,
                 color: Colors.white30,
               ),
             ),
@@ -1054,16 +1243,16 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
             Text(
               price,
               style: GoogleFonts.jetBrainsMono(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontSize: 14.5,
+                fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
             ),
             Text(
               apr,
-              style: GoogleFonts.inter(
+              style: GoogleFonts.spaceGrotesk(
                 fontSize: 12,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
                 color: DexColors.successGlow,
               ),
             ),
@@ -1074,7 +1263,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   }
 
   Widget _buildCustomBarChart() {
-    final heights = [0.3, 0.5, 0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 1.0, 0.7, 0.85, 0.95, 0.65, 0.75, 0.45];
+    final heights = [0.3, 0.5, 0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 1.0, 0.7, 0.85, 0.95, 0.65, 0.75, 0.5];
     return SizedBox(
       height: 180,
       child: Row(
@@ -1085,13 +1274,13 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
               margin: const EdgeInsets.symmetric(horizontal: 4),
               height: 180 * h,
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    DexColors.primary.withOpacity(0.1),
-                    DexColors.primary.withOpacity(0.8),
+                    DexColors.primary.withOpacity(0.08),
+                    DexColors.primary.withOpacity(0.7),
                   ],
                 ),
               ),
@@ -1106,92 +1295,92 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   Widget _buildVaultSection(bool isDesktop) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 100),
-      color: const Color(0xFF030307),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 1200),
-        child: Flex(
-          direction: isDesktop ? Axis.horizontal : Axis.vertical,
-          children: [
-            if (!isDesktop) const SizedBox(height: 64),
-            Expanded(
-              flex: isDesktop ? 6 : 0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: DexColors.success.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(100),
-                      border: Border.all(color: DexColors.success.withOpacity(0.2)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.gpp_good, color: DexColors.success, size: 14),
-                        const SizedBox(width: 8),
-                        Text(
-                          'INSTITUTIONAL CUSTODY ACTIVE',
-                          style: GoogleFonts.inter(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2,
-                            color: DexColors.success,
+      color: const Color(0xFF020206),
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: Flex(
+            direction: isDesktop ? Axis.horizontal : Axis.vertical,
+            children: [
+              Expanded(
+                flex: isDesktop ? 6 : 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: DexColors.success.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: DexColors.success.withOpacity(0.18)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.gpp_good_rounded, color: DexColors.success, size: 14),
+                          const SizedBox(width: 8),
+                          Text(
+                            'HARDWARE CUSTODY PROTECTION OPERATIONAL',
+                            style: GoogleFonts.orbitron(
+                              fontSize: 8,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.5,
+                              color: DexColors.success,
+                            ),
                           ),
-                        ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'SOVEREIGN\n',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: isDesktop ? 56 : 36,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'PLATFORM VAULT.',
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: isDesktop ? 56 : 36,
+                              fontWeight: FontWeight.w900,
+                              color: DexColors.success,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Platform capital is preserved under hardware multi-party segmentation configurations. We guarantee Offline custody backing, continuous node defense scans, and sovereign MPC authorization routes.',
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: DexColors.textSecondary,
+                        height: 1.6,
+                      ),
+                    ),
+                    const SizedBox(height: 44),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 16,
+                      children: [
+                        _buildSecurityCheck('98.4% Cold Vault Storage'),
+                        _buildSecurityCheck('Multi-Sig MPC Segregation'),
+                        _buildSecurityCheck('Lloyds Platform Coverage'),
+                        _buildSecurityCheck('24/7 Active Node Firewalls'),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'IMMUTABLE\n',
-                          style: GoogleFonts.outfit(
-                            fontSize: isDesktop ? 64 : 40,
-                            fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.white,
-                          ),
-                        ),
-                        TextSpan(
-                          text: 'SECURITY.',
-                          style: GoogleFonts.outfit(
-                            fontSize: isDesktop ? 64 : 40,
-                            fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
-                            color: DexColors.success,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'We safeguard your principal with central-bank grade parameters: Air-gapped cold multi-sig setups, MPC key segmentation, and Lloyds-backed platform coverage.',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white54,
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    children: [
-                      _buildSecurityCheck('98% Offline Storage'),
-                      _buildSecurityCheck('MPC Multi-Sig keys'),
-                      _buildSecurityCheck('Full Capital Coverage'),
-                      _buildSecurityCheck('24/7 Node Defense'),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              if (!isDesktop) const SizedBox(height: 64),
+            ],
+          ),
         ),
       ),
     );
@@ -1199,23 +1388,22 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
 
   Widget _buildSecurityCheck(String title) {
     return Container(
-      width: 250,
-      padding: const EdgeInsets.all(20),
+      width: 260,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.01),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.03)),
+        color: Colors.white.withOpacity(0.015),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.04)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.check_circle, color: DexColors.success, size: 20),
-          const SizedBox(width: 16),
+          const Icon(Icons.check_circle_rounded, color: DexColors.success, size: 18),
+          const SizedBox(width: 14),
           Text(
             title,
-            style: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              fontStyle: FontStyle.italic,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
           ),
@@ -1227,50 +1415,48 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   // ─── Footer Section ───
   Widget _buildFooter(bool isDesktop) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 64),
       decoration: const BoxDecoration(
         color: Colors.black,
         border: Border(top: BorderSide(color: Colors.white10)),
       ),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 1200),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: DexColors.primary,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.flash_on, color: Colors.white, size: 18),
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(colors: DexColors.primaryGradient),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'DEXTRADE',
-                      style: GoogleFonts.outfit(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  '© 2026 Dextrade Protocol. All Rights Reserved.',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: Colors.white30,
+                    child: const Icon(Icons.flash_on, color: Colors.white, size: 16),
                   ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'DEXTRADE',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                '© 2026 Dextrade Protocol. Sovereign Financial Systems.',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 11,
+                  color: Colors.white30,
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1293,10 +1479,10 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
+      ..color = Colors.white.withOpacity(0.015)
       ..strokeWidth = 1.0;
 
-    const step = 25.0;
+    const step = 32.0;
     for (double x = 0; x < size.width; x += step) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
@@ -1309,7 +1495,7 @@ class _GridPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ─── Animated Cortex Pulse Nodes Custom Painter ───
+// ─── High-Fidelity Floating Drifting Particle Node Painter (Interactive WebGL-Style) ───
 class AnimatedNodesWidget extends StatefulWidget {
   const AnimatedNodesWidget({super.key});
 
@@ -1320,24 +1506,32 @@ class AnimatedNodesWidget extends StatefulWidget {
 class _AnimatedNodesWidgetState extends State<AnimatedNodesWidget>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  final List<_NodePoint> _nodes = [];
-  final math.Random _random = math.Random();
+  final List<_DriftingNode> _nodes = [];
+  final math.Random _random = math.Random(1337); // Seeded random for consistency
+  Offset _localPointerPos = Offset.zero;
+  bool _isHovering = false;
+
+  // Active ripples from user clicks
+  final List<_ClickRipple> _ripples = [];
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 10),
     )..repeat();
 
-    // Generate static node points inside canvas
-    for (int i = 0; i < 20; i++) {
+    // Populate high fidelity drifting nodes
+    for (int i = 0; i < 28; i++) {
       _nodes.add(
-        _NodePoint(
-          x: _random.nextDouble(),
-          y: _random.nextDouble(),
-          r: 3 + _random.nextDouble() * 5,
+        _DriftingNode(
+          posX: _random.nextDouble() * 450,
+          posY: _random.nextDouble() * 480,
+          velX: (_random.nextDouble() - 0.5) * 0.4,
+          velY: (_random.nextDouble() - 0.5) * 0.4,
+          baseRadius: 3 + _random.nextDouble() * 4,
+          glowPhaseOffset: _random.nextDouble() * 2 * math.pi,
         ),
       );
     }
@@ -1349,69 +1543,225 @@ class _AnimatedNodesWidgetState extends State<AnimatedNodesWidget>
     super.dispose();
   }
 
+  void _onPointerHover(PointerEvent event) {
+    setState(() {
+      _localPointerPos = event.localPosition;
+      _isHovering = true;
+    });
+  }
+
+  void _onPointerExit(PointerEvent event) {
+    setState(() {
+      _isHovering = false;
+    });
+  }
+
+  void _onPointerDown(PointerDownEvent event) {
+    setState(() {
+      _ripples.add(
+        _ClickRipple(
+          origin: event.localPosition,
+          progress: 0.0,
+          maxRadius: 180.0,
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return CustomPaint(
-          painter: _NodesPainter(
-            nodes: _nodes,
-            animationValue: _controller.value,
-          ),
-        );
-      },
+    return MouseRegion(
+      onHover: _onPointerHover,
+      onExit: _onPointerExit,
+      child: Listener(
+        onPointerDown: _onPointerDown,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            _updateParticlePositions();
+            _updateRipples();
+            return CustomPaint(
+              painter: _HifiNodesPainter(
+                nodes: _nodes,
+                ripples: _ripples,
+                pointerPos: _localPointerPos,
+                isHovering: _isHovering,
+                primaryColor: DexColors.primary,
+                accentColor: DexColors.accent,
+                animationVal: _controller.value,
+              ),
+            );
+          },
+        ),
+      ),
     );
+  }
+
+  void _updateParticlePositions() {
+    // Update drifting math logic per frame trigger
+    for (var node in _nodes) {
+      node.posX += node.velX;
+      node.posY += node.velY;
+
+      // Bounce nodes inside bounds
+      if (node.posX < 0 || node.posX > 500) node.velX *= -1;
+      if (node.posY < 0 || node.posY > 480) node.velY *= -1;
+
+      // Mouse attraction
+      if (_isHovering) {
+        final dist = (Offset(node.posX, node.posY) - _localPointerPos).distance;
+        if (dist < 150) {
+          final force = (1.0 - (dist / 150.0)) * 0.12;
+          final diff = _localPointerPos - Offset(node.posX, node.posY);
+          final direction = diff.distance == 0 ? Offset.zero : diff / diff.distance;
+          node.posX += direction.dx * force;
+          node.posY += direction.dy * force;
+        }
+      }
+    }
+  }
+
+  void _updateRipples() {
+    for (int i = _ripples.length - 1; i >= 0; i--) {
+      _ripples[i].progress += 0.024;
+      if (_ripples[i].progress >= 1.0) {
+        _ripples.removeAt(i);
+      }
+    }
   }
 }
 
-class _NodePoint {
-  final double x;
-  final double y;
-  final double r;
+class _DriftingNode {
+  double posX;
+  double posY;
+  double velX;
+  double velY;
+  final double baseRadius;
+  final double glowPhaseOffset;
 
-  _NodePoint({required this.x, required this.y, required this.r});
+  _DriftingNode({
+    required this.posX,
+    required this.posY,
+    required this.velX,
+    required this.velY,
+    required this.baseRadius,
+    required this.glowPhaseOffset,
+  });
 }
 
-class _NodesPainter extends CustomPainter {
-  final List<_NodePoint> nodes;
-  final double animationValue;
+class _ClickRipple {
+  final Offset origin;
+  double progress;
+  final double maxRadius;
 
-  _NodesPainter({required this.nodes, required this.animationValue});
+  _ClickRipple({
+    required this.origin,
+    required this.progress,
+    required this.maxRadius,
+  });
+}
+
+class _HifiNodesPainter extends CustomPainter {
+  final List<_DriftingNode> nodes;
+  final List<_ClickRipple> ripples;
+  final Offset pointerPos;
+  final bool isHovering;
+  final Color primaryColor;
+  final Color accentColor;
+  final double animationVal;
+
+  _HifiNodesPainter({
+    required this.nodes,
+    required this.ripples,
+    required this.pointerPos,
+    required this.isHovering,
+    required this.primaryColor,
+    required this.accentColor,
+    required this.animationVal,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paintLine = Paint()
-      ..color = DexColors.primary.withOpacity(0.1)
-      ..strokeWidth = 1.0;
+    final linePaint = Paint()..strokeWidth = 1.0;
+    final nodePaint = Paint()..style = PaintingStyle.fill;
 
-    final paintNode = Paint()..style = PaintingStyle.fill;
-
-    // Draw connecting lines if nodes are close
+    // 1. Draw connecting structural lines with proximity fades
     for (int i = 0; i < nodes.length; i++) {
-      final p1 = Offset(nodes[i].x * size.width, nodes[i].y * size.height);
+      final p1 = Offset(nodes[i].posX.clamp(0, size.width), nodes[i].posY.clamp(0, size.height));
+
       for (int j = i + 1; j < nodes.length; j++) {
-        final p2 = Offset(nodes[j].x * size.width, nodes[j].y * size.height);
+        final p2 = Offset(nodes[j].posX.clamp(0, size.width), nodes[j].posY.clamp(0, size.height));
         final dist = (p1 - p2).distance;
-        if (dist < 120) {
-          paintLine.color = DexColors.primary.withOpacity((1.0 - (dist / 120.0)) * 0.15);
-          canvas.drawLine(p1, p2, paintLine);
+
+        if (dist < 110) {
+          final progress = 1.0 - (dist / 110.0);
+          final double opacity = 0.08 * progress;
+
+          // Color connectors between primary/accent dynamically based on indexes
+          linePaint.color = Color.lerp(primaryColor, accentColor, i / nodes.length)!.withOpacity(opacity);
+          canvas.drawLine(p1, p2, linePaint);
+
+          // Draw floating animated data packet pulses down the connection pathways
+          final double pulseTime = (animationVal * 3 + (i + j)) % 1.0;
+          final Offset packetOffset = Offset.lerp(p1, p2, pulseTime)!;
+          nodePaint.color = accentColor.withOpacity(0.3 * progress);
+          canvas.drawCircle(packetOffset, 1.5, nodePaint);
         }
       }
     }
 
-    // Draw pulsing node points
-    for (final node in nodes) {
-      final center = Offset(node.x * size.width, node.y * size.height);
-      final pulse = math.sin((animationValue * 2 * math.pi) + (node.x * 10)) * 0.5 + 0.5;
+    // 2. Draw active user click ripples (Visual ping indicator)
+    for (var ripple in ripples) {
+      final double currentRadius = ripple.maxRadius * ripple.progress;
+      final double opacity = 1.0 - ripple.progress;
+      final Paint ripplePaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0
+        ..color = accentColor.withOpacity(0.35 * opacity)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
 
-      // Pulse Glow Aura
-      paintNode.color = DexColors.primary.withOpacity(0.15 * (1.0 - pulse));
-      canvas.drawCircle(center, node.r + (pulse * 15), paintNode);
+      canvas.drawCircle(ripple.origin, currentRadius, ripplePaint);
+    }
 
-      // Core Node
-      paintNode.color = DexColors.accent;
-      canvas.drawCircle(center, node.r, paintNode);
+    // 3. Draw premium pulsing glowing nodes
+    for (int i = 0; i < nodes.length; i++) {
+      final node = nodes[i];
+      final center = Offset(node.posX.clamp(0, size.width), node.posY.clamp(0, size.height));
+
+      // Calculate dynamic breathing pulse
+      final double pulse = math.sin((animationVal * 2 * math.pi * 1.5) + node.glowPhaseOffset) * 0.5 + 0.5;
+      final double radius = node.baseRadius * (0.85 + pulse * 0.3);
+
+      // Node aura glow
+      final Paint auraPaint = Paint()
+        ..style = PaintingStyle.fill
+        ..color = primaryColor.withOpacity(0.12 * (1.0 - pulse))
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+      canvas.drawCircle(center, radius + (pulse * 14.0), auraPaint);
+
+      // Core fills
+      nodePaint.color = Color.lerp(primaryColor, accentColor, i / nodes.length)!;
+      canvas.drawCircle(center, radius, nodePaint);
+
+      // Small chrome center dot reflection
+      nodePaint.color = Colors.white.withOpacity(0.8);
+      canvas.drawCircle(center + Offset(-radius * 0.25, -radius * 0.25), radius * 0.3, nodePaint);
+    }
+
+    // 4. Draw interactive pointer glowing reticle ring
+    if (isHovering && pointerPos != Offset.zero) {
+      final Paint reticlePaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0
+        ..color = primaryColor.withOpacity(0.3)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+      canvas.drawCircle(pointerPos, 20.0, reticlePaint);
+
+      reticlePaint
+        ..strokeWidth = 1.5
+        ..color = accentColor.withOpacity(0.6)
+        ..maskFilter = null;
+      canvas.drawCircle(pointerPos, 4.0, reticlePaint);
     }
   }
 
