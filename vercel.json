@@ -38,6 +38,22 @@
       "dest": "/build/web/$1.$2"
     },
     {
+      "src": "/technology",
+      "dest": "/build/web/technology.html"
+    },
+    {
+      "src": "/assets",
+      "dest": "/build/web/assets.html"
+    },
+    {
+      "src": "/security",
+      "dest": "/build/web/security.html"
+    },
+    {
+      "src": "/institutional",
+      "dest": "/build/web/institutional.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/build/web/index.html"
     }
