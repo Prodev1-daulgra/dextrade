@@ -227,7 +227,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                             'DEXTRADE',
                             style: GoogleFonts.outfit(
                               fontSize: 20,
-                              fontWeight: FontWeight.black,
+                              fontWeight: FontWeight.w900,
                               fontStyle: FontStyle.italic,
                               letterSpacing: -0.5,
                               color: Colors.white,
@@ -287,7 +287,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                         'CLAIM ACCESS',
                         style: DexTypography.button.copyWith(
                           color: Colors.white,
-                          fontWeight: FontWeight.black,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
@@ -354,7 +354,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                   'ALPHA STREAM: OPERATIONAL',
                   style: GoogleFonts.inter(
                     fontSize: 9,
-                    fontWeight: FontWeight.black,
+                    fontWeight: FontWeight.w900,
                     letterSpacing: 2,
                     color: Colors.white70,
                   ),
@@ -374,7 +374,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                   text: 'MIRROR\n',
                   style: GoogleFonts.outfit(
                     fontSize: isDesktop ? 120 : 64,
-                    fontWeight: FontWeight.black,
+                    fontWeight: FontWeight.w900,
                     fontStyle: FontStyle.italic,
                     height: 0.8,
                     color: Colors.white,
@@ -384,7 +384,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                   text: 'LEGENDS.',
                   style: GoogleFonts.outfit(
                     fontSize: isDesktop ? 120 : 64,
-                    fontWeight: FontWeight.black,
+                    fontWeight: FontWeight.w900,
                     fontStyle: FontStyle.italic,
                     height: 0.8,
                     color: DexColors.primary,
@@ -439,7 +439,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                   'INITIALIZE TERMINAL',
                   style: DexTypography.buttonLarge.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.black,
+                    fontWeight: FontWeight.w900,
                     letterSpacing: 2,
                   ),
                 ),
@@ -461,7 +461,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                       'VIEW DECK',
                       style: DexTypography.buttonLarge.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.black,
+                        fontWeight: FontWeight.w900,
                         letterSpacing: 2,
                       ),
                     ),
@@ -519,7 +519,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                     '\$${trade['price']}',
                     style: GoogleFonts.jetBrainsMono(
                       fontSize: 14,
-                      fontWeight: FontWeight.black,
+                      fontWeight: FontWeight.w900,
                       fontStyle: FontStyle.italic,
                       color: Colors.white,
                     ),
@@ -542,7 +542,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                       trade['chg'],
                       style: GoogleFonts.inter(
                         fontSize: 9,
-                        fontWeight: FontWeight.black,
+                        fontWeight: FontWeight.w900,
                         color: trade['pos'] ? DexColors.successGlow : DexColors.errorGlow,
                       ),
                     ),
@@ -604,7 +604,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
               fontSize: isDesktop ? 48 : 32,
-              fontWeight: FontWeight.black,
+              fontWeight: FontWeight.w900,
               fontStyle: FontStyle.italic,
               color: Colors.white,
             ),
@@ -655,7 +655,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
             title,
             style: GoogleFonts.outfit(
               fontSize: 24,
-              fontWeight: FontWeight.black,
+              fontWeight: FontWeight.w900,
               fontStyle: FontStyle.italic,
               color: Colors.white,
             ),
@@ -683,7 +683,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                     statLabel,
                     style: GoogleFonts.inter(
                       fontSize: 9,
-                      fontWeight: FontWeight.black,
+                      fontWeight: FontWeight.w900,
                       letterSpacing: 1.5,
                       color: Colors.white30,
                     ),
@@ -693,7 +693,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                     statValue,
                     style: GoogleFonts.jetBrainsMono(
                       fontSize: 24,
-                      fontWeight: FontWeight.black,
+                      fontWeight: FontWeight.w900,
                       fontStyle: FontStyle.italic,
                       color: Colors.white,
                     ),
@@ -720,7 +720,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
       child: Container(
-        maxWidth: 1200,
+        constraints: const BoxConstraints(maxWidth: 1200),
         child: Flex(
           direction: isDesktop ? Axis.horizontal : Axis.vertical,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -747,7 +747,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                           'INTELLIGENCE PROTOCOL V4.0',
                           style: GoogleFonts.inter(
                             fontSize: 9,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             letterSpacing: 2,
                             color: DexColors.primary,
                           ),
@@ -763,7 +763,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                           text: 'THE ALPHA\n',
                           style: GoogleFonts.outfit(
                             fontSize: isDesktop ? 64 : 40,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             fontStyle: FontStyle.italic,
                             color: Colors.white,
                           ),
@@ -772,7 +772,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                           text: 'CORTEX.',
                           style: GoogleFonts.outfit(
                             fontSize: isDesktop ? 64 : 40,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             fontStyle: FontStyle.italic,
                             color: DexColors.accent,
                           ),
@@ -855,7 +855,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
               title,
               style: GoogleFonts.outfit(
                 fontSize: 18,
-                fontWeight: FontWeight.black,
+                fontWeight: FontWeight.w900,
                 fontStyle: FontStyle.italic,
                 color: Colors.white,
               ),
@@ -878,7 +878,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
       child: Container(
-        maxWidth: 1200,
+        constraints: const BoxConstraints(maxWidth: 1200),
         child: Column(
           children: [
             Row(
@@ -902,7 +902,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                       'Live Pipeline.',
                       style: GoogleFonts.outfit(
                         fontSize: isDesktop ? 48 : 32,
-                        fontWeight: FontWeight.black,
+                        fontWeight: FontWeight.w900,
                         fontStyle: FontStyle.italic,
                         color: Colors.white,
                       ),
@@ -931,7 +931,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                         'LIVE ENGINE',
                         style: GoogleFonts.inter(
                           fontSize: 9,
-                          fontWeight: FontWeight.black,
+                          fontWeight: FontWeight.w900,
                           letterSpacing: 1.5,
                           color: DexColors.successGlow,
                         ),
@@ -971,7 +971,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                           '\$142,392.44',
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: isDesktop ? 64 : 40,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             fontStyle: FontStyle.italic,
                             color: Colors.white,
                           ),
@@ -999,7 +999,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                             'ORDER EXECUTION RECORD',
                             style: GoogleFonts.inter(
                               fontSize: 10,
-                              fontWeight: FontWeight.black,
+                              fontWeight: FontWeight.w900,
                               letterSpacing: 2,
                               color: DexColors.primary,
                             ),
@@ -1034,7 +1034,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
               sym,
               style: GoogleFonts.outfit(
                 fontSize: 16,
-                fontWeight: FontWeight.black,
+                fontWeight: FontWeight.w900,
                 fontStyle: FontStyle.italic,
                 color: Colors.white,
               ),
@@ -1108,7 +1108,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 100),
       color: const Color(0xFF030307),
       child: Container(
-        maxWidth: 1200,
+        constraints: const BoxConstraints(maxWidth: 1200),
         child: Flex(
           direction: isDesktop ? Axis.horizontal : Axis.vertical,
           children: [
@@ -1134,7 +1134,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                           'INSTITUTIONAL CUSTODY ACTIVE',
                           style: GoogleFonts.inter(
                             fontSize: 9,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             letterSpacing: 2,
                             color: DexColors.success,
                           ),
@@ -1150,7 +1150,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                           text: 'IMMUTABLE\n',
                           style: GoogleFonts.outfit(
                             fontSize: isDesktop ? 64 : 40,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             fontStyle: FontStyle.italic,
                             color: Colors.white,
                           ),
@@ -1159,7 +1159,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                           text: 'SECURITY.',
                           style: GoogleFonts.outfit(
                             fontSize: isDesktop ? 64 : 40,
-                            fontWeight: FontWeight.black,
+                            fontWeight: FontWeight.w900,
                             fontStyle: FontStyle.italic,
                             color: DexColors.success,
                           ),
@@ -1214,7 +1214,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
             title,
             style: GoogleFonts.outfit(
               fontSize: 16,
-              fontWeight: FontWeight.black,
+              fontWeight: FontWeight.w900,
               fontStyle: FontStyle.italic,
               color: Colors.white,
             ),
@@ -1228,10 +1228,12 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
   Widget _buildFooter(bool isDesktop) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
-      color: Colors.black,
-      border: const Border(top: BorderSide(color: Colors.white10)),
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        border: Border(top: BorderSide(color: Colors.white10)),
+      ),
       child: Container(
-        maxWidth: 1200,
+        constraints: const BoxConstraints(maxWidth: 1200),
         child: Column(
           children: [
             Row(
@@ -1252,7 +1254,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                       'DEXTRADE',
                       style: GoogleFonts.outfit(
                         fontSize: 24,
-                        fontWeight: FontWeight.black,
+                        fontWeight: FontWeight.w900,
                         fontStyle: FontStyle.italic,
                         color: Colors.white,
                       ),

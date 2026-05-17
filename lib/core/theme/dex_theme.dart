@@ -39,14 +39,14 @@ class DexTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: DexColors.surfaceLight,
+        fillColor: Colors.white.withOpacity(0.015),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: DexColors.border),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.06)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: DexColors.border),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.06)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

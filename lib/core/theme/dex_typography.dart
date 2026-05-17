@@ -5,8 +5,33 @@ import 'dex_colors.dart';
 class DexTypography {
   DexTypography._();
 
-  static TextStyle get _baseInter => GoogleFonts.inter();
-  static TextStyle get _baseOutfit => GoogleFonts.outfit();
+  static const List<String> _fallbacks = [
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'SF Pro Display',
+    'SF Pro Text',
+    'Segoe UI',
+    'Roboto',
+    'Helvetica Neue',
+    'Arial',
+    'sans-serif',
+  ];
+
+  static const List<String> _monoFallbacks = [
+    'JetBrains Mono',
+    'SFMono-Regular',
+    'Consolas',
+    'Liberation Mono',
+    'Courier New',
+    'monospace',
+  ];
+
+  static TextStyle get _baseInter => GoogleFonts.inter(
+    fontFamilyFallback: _fallbacks,
+  );
+  static TextStyle get _baseOutfit => GoogleFonts.outfit(
+    fontFamilyFallback: _fallbacks,
+  );
 
   // ─── Display (Hero / Landing) ───
   static TextStyle displayLarge = _baseOutfit.copyWith(
@@ -60,14 +85,17 @@ class DexTypography {
   static TextStyle mono = GoogleFonts.jetBrainsMono(
     fontSize: 14, fontWeight: FontWeight.w700,
     color: DexColors.textPrimary, letterSpacing: -0.3,
+    fontFamilyFallback: _monoFallbacks,
   );
   static TextStyle monoLarge = GoogleFonts.jetBrainsMono(
     fontSize: 28, fontWeight: FontWeight.w800,
     color: DexColors.textPrimary, letterSpacing: -1,
+    fontFamilyFallback: _monoFallbacks,
   );
   static TextStyle monoHero = GoogleFonts.jetBrainsMono(
     fontSize: 48, fontWeight: FontWeight.w900,
     color: DexColors.textPrimary, letterSpacing: -2,
+    fontFamilyFallback: _monoFallbacks,
   );
 
   // ─── Buttons ───
