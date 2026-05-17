@@ -26,10 +26,10 @@ class DexTypography {
     'monospace',
   ];
 
-  static TextStyle get _baseInter => GoogleFonts.inter(
+  static TextStyle get _baseInter => GoogleFonts.inter().copyWith(
     fontFamilyFallback: _fallbacks,
   );
-  static TextStyle get _baseOutfit => GoogleFonts.outfit(
+  static TextStyle get _baseOutfit => GoogleFonts.outfit().copyWith(
     fontFamilyFallback: _fallbacks,
   );
 
@@ -82,17 +82,17 @@ class DexTypography {
   );
 
   // ─── Mono (Numbers, Prices, Addresses) ───
-  static TextStyle mono = GoogleFonts.jetBrainsMono(
+  static TextStyle mono = GoogleFonts.jetBrainsMono().copyWith(
     fontSize: 14, fontWeight: FontWeight.w700,
     color: DexColors.textPrimary, letterSpacing: -0.3,
     fontFamilyFallback: _monoFallbacks,
   );
-  static TextStyle monoLarge = GoogleFonts.jetBrainsMono(
+  static TextStyle monoLarge = GoogleFonts.jetBrainsMono().copyWith(
     fontSize: 28, fontWeight: FontWeight.w800,
     color: DexColors.textPrimary, letterSpacing: -1,
     fontFamilyFallback: _monoFallbacks,
   );
-  static TextStyle monoHero = GoogleFonts.jetBrainsMono(
+  static TextStyle monoHero = GoogleFonts.jetBrainsMono().copyWith(
     fontSize: 48, fontWeight: FontWeight.w900,
     color: DexColors.textPrimary, letterSpacing: -2,
     fontFamilyFallback: _monoFallbacks,

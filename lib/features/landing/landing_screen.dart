@@ -404,7 +404,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
 
           // Subtitle description
           Container(
-            maxWidth: 600,
+            constraints: const BoxConstraints(maxWidth: 600),
             child: Text(
               'Institutional capital flows, now accessible via the Dextrade matching engine. Stop chasing charts. Execute Alpha.',
               textAlign: TextAlign.center,
