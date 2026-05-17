@@ -76,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         center: Alignment(_bgController.value * 0.4 - 0.2, -0.3),
                         radius: 1.4,
                         colors: [
-                          DexColors.primary.withValues(alpha: 0.16),
+                          DexColors.primary.withOpacity(0.16),
                           Colors.black,
                         ],
                       ),
@@ -118,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           GlassCard(
                             padding: const EdgeInsets.all(32),
                             borderRadius: 28,
-                            borderColor: Colors.white.withValues(alpha: 0.08),
+                            borderColor: Colors.white.withOpacity(0.08),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -127,7 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                 const SizedBox(height: 8),
                                 Text('Unlock your high-performance trading terminal.', style: DexTypography.bodySmall.copyWith(color: DexColors.textSecondary)),
                                 const SizedBox(height: 32),
-
+ 
                                 // Email Input
                                 Text('USERNAME OR EMAIL', style: DexTypography.label.copyWith(fontSize: 9, letterSpacing: 1, color: DexColors.primaryGlow)),
                                 const SizedBox(height: 10),
@@ -175,8 +175,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
-                                      color: DexColors.error.withValues(alpha: 0.1),
-                                      border: Border.all(color: DexColors.error.withValues(alpha: 0.3)),
+                                      color: DexColors.error.withOpacity(0.1),
+                                      border: Border.all(color: DexColors.error.withOpacity(0.3)),
                                     ),
                                     child: Text(_error!, style: DexTypography.caption.copyWith(color: DexColors.error)),
                                   ),
@@ -228,7 +228,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32),
                   color: const Color(0xFF07070E),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(32),
@@ -261,8 +261,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
-                                color: DexColors.primary.withValues(alpha: 0.15),
-                                border: Border.all(color: DexColors.primary.withValues(alpha: 0.3)),
+                                color: DexColors.primary.withOpacity(0.15),
+                                border: Border.all(color: DexColors.primary.withOpacity(0.3)),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -348,8 +348,8 @@ class _3DGraphicPainter extends CustomPainter {
     final auraPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          DexColors.primary.withValues(alpha: 0.35),
-          DexColors.accent.withValues(alpha: 0.1),
+          DexColors.primary.withOpacity(0.35),
+          DexColors.accent.withOpacity(0.1),
           Colors.transparent,
         ],
       ).createShader(Rect.fromCircle(center: center, radius: radius * 2.2));
@@ -366,9 +366,9 @@ class _3DGraphicPainter extends CustomPainter {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            DexColors.primary.withValues(alpha: 0.65 - (i * 0.12)),
-            DexColors.accent.withValues(alpha: 0.35 - (i * 0.08)),
-            Colors.white.withValues(alpha: 0.02),
+            DexColors.primary.withOpacity(0.65 - (i * 0.12)),
+            DexColors.accent.withOpacity(0.35 - (i * 0.08)),
+            Colors.white.withOpacity(0.02),
           ],
         ).createShader(Rect.fromCircle(center: center + offset, radius: radius - (i * 18)))
         ..style = PaintingStyle.fill;
@@ -377,7 +377,7 @@ class _3DGraphicPainter extends CustomPainter {
       canvas.drawCircle(
         center + offset + const Offset(10, 20), 
         radius - (i * 18), 
-        Paint()..color = Colors.black.withValues(alpha: 0.25)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15)
+        Paint()..color = Colors.black.withOpacity(0.25)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15)
       );
 
       canvas.drawCircle(center + offset, radius - (i * 18), shapePaint);
@@ -388,9 +388,9 @@ class _3DGraphicPainter extends CustomPainter {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withValues(alpha: 0.5),
+            Colors.white.withOpacity(0.5),
             Colors.transparent,
-            DexColors.accent.withValues(alpha: 0.3),
+            DexColors.accent.withOpacity(0.3),
             Colors.transparent,
           ],
         ).createShader(Rect.fromCircle(center: center + offset, radius: radius - (i * 18)))

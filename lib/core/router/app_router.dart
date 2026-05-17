@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/providers.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/auth/register_screen.dart';
+import '../../features/landing/landing_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/transactions/transactions_screen.dart';
 import '../../features/copy_trading/copy_trading_screen.dart';
@@ -28,11 +29,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (isLoading) return null;
 
-      final authPaths = ['/login', '/register'];
-      final isAuthPath = authPaths.contains(path);
+      final publicPaths = ['/login', '/register', '/landing'];
+      final isPublicPath = publicPaths.contains(path);
 
-      if (!isAuth && !isAuthPath) return '/login';
-      if (isAuth && isAuthPath) return '/';
+      if (!isAuth && !isPublicPath) return '/landing';
+      if (isAuth && isPublicPath) return '/';
 
       // State admin: web-only guard
       if (path.startsWith('/state-admin') && !kIsWeb) return '/';
@@ -46,6 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Auth routes (no shell)
       GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
+      GoRoute(path: '/landing', builder: (_, __) => const LandingScreen()),
 
       // App shell with navigation
       ShellRoute(
