@@ -64,22 +64,38 @@ class _GlassCardState extends State<GlassCard> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 color: _isHovered
-                    ? DexColors.surfaceGlass.withValues(alpha: 0.25)
-                    : DexColors.surfaceGlass.withValues(alpha: 0.45),
-                border: Border.all(color: activeBorder, width: 1),
+                    ? DexColors.surfaceGlass.withValues(alpha: 0.15)
+                    : DexColors.surfaceGlass.withValues(alpha: 0.08),
+                border: Border.all(
+                  color: _isHovered 
+                    ? DexColors.primary.withValues(alpha: 0.3) 
+                    : Colors.white.withValues(alpha: 0.05), 
+                  width: 1,
+                ),
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: _isHovered
                       ? [
-                          Colors.white.withValues(alpha: 0.16),
-                          Colors.white.withValues(alpha: 0.04),
+                          Colors.white.withValues(alpha: 0.12),
+                          Colors.transparent,
+                          DexColors.primary.withValues(alpha: 0.05),
                         ]
                       : [
-                          Colors.white.withValues(alpha: 0.08),
-                          Colors.white.withValues(alpha: 0.02),
+                          Colors.white.withValues(alpha: 0.06),
+                          Colors.transparent,
+                          Colors.white.withValues(alpha: 0.01),
                         ],
+                  stops: const [0.0, 0.5, 1.0],
                 ),
+                boxShadow: [
+                  // Inner top highlight
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    offset: const Offset(0, 1),
+                    blurRadius: 1,
+                  ),
+                ],
               ),
               padding: widget.padding ?? const EdgeInsets.all(20),
               child: widget.child,

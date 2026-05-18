@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
+import '../../widgets/animated_mesh_gradient.dart';
 import 'marketing_shell.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -15,19 +16,22 @@ class AboutScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 120),
-            _buildManifesto(isDesktop),
-            _buildMissionCards(isDesktop),
-            _buildStats(isDesktop),
-            _buildTeamGrid(isDesktop),
-            _buildComplianceBadges(isDesktop),
-            _buildTimeline(isDesktop),
-            _buildCTA(isDesktop),
-            const MarketingFooter(),
-          ],
+      body: AnimatedMeshGradient(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 120),
+              _buildManifesto(isDesktop),
+              _buildGlobalPresence(isDesktop),
+              _buildMissionCards(isDesktop),
+              _buildStats(isDesktop),
+              _buildTeamGrid(isDesktop),
+              _buildComplianceBadges(isDesktop),
+              _buildTimeline(isDesktop),
+              _buildCTA(isDesktop),
+              const MarketingFooter(),
+            ],
+          ),
         ),
       ),
     );
@@ -59,11 +63,11 @@ class AboutScreen extends StatelessWidget {
                 'Democratizing\nInstitutional Finance',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.spaceGrotesk(
-                  fontSize: isDesktop ? 64 : 40,
+                  fontSize: isDesktop ? 80 : 56,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                   height: 1.0,
-                  letterSpacing: -2,
+                  letterSpacing: -3,
                 ),
               ).animate().fade(delay: 100.ms).slideY(begin: 0.1),
               const SizedBox(height: 24),
@@ -76,6 +80,84 @@ class AboutScreen extends StatelessWidget {
                   height: 1.7,
                 ),
               ).animate().fade(delay: 200.ms),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlobalPresence(bool isDesktop) {
+    return Container(
+      width: double.infinity,
+      height: 400,
+      margin: const EdgeInsets.symmetric(vertical: 40),
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Radar sweep
+              Positioned.fill(
+                child: TweenAnimationBuilder(
+                  tween: Tween<double>(begin: 0, end: 1),
+                  duration: const Duration(seconds: 4),
+                  builder: (context, val, child) {
+                    return Transform.rotate(
+                      angle: val * 2 * 3.14159,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: SweepGradient(
+                            colors: [
+                              Colors.transparent,
+                              DexColors.primary.withOpacity(0.05),
+                              DexColors.primary.withOpacity(0.4),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.8, 1.0, 1.0],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Map placeholder dots
+              ...List.generate(12, (index) {
+                return Positioned(
+                  left: 200 + (index * 45.0) % 600,
+                  top: 100 + (index * 60.0) % 200,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: DexColors.primary,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: DexColors.primary.withOpacity(0.6),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                  ).animate(onPlay: (c) => c.repeat()).fade(duration: 1000.ms, begin: 0.2, end: 1.0).then().fade(duration: 1000.ms, begin: 1.0, end: 0.2),
+                );
+              }),
+              Positioned(
+                bottom: 20,
+                child: Text(
+                  '14 GLOBAL LIQUIDITY NODES',
+                  style: GoogleFonts.orbitron(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 4,
+                    color: DexColors.primary,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

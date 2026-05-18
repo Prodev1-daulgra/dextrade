@@ -7,6 +7,7 @@ import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/pulse_dot.dart';
+import '../../widgets/animated_mesh_gradient.dart';
 import 'marketing_shell.dart';
 
 class FeaturesScreen extends StatefulWidget {
@@ -27,18 +28,20 @@ class _FeaturesScreenState extends State<FeaturesScreen>
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 120),
-            _buildHero(isDesktop),
-            _buildTabbedShowcase(isDesktop),
-            _buildBentoGrid(isDesktop),
-            _buildSecuritySection(isDesktop),
-            _buildTechSpecs(isDesktop),
-            _buildCTABanner(isDesktop),
-            const MarketingFooter(),
-          ],
+      body: AnimatedMeshGradient(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 120),
+              _buildHero(isDesktop),
+              _buildContinuousShowcase(isDesktop),
+              _buildBentoGrid(isDesktop),
+              _buildSecuritySection(isDesktop),
+              _buildTechSpecs(isDesktop),
+              _buildCTABanner(isDesktop),
+              const MarketingFooter(),
+            ],
+          ),
         ),
       ),
     );
@@ -83,11 +86,11 @@ class _FeaturesScreenState extends State<FeaturesScreen>
                 'Built for\nInstitutional Speed',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.spaceGrotesk(
-                  fontSize: isDesktop ? 64 : 40,
+                  fontSize: isDesktop ? 80 : 56,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                   height: 1.0,
-                  letterSpacing: -2,
+                  letterSpacing: -3,
                 ),
               ).animate().fade(delay: 100.ms).slideY(begin: 0.1),
               const SizedBox(height: 20),
@@ -107,7 +110,7 @@ class _FeaturesScreenState extends State<FeaturesScreen>
     );
   }
 
-  Widget _buildTabbedShowcase(bool isDesktop) {
+  Widget _buildContinuousShowcase(bool isDesktop) {
     final contents = [
       _TabContent(
         title: 'Microsecond Matching Engine',
@@ -135,8 +138,6 @@ class _FeaturesScreenState extends State<FeaturesScreen>
       ),
     ];
 
-    final content = contents[_activeTab];
-
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
@@ -147,65 +148,10 @@ class _FeaturesScreenState extends State<FeaturesScreen>
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
           child: Column(
-            children: [
-              // Tab buttons
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  color: Colors.white.withOpacity(0.03),
-                  border: Border.all(color: Colors.white.withOpacity(0.06)),
-                ),
-                child: Row(
-                  mainAxisSize: isDesktop ? MainAxisSize.min : MainAxisSize.max,
-                  children: List.generate(_tabs.length, (i) {
-                    final active = i == _activeTab;
-                    return Expanded(
-                      flex: isDesktop ? 0 : 1,
-                      child: GestureDetector(
-                        onTap: () => setState(() => _activeTab = i),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isDesktop ? 28 : 12,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: active
-                                ? DexColors.primary.withOpacity(0.12)
-                                : Colors.transparent,
-                            border: active
-                                ? Border.all(
-                                    color: DexColors.primary.withOpacity(0.2),
-                                  )
-                                : null,
-                          ),
-                          child: Text(
-                            _tabs[i],
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.spaceGrotesk(
-                              fontSize: isDesktop ? 13 : 11,
-                              fontWeight: active
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
-                              color: active
-                                  ? DexColors.primary
-                                  : Colors.white38,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-              const SizedBox(height: 40),
-              // Content card
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 350),
+            children: contents.map((content) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 60),
                 child: GlassCard(
-                  key: ValueKey(_activeTab),
                   padding: EdgeInsets.all(isDesktop ? 40 : 24),
                   borderRadius: 24,
                   borderColor: content.color.withOpacity(0.12),
@@ -217,20 +163,20 @@ class _FeaturesScreenState extends State<FeaturesScreen>
                               flex: 3,
                               child: _buildTabContentBody(content, isDesktop),
                             ),
-                            const SizedBox(width: 40),
+                            const SizedBox(width: 60),
                             Expanded(flex: 2, child: _buildTabStats(content)),
                           ],
                         )
                       : Column(
                           children: [
                             _buildTabContentBody(content, isDesktop),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 32),
                             _buildTabStats(content),
                           ],
                         ),
                 ),
-              ),
-            ],
+              ).animate().fade().slideY(begin: 0.1);
+            }).toList(),
           ),
         ),
       ),

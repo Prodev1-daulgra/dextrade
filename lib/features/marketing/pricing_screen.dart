@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
+import '../../widgets/animated_mesh_gradient.dart';
 import 'marketing_shell.dart';
 
 class PricingScreen extends StatefulWidget {
@@ -23,17 +24,19 @@ class _PricingScreenState extends State<PricingScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 120),
-            _buildHero(isDesktop),
-            _buildPricingCards(isDesktop),
-            _buildComparisonTable(isDesktop),
-            _buildFAQ(isDesktop),
-            _buildCTA(isDesktop),
-            const MarketingFooter(),
-          ],
+      body: AnimatedMeshGradient(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 120),
+              _buildHero(isDesktop),
+              _buildPricingCards(isDesktop),
+              _buildComparisonTable(isDesktop),
+              _buildFAQ(isDesktop),
+              _buildCTA(isDesktop),
+              const MarketingFooter(),
+            ],
+          ),
         ),
       ),
     );
@@ -65,11 +68,11 @@ class _PricingScreenState extends State<PricingScreen> {
                 'Scale Without\nSurprise Costs',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.spaceGrotesk(
-                  fontSize: isDesktop ? 56 : 36,
+                  fontSize: isDesktop ? 80 : 56,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                   height: 1.05,
-                  letterSpacing: -2,
+                  letterSpacing: -3,
                 ),
               ).animate().fade(delay: 100.ms).slideY(begin: 0.1),
               const SizedBox(height: 16),
@@ -272,37 +275,10 @@ class _PricingScreenState extends State<PricingScreen> {
   Widget _buildTierCard(_Tier tier, bool isDesktop) {
     final price = _isYearly ? tier.yearlyPrice : tier.monthlyPrice;
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: tier.highlighted
-            ? LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  DexColors.primary.withOpacity(0.12),
-                  Colors.transparent,
-                ],
-              )
-            : null,
-        border: Border.all(
-          color: tier.highlighted
-              ? DexColors.primary.withOpacity(0.25)
-              : Colors.white.withOpacity(0.06),
-          width: tier.highlighted ? 1.5 : 1,
-        ),
-        boxShadow: tier.highlighted
-            ? [
-                BoxShadow(
-                  color: DexColors.primary.withOpacity(0.08),
-                  blurRadius: 40,
-                  offset: const Offset(0, 10),
-                ),
-              ]
-            : null,
-        color: tier.highlighted ? null : Colors.white.withOpacity(0.02),
-      ),
+    return GlassCard(
       padding: const EdgeInsets.all(28),
+      borderRadius: 24,
+      borderColor: tier.highlighted ? DexColors.primary.withOpacity(0.5) : Colors.white.withOpacity(0.06),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

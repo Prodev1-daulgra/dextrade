@@ -8,6 +8,7 @@ import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/smooth_scroll_wrapper.dart';
+import '../../widgets/animated_mesh_gradient.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -109,9 +110,10 @@ class _LandingScreenState extends State<LandingScreen>
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SmoothScrollWrapper(
-        controller: _scrollController,
-        child: SingleChildScrollView(
+      body: AnimatedMeshGradient(
+        child: SmoothScrollWrapper(
+          controller: _scrollController,
+          child: SingleChildScrollView(
           controller: _scrollController,
           child: Column(
             children: [
@@ -191,11 +193,11 @@ class _LandingScreenState extends State<LandingScreen>
           'Trade with Sovereign Authority.',
           textAlign: isMobile ? TextAlign.center : TextAlign.left,
           style: GoogleFonts.spaceGrotesk(
-            fontSize: isMobile ? 48 : 82,
+            fontSize: isMobile ? 56 : 96,
             fontWeight: FontWeight.w900,
             color: Colors.white,
             height: 1.0,
-            letterSpacing: -2.5,
+            letterSpacing: -3.0,
           ),
         ).animate().fade(delay: 100.ms).slideY(begin: 0.1),
         const SizedBox(height: 24),
@@ -309,6 +311,35 @@ class _LandingScreenState extends State<LandingScreen>
             ),
             child: Stack(
               children: [
+                // Abstract 3D Hero Image
+                Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Opacity(
+                      opacity: 0.6,
+                      child: Image.asset(
+                        'assets/images/hero_abstract_1779065799138.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                // Overlay Gradient
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.1),
+                          Colors.black.withOpacity(0.8),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 // Simulated Chart Lines
                 Positioned.fill(
                   child: CustomPaint(painter: _MockChartPainter()),
@@ -562,6 +593,7 @@ class _LandingScreenState extends State<LandingScreen>
                             'Geographically distributed signing nodes.',
                             Icons.shield,
                             DexColors.success,
+                            imagePath: 'assets/images/bento_security_1779065769073.png',
                           ),
                         ),
                         const SizedBox(width: 24),
@@ -572,6 +604,7 @@ class _LandingScreenState extends State<LandingScreen>
                             'Zero-slippage matching.',
                             Icons.speed,
                             DexColors.primary,
+                            imagePath: 'assets/images/bento_routing_1779065754132.png',
                           ),
                         ),
                       ],
@@ -596,6 +629,7 @@ class _LandingScreenState extends State<LandingScreen>
                             'Automated strategy replication.',
                             Icons.people,
                             DexColors.info,
+                            imagePath: 'assets/images/bento_analytics_1779065784478.png',
                           ),
                         ),
                       ],
@@ -610,6 +644,7 @@ class _LandingScreenState extends State<LandingScreen>
                       'Geographically distributed signing nodes.',
                       Icons.shield,
                       DexColors.success,
+                      imagePath: 'assets/images/bento_security_1779065769073.png',
                     ),
                     const SizedBox(height: 16),
                     _buildBentoCard(
@@ -617,6 +652,7 @@ class _LandingScreenState extends State<LandingScreen>
                       'Zero-slippage matching.',
                       Icons.speed,
                       DexColors.primary,
+                      imagePath: 'assets/images/bento_routing_1779065754132.png',
                     ),
                     const SizedBox(height: 16),
                     _buildBentoCard(
@@ -631,6 +667,7 @@ class _LandingScreenState extends State<LandingScreen>
                       'Automated strategy replication.',
                       Icons.people,
                       DexColors.info,
+                      imagePath: 'assets/images/bento_analytics_1779065784478.png',
                     ),
                   ],
                 ),
@@ -646,38 +683,60 @@ class _LandingScreenState extends State<LandingScreen>
     String desc,
     IconData icon,
     Color color,
+    {String? imagePath}
   ) {
     return GlassCard(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.zero,
       borderRadius: 24,
       borderColor: color.withOpacity(0.1),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: color.withOpacity(0.2)),
+          if (imagePath != null)
+            Positioned(
+              right: -40,
+              bottom: -40,
+              width: 300,
+              height: 300,
+              child: Opacity(
+                opacity: 0.7,
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            title,
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            desc,
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 14,
-              color: DexColors.textSecondary,
+          Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: color.withOpacity(0.2)),
+                  ),
+                  child: Icon(icon, color: color, size: 24),
+                ),
+                const SizedBox(height: 120),
+                Text(
+                  title,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  desc,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 14,
+                    color: DexColors.textSecondary,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
