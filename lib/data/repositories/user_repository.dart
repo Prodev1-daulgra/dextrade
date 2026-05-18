@@ -7,7 +7,10 @@ class UserRepository {
   UserRepository(this._client);
 
   Future<List<UserModel>> getAllUsers() async {
-    final res = await _client.from('users').select().order('created_at', ascending: false);
+    final res = await _client
+        .from('users')
+        .select()
+        .order('created_at', ascending: false);
     return (res as List).map((e) => UserModel.fromJson(e)).toList();
   }
 
@@ -16,7 +19,10 @@ class UserRepository {
   }
 
   Future<void> suspendUser(String userId) async {
-    await _client.from('users').update({'status': 'suspended'}).eq('id', userId);
+    await _client
+        .from('users')
+        .update({'status': 'suspended'})
+        .eq('id', userId);
   }
 
   Future<void> activateUser(String userId) async {

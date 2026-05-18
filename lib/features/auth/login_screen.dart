@@ -76,14 +76,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       _loading = true;
       _error = null;
     });
-    final err = await ref.read(authProvider.notifier).login(_emailCtrl.text.trim(), _passCtrl.text);
+    final err = await ref
+        .read(authProvider.notifier)
+        .login(_emailCtrl.text.trim(), _passCtrl.text);
     if (mounted) {
       setState(() => _loading = false);
       if (err != null) {
         setState(() => _error = err);
         DexToast.showPushNotification(context, title: 'Error', body: err);
       } else {
-        DexToast.showPushNotification(context, title: 'Success', body: 'Authentication Successful. Syncing Node...');
+        DexToast.showPushNotification(
+          context,
+          title: 'Success',
+          body: 'Authentication Successful. Syncing Node...',
+        );
       }
     }
   }
@@ -111,7 +117,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   // 1. Drifting Star Particles Background + Ambient Glow Blobs
                   Positioned.fill(
                     child: AnimatedBuilder(
-                      animation: Listenable.merge([_bgController, _starController]),
+                      animation: Listenable.merge([
+                        _bgController,
+                        _starController,
+                      ]),
                       builder: (context, _) {
                         return CustomPaint(
                           painter: _AuthBackgroundPainter(
@@ -129,7 +138,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   // 2. Interactive Form Content
                   Center(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 28,
+                        vertical: 32,
+                      ),
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 440),
                         child: Column(
@@ -138,7 +150,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           children: [
                             // Premium Brand Watermark (Space Grotesk & Orbitron combination)
                             Padding(
-                              padding: const EdgeInsets.only(left: 8, bottom: 32),
+                              padding: const EdgeInsets.only(
+                                left: 8,
+                                bottom: 32,
+                              ),
                               child: Row(
                                 children: [
                                   Container(
@@ -153,7 +168,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: DexColors.primary.withOpacity(0.3),
+                                          color: DexColors.primary.withOpacity(
+                                            0.3,
+                                          ),
                                           blurRadius: 15,
                                         ),
                                       ],
@@ -171,7 +188,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                   ),
                                   const SizedBox(width: 14),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'DEXTRADE',
@@ -233,7 +251,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       fontSize: 9,
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5,
-                                      color: _emailHasFocus ? DexColors.accent : DexColors.textMuted,
+                                      color: _emailHasFocus
+                                          ? DexColors.accent
+                                          : DexColors.textMuted,
                                     ),
                                   ),
                                   const SizedBox(height: 10),
@@ -251,10 +271,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       boxShadow: _emailHasFocus
                                           ? [
                                               BoxShadow(
-                                                color: DexColors.accent.withOpacity(0.1),
+                                                color: DexColors.accent
+                                                    .withOpacity(0.1),
                                                 blurRadius: 12,
                                                 spreadRadius: 1,
-                                              )
+                                              ),
                                             ]
                                           : [],
                                     ),
@@ -272,7 +293,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                         prefixIcon: Icon(
                                           Icons.alternate_email_rounded,
                                           size: 20,
-                                          color: _emailHasFocus ? DexColors.accent : DexColors.textMuted,
+                                          color: _emailHasFocus
+                                              ? DexColors.accent
+                                              : DexColors.textMuted,
                                         ),
                                         border: InputBorder.none,
                                         enabledBorder: InputBorder.none,
@@ -284,7 +307,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
                                   // Password input
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         'ACCESS KEYPASS',
@@ -292,7 +316,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                           fontSize: 9,
                                           fontWeight: FontWeight.w900,
                                           letterSpacing: 1.5,
-                                          color: _passHasFocus ? DexColors.primaryGlow : DexColors.textMuted,
+                                          color: _passHasFocus
+                                              ? DexColors.primaryGlow
+                                              : DexColors.textMuted,
                                         ),
                                       ),
                                       GestureDetector(
@@ -300,7 +326,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                           DexToast.showPushNotification(
                                             context,
                                             title: 'Recovery Initiated',
-                                            body: 'Node key recovery system triggered. Check configured notification pathways.',
+                                            body:
+                                                'Node key recovery system triggered. Check configured notification pathways.',
                                           );
                                         },
                                         child: Text(
@@ -329,10 +356,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       boxShadow: _passHasFocus
                                           ? [
                                               BoxShadow(
-                                                color: DexColors.primary.withOpacity(0.12),
+                                                color: DexColors.primary
+                                                    .withOpacity(0.12),
                                                 blurRadius: 12,
                                                 spreadRadius: 1,
-                                              )
+                                              ),
                                             ]
                                           : [],
                                     ),
@@ -348,19 +376,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       decoration: InputDecoration(
                                         fillColor: Colors.transparent,
                                         hintText: '••••••••',
-                                        hintStyle: GoogleFonts.jetBrainsMono(letterSpacing: 4.0),
+                                        hintStyle: GoogleFonts.jetBrainsMono(
+                                          letterSpacing: 4.0,
+                                        ),
                                         prefixIcon: Icon(
                                           Icons.lock_outline_rounded,
                                           size: 20,
-                                          color: _passHasFocus ? DexColors.primary : DexColors.textMuted,
+                                          color: _passHasFocus
+                                              ? DexColors.primary
+                                              : DexColors.textMuted,
                                         ),
                                         suffixIcon: IconButton(
                                           icon: Icon(
-                                            _obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                                            _obscure
+                                                ? Icons.visibility_off_rounded
+                                                : Icons.visibility_rounded,
                                             size: 20,
                                             color: DexColors.textMuted,
                                           ),
-                                          onPressed: () => setState(() => _obscure = !_obscure),
+                                          onPressed: () => setState(
+                                            () => _obscure = !_obscure,
+                                          ),
                                         ),
                                         border: InputBorder.none,
                                         enabledBorder: InputBorder.none,
@@ -373,15 +409,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                   if (_error != null) ...[
                                     const SizedBox(height: 20),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(14),
-                                        color: DexColors.error.withOpacity(0.08),
-                                        border: Border.all(color: DexColors.error.withOpacity(0.2)),
+                                        color: DexColors.error.withOpacity(
+                                          0.08,
+                                        ),
+                                        border: Border.all(
+                                          color: DexColors.error.withOpacity(
+                                            0.2,
+                                          ),
+                                        ),
                                       ),
                                       child: Row(
                                         children: [
-                                          const Icon(Icons.error_outline_rounded, color: DexColors.error, size: 18),
+                                          const Icon(
+                                            Icons.error_outline_rounded,
+                                            color: DexColors.error,
+                                            size: 18,
+                                          ),
                                           const SizedBox(width: 10),
                                           Expanded(
                                             child: Text(
@@ -425,7 +474,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                             color: DexColors.accent,
                                             fontWeight: FontWeight.w800,
                                             fontSize: 13,
-                                            decoration: TextDecoration.underline,
+                                            decoration:
+                                                TextDecoration.underline,
                                           ),
                                         ),
                                       ),
@@ -471,9 +521,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         ),
 
                         // Stunning rotating 3D custom nodes
-                        const Center(
-                          child: Stunning3DGraphic(),
-                        ),
+                        const Center(child: Stunning3DGraphic()),
 
                         // Premium bottom copy panel
                         Positioned(
@@ -484,11 +532,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   color: DexColors.primary.withOpacity(0.12),
-                                  border: Border.all(color: DexColors.primary.withOpacity(0.25)),
+                                  border: Border.all(
+                                    color: DexColors.primary.withOpacity(0.25),
+                                  ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -625,14 +678,18 @@ class _AuthBackgroundPainter extends CustomPainter {
       if (distToMouse < 280 && mousePos != Offset.zero) {
         final double attractionStrength = (1.0 - (distToMouse / 280.0)) * 25.0;
         final Offset diff = mousePos - Offset(finalX, finalY);
-        final Offset direction = diff.distance == 0 ? Offset.zero : diff / diff.distance;
+        final Offset direction = diff.distance == 0
+            ? Offset.zero
+            : diff / diff.distance;
         finalX += direction.dx * attractionStrength;
         finalY += direction.dy * attractionStrength;
       }
 
       // Sparkle pulse
-      final double sparkle = math.sin((starValue * 2 * math.pi * 3) + i) * 0.5 + 0.5;
-      final double radius = (1.2 + random.nextDouble() * 2.0) * (0.8 + sparkle * 0.4);
+      final double sparkle =
+          math.sin((starValue * 2 * math.pi * 3) + i) * 0.5 + 0.5;
+      final double radius =
+          (1.2 + random.nextDouble() * 2.0) * (0.8 + sparkle * 0.4);
 
       // Gradient color between primary/accent based on index
       final Color color = Color.lerp(
@@ -729,7 +786,8 @@ class _3DGraphicPainter extends CustomPainter {
 
     for (int i = 0; i < nodeCount; i++) {
       // Calculate coordinates around 3D sphere shell using sine/cosine projection
-      final double phi = (i * math.pi / (nodeCount / 2)) + (progress * 2 * math.pi * 0.5);
+      final double phi =
+          (i * math.pi / (nodeCount / 2)) + (progress * 2 * math.pi * 0.5);
       final double theta = (i * math.pi / 5.0) + (progress * 2 * math.pi * 0.2);
 
       // Coordinate projections
@@ -753,7 +811,9 @@ class _3DGraphicPainter extends CustomPainter {
 
       // Draw subtle connectors between sequential nodes
       if (i > 0) {
-        linePaint.color = DexColors.primary.withOpacity(0.05 + depthScale * 0.1);
+        linePaint.color = DexColors.primary.withOpacity(
+          0.05 + depthScale * 0.1,
+        );
         canvas.drawLine(nodeOffsets[i - 1], projectedOffset, linePaint);
       }
 
@@ -761,14 +821,17 @@ class _3DGraphicPainter extends CustomPainter {
 
       // Subtle pulse rings around node vectors
       if (i % 3 == 0) {
-        final double pulse = math.sin((progress * 2 * math.pi * 2) + i) * 0.5 + 0.5;
+        final double pulse =
+            math.sin((progress * 2 * math.pi * 2) + i) * 0.5 + 0.5;
         canvas.drawCircle(
           projectedOffset,
           sizeMultiplier + pulse * 12.0,
           Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 1.0
-            ..color = DexColors.accent.withOpacity((1.0 - pulse) * 0.3 * depthScale),
+            ..color = DexColors.accent.withOpacity(
+              (1.0 - pulse) * 0.3 * depthScale,
+            ),
         );
       }
     }
@@ -777,22 +840,31 @@ class _3DGraphicPainter extends CustomPainter {
     for (int i = 0; i < 4; i++) {
       final double angle = (progress * 2 * math.pi) + (i * math.pi / 2);
       final double offsetDist = 12.0 * (4 - i);
-      final Offset ringOffset = Offset(math.cos(angle) * offsetDist, math.sin(angle) * offsetDist);
+      final Offset ringOffset = Offset(
+        math.cos(angle) * offsetDist,
+        math.sin(angle) * offsetDist,
+      );
 
       final double currentRadius = baseRadius - (i * 16.0);
 
       // Chromatic Swept Gradient
       final ringPaint = Paint()
         ..style = PaintingStyle.fill
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            DexColors.primary.withOpacity(0.68 - (i * 0.12)),
-            DexColors.accent.withOpacity(0.32 - (i * 0.08)),
-            Colors.white.withOpacity(0.01),
-          ],
-        ).createShader(Rect.fromCircle(center: center + ringOffset, radius: currentRadius));
+        ..shader =
+            LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                DexColors.primary.withOpacity(0.68 - (i * 0.12)),
+                DexColors.accent.withOpacity(0.32 - (i * 0.08)),
+                Colors.white.withOpacity(0.01),
+              ],
+            ).createShader(
+              Rect.fromCircle(
+                center: center + ringOffset,
+                radius: currentRadius,
+              ),
+            );
 
       // Layered drop shadows
       canvas.drawCircle(
@@ -809,16 +881,22 @@ class _3DGraphicPainter extends CustomPainter {
       final highlightPaint = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withOpacity(0.55),
-            Colors.transparent,
-            DexColors.accent.withOpacity(0.3),
-            Colors.transparent,
-          ],
-        ).createShader(Rect.fromCircle(center: center + ringOffset, radius: currentRadius));
+        ..shader =
+            LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withOpacity(0.55),
+                Colors.transparent,
+                DexColors.accent.withOpacity(0.3),
+                Colors.transparent,
+              ],
+            ).createShader(
+              Rect.fromCircle(
+                center: center + ringOffset,
+                radius: currentRadius,
+              ),
+            );
 
       canvas.drawCircle(center + ringOffset, currentRadius, highlightPaint);
     }

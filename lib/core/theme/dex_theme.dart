@@ -58,7 +58,10 @@ class DexTheme {
         ),
         hintStyle: DexTypography.bodyMedium.copyWith(color: DexColors.textDim),
         labelStyle: DexTypography.label,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 18,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -66,7 +69,9 @@ class DexTheme {
           foregroundColor: DexColors.background,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: DexTypography.buttonLarge,
         ),
       ),
@@ -75,7 +80,9 @@ class DexTheme {
           foregroundColor: DexColors.textPrimary,
           side: const BorderSide(color: DexColors.border),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: DexTypography.button,
         ),
       ),

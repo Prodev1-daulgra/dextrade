@@ -47,13 +47,17 @@ class TransactionModel {
       amount: _toDouble(json['amount']),
       cryptoSymbol: json['crypto_symbol'] as String?,
       stockSymbol: json['stock_symbol'] as String?,
-      cryptoAmount: json['crypto_amount'] != null ? _toDouble(json['crypto_amount']) : null,
+      cryptoAmount: json['crypto_amount'] != null
+          ? _toDouble(json['crypto_amount'])
+          : null,
       shares: json['shares'] != null ? _toDouble(json['shares']) : null,
       status: json['status'] as String? ?? 'pending',
       notes: json['notes'] as String?,
       walletAddress: json['wallet_address'] as String?,
       reviewedBy: json['reviewed_by'] as String?,
-      reviewedAt: json['reviewed_at'] != null ? DateTime.parse(json['reviewed_at'] as String) : null,
+      reviewedAt: json['reviewed_at'] != null
+          ? DateTime.parse(json['reviewed_at'] as String)
+          : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );

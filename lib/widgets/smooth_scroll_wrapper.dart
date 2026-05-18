@@ -39,11 +39,11 @@ class _SmoothScrollWrapperState extends State<SmoothScrollWrapper> {
     // Only intercept mouse wheel signals on Web or Desktop platforms
     if (event is PointerScrollEvent && (kIsWeb || _isDesktopPlatform())) {
       final double delta = event.scrollDelta.dy * widget.scrollSpeed;
-      
+
       if (!widget.controller.hasClients) return;
 
       final double maxScroll = widget.controller.position.maxScrollExtent;
-      
+
       // If we are starting a scroll, sync current position first
       if (!_isAnimating) {
         _targetOffset = widget.controller.offset;
@@ -75,10 +75,7 @@ class _SmoothScrollWrapperState extends State<SmoothScrollWrapper> {
   Widget build(BuildContext context) {
     // Wrap with Listener only on Web/Desktop viewports to preserve native touch dragging on mobile
     if (kIsWeb || _isDesktopPlatform()) {
-      return Listener(
-        onPointerSignal: _onPointerSignal,
-        child: widget.child,
-      );
+      return Listener(onPointerSignal: _onPointerSignal, child: widget.child);
     }
     return widget.child;
   }

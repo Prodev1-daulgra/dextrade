@@ -24,14 +24,21 @@ class CopyTradeRepository {
     return (res as List).map((e) => CopyTradeModel.fromJson(e)).toList();
   }
 
-  Future<CopyTradeModel> initializeMirror(String email, CopyTraderModel trader) async {
-    final res = await _client.from('copy_trades').insert({
-      'user_email': email,
-      'trader_id': trader.id,
-      'trader_name': trader.traderName,
-      'allocation': trader.minAllocation,
-      'status': 'pending',
-    }).select().single();
+  Future<CopyTradeModel> initializeMirror(
+    String email,
+    CopyTraderModel trader,
+  ) async {
+    final res = await _client
+        .from('copy_trades')
+        .insert({
+          'user_email': email,
+          'trader_id': trader.id,
+          'trader_name': trader.traderName,
+          'allocation': trader.minAllocation,
+          'status': 'pending',
+        })
+        .select()
+        .single();
     return CopyTradeModel.fromJson(res);
   }
 
@@ -40,25 +47,46 @@ class CopyTradeRepository {
   }
 
   Future<void> approveCopyTrade(String tradeId) async {
-    final tx = await _client.from('copy_trades').select().eq('id', tradeId).single();
-    if (tx['status'] != 'pending') throw Exception('Copy trade already ${tx['status']}');
+    final tx = await _client
+        .from('copy_trades')
+        .select()
+        .eq('id', tradeId)
+        .single();
+    if (tx['status'] != 'pending')
+      throw Exception('Copy trade already ${tx['status']}');
 
-    final bal = await _client.from('user_balances').select().eq('user_email', tx['user_email']).single();
+    final bal = await _client
+        .from('user_balances')
+        .select()
+        .eq('user_email', tx['user_email'])
+        .single();
     final amount = (tx['allocation'] as num).toDouble();
     final currentBalance = (bal['balance_usd'] as num).toDouble();
 
     if (currentBalance < amount) {
-      await _client.from('copy_trades').update({'status': 'rejected'}).eq('id', tradeId);
+      await _client
+          .from('copy_trades')
+          .update({'status': 'rejected'})
+          .eq('id', tradeId);
       throw Exception('Insufficient funds. Auto-rejected.');
     }
 
-    await _client.from('copy_trades')
-        .update({'status': 'approved', 'is_active': true, 'updated_at': DateTime.now().toIso8601String()})
+    await _client
+        .from('copy_trades')
+        .update({
+          'status': 'approved',
+          'is_active': true,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
         .eq('id', tradeId)
         .eq('status', 'pending');
 
-    await _client.from('user_balances')
-        .update({'balance_usd': currentBalance - amount, 'updated_at': DateTime.now().toIso8601String()})
+    await _client
+        .from('user_balances')
+        .update({
+          'balance_usd': currentBalance - amount,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
         .eq('id', bal['id']);
   }
 }

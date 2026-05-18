@@ -32,7 +32,8 @@ class FuturesPositionModel {
   bool get isOpen => status == 'open';
   bool get isLong => side == 'long';
 
-  double get pnlPercent => marginUsd > 0 ? (unrealizedPnl / marginUsd) * 100 : 0;
+  double get pnlPercent =>
+      marginUsd > 0 ? (unrealizedPnl / marginUsd) * 100 : 0;
 
   factory FuturesPositionModel.fromJson(Map<String, dynamic> json) {
     return FuturesPositionModel(

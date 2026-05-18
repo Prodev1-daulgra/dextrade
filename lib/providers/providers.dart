@@ -25,14 +25,30 @@ import '../data/models/stock_portfolio_model.dart';
 // ─── Repository Providers ───
 final supabaseProvider = Provider<SupabaseClient>((_) => SupabaseConfig.client);
 
-final authRepoProvider = Provider((ref) => AuthRepository(ref.read(supabaseProvider)));
-final balanceRepoProvider = Provider((ref) => BalanceRepository(ref.read(supabaseProvider)));
-final txRepoProvider = Provider((ref) => TransactionRepository(ref.read(supabaseProvider)));
-final copyTradeRepoProvider = Provider((ref) => CopyTradeRepository(ref.read(supabaseProvider)));
-final cryptoRepoProvider = Provider((ref) => CryptoRepository(ref.read(supabaseProvider)));
-final userRepoProvider = Provider((ref) => UserRepository(ref.read(supabaseProvider)));
-final portfolioRepoProvider = Provider((ref) => PortfolioRepository(ref.read(supabaseProvider)));
-final platformSettingsRepoProvider = Provider((ref) => PlatformSettingsRepository(ref.read(supabaseProvider)));
+final authRepoProvider = Provider(
+  (ref) => AuthRepository(ref.read(supabaseProvider)),
+);
+final balanceRepoProvider = Provider(
+  (ref) => BalanceRepository(ref.read(supabaseProvider)),
+);
+final txRepoProvider = Provider(
+  (ref) => TransactionRepository(ref.read(supabaseProvider)),
+);
+final copyTradeRepoProvider = Provider(
+  (ref) => CopyTradeRepository(ref.read(supabaseProvider)),
+);
+final cryptoRepoProvider = Provider(
+  (ref) => CryptoRepository(ref.read(supabaseProvider)),
+);
+final userRepoProvider = Provider(
+  (ref) => UserRepository(ref.read(supabaseProvider)),
+);
+final portfolioRepoProvider = Provider(
+  (ref) => PortfolioRepository(ref.read(supabaseProvider)),
+);
+final platformSettingsRepoProvider = Provider(
+  (ref) => PlatformSettingsRepository(ref.read(supabaseProvider)),
+);
 
 // ─── Auth State ───
 class AuthState {
@@ -74,7 +90,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     _authSub = _authRepo.authStateChanges.listen((event) async {
       if (event.session?.user != null) {
-        final profile = await _authRepo.getUserProfile(event.session!.user.email!);
+        final profile = await _authRepo.getUserProfile(
+          event.session!.user.email!,
+        );
         state = AuthState(user: profile, isLoading: false);
       } else {
         state = const AuthState(isLoading: false);
@@ -95,7 +113,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<String?> register(String email, String password, {String? fullName}) async {
+  Future<String?> register(
+    String email,
+    String password, {
+    String? fullName,
+  }) async {
     state = state.copyWith(isLoading: true);
     try {
       await _authRepo.register(email, password, fullName: fullName);
@@ -136,7 +158,10 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 });
 
 // ─── Balance Provider (Real-time) ───
-final balanceProvider = StreamProvider.family<BalanceModel?, String>((ref, email) {
+final balanceProvider = StreamProvider.family<BalanceModel?, String>((
+  ref,
+  email,
+) {
   final client = ref.read(supabaseProvider);
   return client
       .from('user_balances')
@@ -149,15 +174,18 @@ final balanceProvider = StreamProvider.family<BalanceModel?, String>((ref, email
 });
 
 // ─── Transaction Provider (Real-time) ───
-final transactionsProvider = StreamProvider.family<List<TransactionModel>, String>((ref, email) {
-  final client = ref.read(supabaseProvider);
-  return client
-      .from('transactions')
-      .stream(primaryKey: ['id'])
-      .eq('user_email', email)
-      .order('created_at', ascending: false)
-      .map((list) => list.map((e) => TransactionModel.fromJson(e)).toList());
-});
+final transactionsProvider =
+    StreamProvider.family<List<TransactionModel>, String>((ref, email) {
+      final client = ref.read(supabaseProvider);
+      return client
+          .from('transactions')
+          .stream(primaryKey: ['id'])
+          .eq('user_email', email)
+          .order('created_at', ascending: false)
+          .map(
+            (list) => list.map((e) => TransactionModel.fromJson(e)).toList(),
+          );
+    });
 
 // ─── Crypto Provider ───
 final cryptosProvider = FutureProvider<List<CryptoModel>>((ref) async {
@@ -169,32 +197,48 @@ final copyTradersProvider = FutureProvider<List<CopyTraderModel>>((ref) async {
   return ref.read(copyTradeRepoProvider).getActiveTraders();
 });
 
-final userCopyTradesProvider = StreamProvider.family<List<CopyTradeModel>, String>((ref, email) {
-  final client = ref.read(supabaseProvider);
-  return client
-      .from('copy_trades')
-      .stream(primaryKey: ['id'])
-      .eq('user_email', email)
-      .order('created_at', ascending: false)
-      .map((list) => list.map((e) => CopyTradeModel.fromJson(e)).toList());
-});
+final userCopyTradesProvider =
+    StreamProvider.family<List<CopyTradeModel>, String>((ref, email) {
+      final client = ref.read(supabaseProvider);
+      return client
+          .from('copy_trades')
+          .stream(primaryKey: ['id'])
+          .eq('user_email', email)
+          .order('created_at', ascending: false)
+          .map((list) => list.map((e) => CopyTradeModel.fromJson(e)).toList());
+    });
 
 // ─── Portfolio Providers ───
-final portfolioProvider = StreamProvider.family<List<PortfolioModel>, String>((ref, email) {
+final portfolioProvider = StreamProvider.family<List<PortfolioModel>, String>((
+  ref,
+  email,
+) {
   return ref.read(portfolioRepoProvider).watchCryptoPortfolio(email);
 });
 
-final futuresProvider = FutureProvider.family<List<FuturesPositionModel>, String>((ref, email) async {
-  return ref.read(portfolioRepoProvider).getFuturesPositions(email);
-});
+final futuresProvider =
+    FutureProvider.family<List<FuturesPositionModel>, String>((
+      ref,
+      email,
+    ) async {
+      return ref.read(portfolioRepoProvider).getFuturesPositions(email);
+    });
 
-final optionsProvider = FutureProvider.family<List<OptionsPositionModel>, String>((ref, email) async {
-  return ref.read(portfolioRepoProvider).getOptionsPositions(email);
-});
+final optionsProvider =
+    FutureProvider.family<List<OptionsPositionModel>, String>((
+      ref,
+      email,
+    ) async {
+      return ref.read(portfolioRepoProvider).getOptionsPositions(email);
+    });
 
-final stockPortfolioProvider = FutureProvider.family<List<StockPortfolioModel>, String>((ref, email) async {
-  return ref.read(portfolioRepoProvider).getStockPortfolio(email);
-});
+final stockPortfolioProvider =
+    FutureProvider.family<List<StockPortfolioModel>, String>((
+      ref,
+      email,
+    ) async {
+      return ref.read(portfolioRepoProvider).getStockPortfolio(email);
+    });
 
 // ─── Superadmin: All Users ───
 final allUsersProvider = FutureProvider<List<UserModel>>((ref) async {

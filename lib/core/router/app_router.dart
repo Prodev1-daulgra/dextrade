@@ -15,6 +15,7 @@ import '../../features/settings/settings_screen.dart';
 import '../../features/state_admin/state_admin_screen.dart';
 import '../../features/superadmin/superadmin_screen.dart';
 import '../../app_shell.dart';
+import '../../widgets/dex_page_transition.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -44,25 +45,67 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      // Auth routes (no shell)
-      GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
-      GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
-      GoRoute(path: '/landing', builder: (_, __) => const LandingScreen()),
+      // Auth routes (no shell — cinematic transitions)
+      GoRoute(
+        path: '/login',
+        pageBuilder: (_, __) => DexPageTransition(child: const LoginScreen()),
+      ),
+      GoRoute(
+        path: '/register',
+        pageBuilder: (_, __) =>
+            DexPageTransition(child: const RegisterScreen()),
+      ),
+      GoRoute(
+        path: '/landing',
+        pageBuilder: (_, __) => DexPageTransition(child: const LandingScreen()),
+      ),
 
-      // App shell with navigation
+      // App shell with navigation — all child routes use cinematic transitions
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
         routes: [
-          GoRoute(path: '/', builder: (_, __) => const DashboardScreen()),
-          GoRoute(path: '/portfolio', builder: (_, __) => const PortfolioScreen()),
-          GoRoute(path: '/trade', builder: (_, __) => const TradeScreen()),
-          GoRoute(path: '/copy-trading', builder: (_, __) => const CopyTradingScreen()),
-          GoRoute(path: '/transactions', builder: (_, __) => const TransactionsScreen()),
-          GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+          GoRoute(
+            path: '/',
+            pageBuilder: (_, __) =>
+                DexPageTransition(child: const DashboardScreen()),
+          ),
+          GoRoute(
+            path: '/portfolio',
+            pageBuilder: (_, __) =>
+                DexPageTransition(child: const PortfolioScreen()),
+          ),
+          GoRoute(
+            path: '/trade',
+            pageBuilder: (_, __) =>
+                DexPageTransition(child: const TradeScreen()),
+          ),
+          GoRoute(
+            path: '/copy-trading',
+            pageBuilder: (_, __) =>
+                DexPageTransition(child: const CopyTradingScreen()),
+          ),
+          GoRoute(
+            path: '/transactions',
+            pageBuilder: (_, __) =>
+                DexPageTransition(child: const TransactionsScreen()),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (_, __) =>
+                DexPageTransition(child: const SettingsScreen()),
+          ),
           // Web-only routes
           if (kIsWeb) ...[
-            GoRoute(path: '/state-admin', builder: (_, __) => const StateAdminScreen()),
-            GoRoute(path: '/superadmin', builder: (_, __) => const SuperadminScreen()),
+            GoRoute(
+              path: '/state-admin',
+              pageBuilder: (_, __) =>
+                  DexPageTransition(child: const StateAdminScreen()),
+            ),
+            GoRoute(
+              path: '/superadmin',
+              pageBuilder: (_, __) =>
+                  DexPageTransition(child: const SuperadminScreen()),
+            ),
           ],
         ],
       ),

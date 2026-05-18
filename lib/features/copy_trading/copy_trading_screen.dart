@@ -51,7 +51,9 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
     String email,
     CopyTraderModel trader,
   ) {
-    final TextEditingController allocCtrl = TextEditingController(text: trader.minAllocation.toStringAsFixed(0));
+    final TextEditingController allocCtrl = TextEditingController(
+      text: trader.minAllocation.toStringAsFixed(0),
+    );
     double sliderVal = trader.minAllocation;
     bool processing = false;
 
@@ -69,7 +71,9 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFF06060C),
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(32),
+                  ),
                   border: Border.all(color: Colors.white.withOpacity(0.06)),
                 ),
                 padding: const EdgeInsets.all(32),
@@ -99,7 +103,11 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                             color: DexColors.primary.withOpacity(0.12),
                           ),
                           child: const Center(
-                            child: Icon(Icons.flash_on_rounded, color: DexColors.primary, size: 18),
+                            child: Icon(
+                              Icons.flash_on_rounded,
+                              color: DexColors.primary,
+                              size: 18,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 14),
@@ -142,11 +150,17 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.02),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withOpacity(0.08)),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.08),
+                        ),
                       ),
                       child: TextField(
                         controller: allocCtrl,
-                        style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.jetBrainsMono(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           suffixText: "USDT",
@@ -156,7 +170,10 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                           final double? numVal = double.tryParse(val);
                           if (numVal != null) {
                             setModalState(() {
-                              sliderVal = numVal.clamp(trader.minAllocation, 10000.0);
+                              sliderVal = numVal.clamp(
+                                trader.minAllocation,
+                                10000.0,
+                              );
                             });
                           }
                         },
@@ -190,11 +207,17 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                       children: [
                         Text(
                           'Minimum Required: \$${trader.minAllocation.toStringAsFixed(0)}',
-                          style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.white30),
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 12,
+                            color: Colors.white30,
+                          ),
                         ),
                         Text(
                           'Platform Cap: \$10,000',
-                          style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.white30),
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 12,
+                            color: Colors.white30,
+                          ),
                         ),
                       ],
                     ),
@@ -205,24 +228,40 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                       onPressed: processing
                           ? null
                           : () async {
-                              final double amt = double.tryParse(allocCtrl.text) ?? 0.0;
+                              final double amt =
+                                  double.tryParse(allocCtrl.text) ?? 0.0;
                               if (amt < trader.minAllocation) {
-                                DexToast.showPushNotification(context, title: 'Error', body: 'Allocation is below the trader\'s minimum limit.');
+                                DexToast.showPushNotification(
+                                  context,
+                                  title: 'Error',
+                                  body:
+                                      'Allocation is below the trader\'s minimum limit.',
+                                );
                                 return;
                               }
 
                               setModalState(() => processing = true);
                               try {
-                                await ref.read(copyTradeRepoProvider).initializeMirror(email, trader);
+                                await ref
+                                    .read(copyTradeRepoProvider)
+                                    .initializeMirror(email, trader);
                                 ref.invalidate(userCopyTradesProvider(email));
                                 if (context.mounted) {
                                   Navigator.pop(context);
-                                  DexToast.showPushNotification(context, title: 'Success', body: 'Mirror sync initialized!');
+                                  DexToast.showPushNotification(
+                                    context,
+                                    title: 'Success',
+                                    body: 'Mirror sync initialized!',
+                                  );
                                 }
                               } catch (e) {
                                 if (context.mounted) {
                                   setModalState(() => processing = false);
-                                  DexToast.showPushNotification(context, title: 'Error', body: e.toString());
+                                  DexToast.showPushNotification(
+                                    context,
+                                    title: 'Error',
+                                    body: e.toString(),
+                                  );
                                 }
                               }
                             },
@@ -246,7 +285,11 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
     final tradersAsync = ref.watch(copyTradersProvider);
     final copiesAsync = ref.watch(userCopyTradesProvider(email));
 
-    final riskColors = {'low': DexColors.success, 'medium': DexColors.warning, 'high': DexColors.error};
+    final riskColors = {
+      'low': DexColors.success,
+      'medium': DexColors.warning,
+      'high': DexColors.error,
+    };
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -283,11 +326,16 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: DexColors.success.withOpacity(0.08),
-                    border: Border.all(color: DexColors.success.withOpacity(0.18)),
+                    border: Border.all(
+                      color: DexColors.success.withOpacity(0.18),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -295,7 +343,10 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                       Container(
                         width: 6,
                         height: 6,
-                        decoration: const BoxDecoration(shape: BoxShape.circle, color: DexColors.success),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: DexColors.success,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -323,11 +374,18 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.people_outline_rounded, size: 48, color: Colors.white.withOpacity(0.2)),
+                          Icon(
+                            Icons.people_outline_rounded,
+                            size: 48,
+                            color: Colors.white.withOpacity(0.2),
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'No active matching nodes found in cluster.',
-                            style: GoogleFonts.spaceGrotesk(color: Colors.white30, fontSize: 14),
+                            style: GoogleFonts.spaceGrotesk(
+                              color: Colors.white30,
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       ),
@@ -339,196 +397,284 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                   children: List.generate(traders.length, (idx) {
                     final trader = traders[idx];
                     final activeCopies = copiesAsync.valueOrNull ?? [];
-                    final activeCopy = activeCopies.where((c) => c.traderId == trader.id).firstOrNull;
-                    final riskColor = riskColors[trader.riskLevel] ?? DexColors.warning;
+                    final activeCopy = activeCopies
+                        .where((c) => c.traderId == trader.id)
+                        .firstOrNull;
+                    final riskColor =
+                        riskColors[trader.riskLevel] ?? DexColors.warning;
                     final bool isSynced = activeCopy != null;
 
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(28),
-                          boxShadow: isSynced
-                              ? [
-                                  BoxShadow(
-                                    color: DexColors.primary.withOpacity(0.12),
-                                    blurRadius: 20,
-                                    spreadRadius: 1,
-                                  )
-                                ]
-                              : [],
-                        ),
-                        child: GlassCard(
-                          padding: const EdgeInsets.all(28),
-                          borderRadius: 28,
-                          borderColor: isSynced
-                              ? DexColors.primary.withOpacity(0.3)
-                              : Colors.white.withOpacity(0.04),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Row(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(28),
+                              boxShadow: isSynced
+                                  ? [
+                                      BoxShadow(
+                                        color: DexColors.primary.withOpacity(
+                                          0.12,
+                                        ),
+                                        blurRadius: 20,
+                                        spreadRadius: 1,
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                            child: GlassCard(
+                              padding: const EdgeInsets.all(28),
+                              borderRadius: 28,
+                              borderColor: isSynced
+                                  ? DexColors.primary.withOpacity(0.3)
+                                  : Colors.white.withOpacity(0.04),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Container(
-                                    width: 56,
-                                    height: 56,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                                      color: Color(
-                                        int.parse(trader.avatarColor.replaceFirst('#', '0xFF')),
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Color(
-                                            int.parse(trader.avatarColor.replaceFirst('#', '0xFF')),
-                                          ).withOpacity(0.2),
-                                          blurRadius: 10,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        trader.traderName.substring(0, 2).toUpperCase(),
-                                        style: GoogleFonts.orbitron(
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 18,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          trader.traderName,
-                                          style: GoogleFonts.spaceGrotesk(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w800,
-                                            color: Colors.white,
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 56,
+                                        height: 56,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
                                           ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(8),
-                                                color: DexColors.primary.withOpacity(0.08),
-                                              ),
-                                              child: Text(
-                                                trader.specialty ?? 'Institutional',
-                                                style: GoogleFonts.spaceGrotesk(
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w900,
-                                                  color: DexColors.primaryGlow,
-                                                ),
+                                          color: Color(
+                                            int.parse(
+                                              trader.avatarColor.replaceFirst(
+                                                '#',
+                                                '0xFF',
                                               ),
                                             ),
-                                            const SizedBox(width: 10),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(8),
-                                                color: riskColor.withOpacity(0.08),
-                                              ),
-                                              child: Text(
-                                                trader.riskLevel.toUpperCase(),
-                                                style: GoogleFonts.spaceGrotesk(
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w900,
-                                                  color: riskColor,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(
+                                                int.parse(
+                                                  trader.avatarColor
+                                                      .replaceFirst(
+                                                        '#',
+                                                        '0xFF',
+                                                      ),
                                                 ),
-                                              ),
+                                              ).withOpacity(0.2),
+                                              blurRadius: 10,
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 24),
-
-                              // Interactive Stats Layout + Neon Sparkline graph
-                              Row(
-                                children: [
-                                  _StatCol('Return', '+${trader.totalProfitPct.toStringAsFixed(1)}%', DexColors.success),
-                                  _StatCol('Win Rate', '${trader.winRate.toStringAsFixed(0)}%', Colors.white),
-                                  _StatCol('Followers', '${trader.followers}', Colors.white),
-                                  _StatCol('Min Required', '\$${trader.minAllocation.toStringAsFixed(0)}', DexColors.textSecondary),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-
-                              // Floating neon sparkline cumulative profit visual curve
-                              Container(
-                                height: 52,
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.005),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: CustomPaint(
-                                  size: Size.infinite,
-                                  painter: _SparklinePainter(
-                                    points: _getSparklinePoints(trader.id, trader.totalProfitPct),
-                                    lineColor: isSynced ? DexColors.primary : DexColors.success,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-
-                              if (isSynced)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16),
-                                    color: DexColors.primary.withOpacity(0.06),
-                                    border: Border.all(color: DexColors.primary.withOpacity(0.2)),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      // Pulsating green sync node
-                                      const _PulsatingNode(color: DexColors.success),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        'SYNCED TERMINAL ACTIVE',
-                                        style: GoogleFonts.orbitron(
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white70,
-                                          letterSpacing: 1.0,
+                                        child: Center(
+                                          child: Text(
+                                            trader.traderName
+                                                .substring(0, 2)
+                                                .toUpperCase(),
+                                            style: GoogleFonts.orbitron(
+                                              fontWeight: FontWeight.w900,
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                      const Spacer(),
-                                      Text(
-                                        '${activeCopy.profitLoss >= 0 ? '+' : ''}\$${activeCopy.profitLoss.toStringAsFixed(2)} P&L',
-                                        style: GoogleFonts.jetBrainsMono(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w900,
-                                          color: activeCopy.profitLoss >= 0 ? DexColors.successGlow : DexColors.errorGlow,
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              trader.traderName,
+                                              style: GoogleFonts.spaceGrotesk(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 4,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                    color: DexColors.primary
+                                                        .withOpacity(0.08),
+                                                  ),
+                                                  child: Text(
+                                                    trader.specialty ??
+                                                        'Institutional',
+                                                    style:
+                                                        GoogleFonts.spaceGrotesk(
+                                                          fontSize: 9,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          color: DexColors
+                                                              .primaryGlow,
+                                                        ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 4,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                    color: riskColor
+                                                        .withOpacity(0.08),
+                                                  ),
+                                                  child: Text(
+                                                    trader.riskLevel
+                                                        .toUpperCase(),
+                                                    style:
+                                                        GoogleFonts.spaceGrotesk(
+                                                          fontSize: 9,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          color: riskColor,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                )
-                              else
-                                GlowButton(
-                                  label: 'Initialize Mirror Sync',
-                                  icon: Icons.flash_on_rounded,
-                                  width: double.infinity,
-                                  onPressed: () => _openAllocationDialog(context, ref, email, trader),
-                                ),
-                            ],
+                                  const SizedBox(height: 24),
+
+                                  // Interactive Stats Layout + Neon Sparkline graph
+                                  Row(
+                                    children: [
+                                      _StatCol(
+                                        'Return',
+                                        '+${trader.totalProfitPct.toStringAsFixed(1)}%',
+                                        DexColors.success,
+                                      ),
+                                      _StatCol(
+                                        'Win Rate',
+                                        '${trader.winRate.toStringAsFixed(0)}%',
+                                        Colors.white,
+                                      ),
+                                      _StatCol(
+                                        'Followers',
+                                        '${trader.followers}',
+                                        Colors.white,
+                                      ),
+                                      _StatCol(
+                                        'Min Required',
+                                        '\$${trader.minAllocation.toStringAsFixed(0)}',
+                                        DexColors.textSecondary,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 20),
+
+                                  // Floating neon sparkline cumulative profit visual curve
+                                  Container(
+                                    height: 52,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.005),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: CustomPaint(
+                                      size: Size.infinite,
+                                      painter: _SparklinePainter(
+                                        points: _getSparklinePoints(
+                                          trader.id,
+                                          trader.totalProfitPct,
+                                        ),
+                                        lineColor: isSynced
+                                            ? DexColors.primary
+                                            : DexColors.success,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+
+                                  if (isSynced)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 18,
+                                        vertical: 14,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: DexColors.primary.withOpacity(
+                                          0.06,
+                                        ),
+                                        border: Border.all(
+                                          color: DexColors.primary.withOpacity(
+                                            0.2,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          // Pulsating green sync node
+                                          const _PulsatingNode(
+                                            color: DexColors.success,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            'SYNCED TERMINAL ACTIVE',
+                                            style: GoogleFonts.orbitron(
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.white70,
+                                              letterSpacing: 1.0,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Text(
+                                            '${activeCopy.profitLoss >= 0 ? '+' : ''}\$${activeCopy.profitLoss.toStringAsFixed(2)} P&L',
+                                            style: GoogleFonts.jetBrainsMono(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w900,
+                                              color: activeCopy.profitLoss >= 0
+                                                  ? DexColors.successGlow
+                                                  : DexColors.errorGlow,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  else
+                                    GlowButton(
+                                      label: 'Initialize Mirror Sync',
+                                      icon: Icons.flash_on_rounded,
+                                      width: double.infinity,
+                                      onPressed: () => _openAllocationDialog(
+                                        context,
+                                        ref,
+                                        email,
+                                        trader,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ).animate().fade(duration: 500.ms, delay: (idx * 100).ms).slideY(begin: 0.1, end: 0, curve: Curves.easeOutCubic);
+                        )
+                        .animate()
+                        .fade(duration: 500.ms, delay: (idx * 100).ms)
+                        .slideY(begin: 0.1, end: 0, curve: Curves.easeOutCubic);
                   }),
                 );
               },
@@ -544,7 +690,10 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
               error: (_, __) => Center(
                 child: Text(
                   'Failed to locate alignment traders.',
-                  style: GoogleFonts.spaceGrotesk(color: DexColors.error, fontSize: 14),
+                  style: GoogleFonts.spaceGrotesk(
+                    color: DexColors.error,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ),
@@ -676,7 +825,8 @@ class _SparklinePainter extends CustomPainter {
 
     // Map points coordinates
     double getX(int idx) => idx * stepX;
-    double getY(double val) => height - ((val - minVal) / (maxVal - minVal)) * (height - 8) - 4;
+    double getY(double val) =>
+        height - ((val - minVal) / (maxVal - minVal)) * (height - 8) - 4;
 
     path.moveTo(getX(0), getY(points.first));
     fillPath.moveTo(getX(0), height);
@@ -725,10 +875,7 @@ class _SparklinePainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [
-          lineColor.withOpacity(0.08),
-          lineColor.withOpacity(0.00),
-        ],
+        colors: [lineColor.withOpacity(0.08), lineColor.withOpacity(0.00)],
       ).createShader(Rect.fromLTWH(0, 0, width, height));
     canvas.drawPath(fillPath, fillPaint);
   }

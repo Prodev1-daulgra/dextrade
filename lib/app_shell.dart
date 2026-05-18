@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/dex_colors.dart';
 import 'core/theme/dex_typography.dart';
 import 'providers/providers.dart';
+import 'widgets/pulse_dot.dart';
 
 class AppShell extends ConsumerStatefulWidget {
   final Widget child;
@@ -49,6 +52,7 @@ class _AppShellState extends ConsumerState<AppShell> {
   void _onNavTap(int index) {
     final items = kIsWeb ? _webNavItems : _mobileNavItems;
     if (index < items.length) {
+      HapticFeedback.selectionClick();
       setState(() => _currentIndex = index);
       context.go(items[index].path);
     }
@@ -69,13 +73,22 @@ class _AppShellState extends ConsumerState<AppShell> {
     return Scaffold(
       body: widget.child,
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: DexColors.surface,
-          border: Border(top: BorderSide(color: DexColors.border, width: 1)),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0D0D18),
+          border: const Border(
+            top: BorderSide(color: DexColors.border, width: 0.5),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, -8),
+            ),
+          ],
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(_mobileNavItems.length, (i) {
@@ -99,7 +112,13 @@ class _AppShellState extends ConsumerState<AppShell> {
     var navItems = List<_NavItem>.from(_webNavItems);
     // Add superadmin link for the superadmin
     if (auth.isSuperAdmin) {
-      navItems.add(const _NavItem('/superadmin', Icons.admin_panel_settings_rounded, 'Super Admin'));
+      navItems.add(
+        const _NavItem(
+          '/superadmin',
+          Icons.admin_panel_settings_rounded,
+          'Super Admin',
+        ),
+      );
     }
 
     return Scaffold(
@@ -108,33 +127,99 @@ class _AppShellState extends ConsumerState<AppShell> {
           // Sidebar
           Container(
             width: 260,
-            decoration: const BoxDecoration(
-              color: DexColors.surface,
-              border: Border(right: BorderSide(color: DexColors.border, width: 1)),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D0D18),
+              border: const Border(
+                right: BorderSide(color: DexColors.border, width: 0.5),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 20,
+                  offset: const Offset(4, 0),
+                ),
+              ],
             ),
             child: Column(
               children: [
                 // Logo
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 12),
                   child: Row(
                     children: [
                       Container(
-                        width: 40, height: 40,
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          gradient: const LinearGradient(colors: DexColors.primaryGradient),
+                          gradient: const LinearGradient(
+                            colors: DexColors.primaryGradient,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: DexColors.primary.withValues(alpha: 0.3),
+                              blurRadius: 12,
+                              spreadRadius: -2,
+                            ),
+                          ],
                         ),
-                        child: const Center(
-                          child: Text('D', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18)),
+                        child: Center(
+                          child: Text(
+                            'D',
+                            style: GoogleFonts.spaceGrotesk(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Text('DEXTRADE', style: DexTypography.h3.copyWith(letterSpacing: 2)),
+                      Text(
+                        'DEXTRADE',
+                        style: GoogleFonts.orbitron(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: 2,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                // Status indicator
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: DexColors.success.withValues(alpha: 0.06),
+                      border: Border.all(
+                        color: DexColors.success.withValues(alpha: 0.12),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const PulseDot(color: DexColors.success, size: 6),
+                        const SizedBox(width: 8),
+                        Text(
+                          'SYSTEM ONLINE',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w900,
+                            color: DexColors.success,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 // Nav items
                 Expanded(
                   child: ListView.builder(
@@ -144,7 +229,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                       final item = navItems[i];
                       final isActive = _currentIndex == i;
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
+                        padding: const EdgeInsets.only(bottom: 2),
                         child: _WebNavButton(
                           icon: item.icon,
                           label: item.label,
@@ -158,7 +243,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                 // User info + logout
                 Container(
                   margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     color: DexColors.surfaceLight,
@@ -167,15 +252,26 @@ class _AppShellState extends ConsumerState<AppShell> {
                   child: Row(
                     children: [
                       Container(
-                        width: 36, height: 36,
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: DexColors.primary.withValues(alpha: 0.2),
+                          gradient: LinearGradient(
+                            colors: [
+                              DexColors.primary.withValues(alpha: 0.3),
+                              DexColors.primary.withValues(alpha: 0.15),
+                            ],
+                          ),
                         ),
                         child: Center(
                           child: Text(
-                            (auth.user?.fullName ?? auth.user?.email ?? 'U')[0].toUpperCase(),
-                            style: TextStyle(color: DexColors.primary, fontWeight: FontWeight.w800, fontSize: 14),
+                            (auth.user?.fullName ?? auth.user?.email ?? 'U')[0]
+                                .toUpperCase(),
+                            style: GoogleFonts.spaceGrotesk(
+                              color: DexColors.primary,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
@@ -186,20 +282,30 @@ class _AppShellState extends ConsumerState<AppShell> {
                           children: [
                             Text(
                               auth.user?.fullName ?? 'User',
-                              style: DexTypography.bodySmall.copyWith(color: DexColors.textPrimary, fontWeight: FontWeight.w700),
+                              style: DexTypography.bodySmall.copyWith(
+                                color: DexColors.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               auth.user?.email ?? '',
-                              style: DexTypography.caption.copyWith(fontSize: 9),
+                              style: DexTypography.caption.copyWith(
+                                fontSize: 9,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.logout_rounded, size: 18, color: DexColors.textMuted),
-                        onPressed: () => ref.read(authProvider.notifier).logout(),
+                        icon: const Icon(
+                          Icons.logout_rounded,
+                          size: 18,
+                          color: DexColors.textMuted,
+                        ),
+                        onPressed: () =>
+                            ref.read(authProvider.notifier).logout(),
                         tooltip: 'Logout',
                       ),
                     ],
@@ -210,10 +316,7 @@ class _AppShellState extends ConsumerState<AppShell> {
           ),
           // Main content
           Expanded(
-            child: Container(
-              color: DexColors.background,
-              child: widget.child,
-            ),
+            child: Container(color: DexColors.background, child: widget.child),
           ),
         ],
       ),
@@ -228,80 +331,205 @@ class _NavItem {
   const _NavItem(this.path, this.icon, this.label);
 }
 
-class _MobileNavButton extends StatelessWidget {
+// ─── Premium Mobile Nav Button ───
+
+class _MobileNavButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final bool isActive;
   final VoidCallback onTap;
 
-  const _MobileNavButton({required this.icon, required this.label, required this.isActive, required this.onTap});
+  const _MobileNavButton({
+    required this.icon,
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  State<_MobileNavButton> createState() => _MobileNavButtonState();
+}
+
+class _MobileNavButtonState extends State<_MobileNavButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pressController;
+  late Animation<double> _scaleAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _pressController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 80),
+    );
+    _scaleAnim = Tween<double>(begin: 1.0, end: 0.85).animate(
+      CurvedAnimation(parent: _pressController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pressController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTapDown: (_) => _pressController.forward(),
+      onTapUp: (_) {
+        _pressController.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _pressController.reverse(),
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: isActive ? DexColors.primary.withValues(alpha: 0.12) : Colors.transparent,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 22, color: isActive ? DexColors.primary : DexColors.textMuted),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: isActive ? DexColors.primary : DexColors.textMuted,
-                letterSpacing: 0.5,
+      child: AnimatedBuilder(
+        animation: _scaleAnim,
+        builder: (_, child) =>
+            Transform.scale(scale: _scaleAnim.value, child: child),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: widget.isActive
+                ? DexColors.primary.withValues(alpha: 0.12)
+                : Colors.transparent,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Active indicator dot
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                width: widget.isActive ? 16 : 0,
+                height: 3,
+                margin: const EdgeInsets.only(bottom: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: widget.isActive
+                      ? DexColors.primary
+                      : Colors.transparent,
+                  boxShadow: widget.isActive
+                      ? [
+                          BoxShadow(
+                            color: DexColors.primary.withValues(alpha: 0.5),
+                            blurRadius: 6,
+                          ),
+                        ]
+                      : [],
+                ),
               ),
-            ),
-          ],
+              Icon(
+                widget.icon,
+                size: 22,
+                color: widget.isActive
+                    ? DexColors.primary
+                    : DexColors.textMuted,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.label,
+                style: GoogleFonts.inter(
+                  fontSize: 9,
+                  fontWeight: widget.isActive
+                      ? FontWeight.w800
+                      : FontWeight.w600,
+                  color: widget.isActive
+                      ? DexColors.primary
+                      : DexColors.textMuted,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _WebNavButton extends StatelessWidget {
+// ─── Web Nav Button ───
+
+class _WebNavButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final bool isActive;
   final VoidCallback onTap;
 
-  const _WebNavButton({required this.icon, required this.label, required this.isActive, required this.onTap});
+  const _WebNavButton({
+    required this.icon,
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  State<_WebNavButton> createState() => _WebNavButtonState();
+}
+
+class _WebNavButtonState extends State<_WebNavButton> {
+  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+    final isActiveOrHovered = widget.isActive || _isHovered;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: isActive ? DexColors.primary.withValues(alpha: 0.1) : Colors.transparent,
-            border: isActive ? Border.all(color: DexColors.primary.withValues(alpha: 0.2)) : null,
+            color: widget.isActive
+                ? DexColors.primary.withValues(alpha: 0.1)
+                : _isHovered
+                ? Colors.white.withValues(alpha: 0.03)
+                : Colors.transparent,
+            border: widget.isActive
+                ? Border.all(color: DexColors.primary.withValues(alpha: 0.2))
+                : null,
           ),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: isActive ? DexColors.primary : DexColors.textMuted),
+              // Active indicator bar
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 3,
+                height: widget.isActive ? 20 : 0,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: widget.isActive
+                      ? DexColors.primary
+                      : Colors.transparent,
+                ),
+              ),
+              Icon(
+                widget.icon,
+                size: 20,
+                color: isActiveOrHovered
+                    ? DexColors.primary
+                    : DexColors.textMuted,
+              ),
               const SizedBox(width: 12),
               Text(
-                label,
-                style: TextStyle(
+                widget.label,
+                style: GoogleFonts.inter(
                   fontSize: 13,
-                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                  color: isActive ? DexColors.primary : DexColors.textSecondary,
+                  fontWeight: widget.isActive
+                      ? FontWeight.w700
+                      : FontWeight.w500,
+                  color: isActiveOrHovered
+                      ? Colors.white
+                      : DexColors.textSecondary,
                   letterSpacing: 0.3,
                 ),
               ),

@@ -36,7 +36,11 @@ class BalanceModel {
     return double.tryParse(v.toString()) ?? 0;
   }
 
-  BalanceModel copyWith({double? balanceUsd, double? totalInvested, double? totalProfitLoss}) {
+  BalanceModel copyWith({
+    double? balanceUsd,
+    double? totalInvested,
+    double? totalProfitLoss,
+  }) {
     return BalanceModel(
       id: id,
       userEmail: userEmail,

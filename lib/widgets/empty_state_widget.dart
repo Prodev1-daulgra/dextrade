@@ -55,7 +55,7 @@ class EmptyStateWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Text Content
             Text(
               title,
@@ -78,7 +78,7 @@ class EmptyStateWidget extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            
+
             // Optional CTA
             if (ctaLabel != null && onCtaPressed != null) ...[
               const SizedBox(height: 32),

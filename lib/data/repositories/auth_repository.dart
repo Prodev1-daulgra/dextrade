@@ -12,10 +12,17 @@ class AuthRepository {
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
   Future<AuthResponse> login(String email, String password) async {
-    return await _client.auth.signInWithPassword(email: email, password: password);
+    return await _client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
   }
 
-  Future<AuthResponse> register(String email, String password, {String? fullName}) async {
+  Future<AuthResponse> register(
+    String email,
+    String password, {
+    String? fullName,
+  }) async {
     return await _client.auth.signUp(
       email: email,
       password: password,
@@ -32,7 +39,11 @@ class AuthRepository {
   }
 
   Future<UserModel?> getUserProfile(String email) async {
-    final res = await _client.from('users').select().eq('email', email).maybeSingle();
+    final res = await _client
+        .from('users')
+        .select()
+        .eq('email', email)
+        .maybeSingle();
     if (res == null) return null;
     return UserModel.fromJson(res);
   }

@@ -24,19 +24,29 @@ class CryptoIcon extends StatelessWidget {
         // Fallback
       }
     }
-    
+
     // Default colors for common cryptos
     switch (symbol.toUpperCase()) {
-      case 'BTC': return const Color(0xFFF7931A);
-      case 'ETH': return const Color(0xFF627EEA);
-      case 'SOL': return const Color(0xFF14F195);
-      case 'USDT': return const Color(0xFF26A17B);
-      case 'USDC': return const Color(0xFF2775CA);
-      case 'BNB': return const Color(0xFFF3BA2F);
-      case 'XRP': return const Color(0xFF23292F);
-      case 'ADA': return const Color(0xFF0033AD);
-      case 'DOGE': return const Color(0xFFC2A633);
-      case 'DOT': return const Color(0xFFE6007A);
+      case 'BTC':
+        return const Color(0xFFF7931A);
+      case 'ETH':
+        return const Color(0xFF627EEA);
+      case 'SOL':
+        return const Color(0xFF14F195);
+      case 'USDT':
+        return const Color(0xFF26A17B);
+      case 'USDC':
+        return const Color(0xFF2775CA);
+      case 'BNB':
+        return const Color(0xFFF3BA2F);
+      case 'XRP':
+        return const Color(0xFF23292F);
+      case 'ADA':
+        return const Color(0xFF0033AD);
+      case 'DOGE':
+        return const Color(0xFFC2A633);
+      case 'DOT':
+        return const Color(0xFFE6007A);
       default:
         // Generate pseudo-random color based on symbol hash
         final hash = symbol.codeUnits.fold<int>(0, (prev, curr) => prev + curr);
@@ -48,7 +58,7 @@ class CryptoIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _getColor();
-    
+
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return Container(
         width: size,
@@ -77,10 +87,7 @@ class CryptoIcon extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: color.withValues(alpha: 0.3)),
         boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.2),
-            blurRadius: size / 4,
-          ),
+          BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: size / 4),
         ],
       ),
       child: Center(

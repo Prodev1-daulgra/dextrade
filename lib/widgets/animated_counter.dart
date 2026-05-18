@@ -27,29 +27,39 @@ class AnimatedCounter extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, animValue, _) {
         final whole = animValue.truncate();
-        final frac = ((animValue - whole) * 100).truncate().toString().padLeft(2, '0');
+        final frac = ((animValue - whole) * 100).truncate().toString().padLeft(
+          2,
+          '0',
+        );
         return RichText(
           text: TextSpan(
             children: [
               TextSpan(
                 text: '$prefix${_formatNumber(whole)}',
-                style: style ?? TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.w900,
-                  color: DexColors.textPrimary,
-                  letterSpacing: -1.5,
-                ),
+                style:
+                    style ??
+                    TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w900,
+                      color: DexColors.textPrimary,
+                      letterSpacing: -1.5,
+                    ),
               ),
               if (decimals > 0)
                 TextSpan(
                   text: '.$frac$suffix',
-                  style: (style ?? TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -1.5,
-                  )).copyWith(
-                    color: DexColors.textPrimary.withValues(alpha: 0.25),
-                  ),
+                  style:
+                      (style ??
+                              TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1.5,
+                              ))
+                          .copyWith(
+                            color: DexColors.textPrimary.withValues(
+                              alpha: 0.25,
+                            ),
+                          ),
                 ),
             ],
           ),

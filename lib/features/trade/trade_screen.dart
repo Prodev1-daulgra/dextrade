@@ -72,7 +72,8 @@ class TradeScreen extends ConsumerStatefulWidget {
   ConsumerState<TradeScreen> createState() => _TradeScreenState();
 }
 
-class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderStateMixin {
+class _TradeScreenState extends ConsumerState<TradeScreen>
+    with TickerProviderStateMixin {
   // Tab controller for order forms
   int _orderTab = 0; // 0 = Market, 1 = Limit
   int _sideTab = 0; // 0 = Buy (Long), 1 = Sell (Short)
@@ -213,7 +214,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
       // Scroll to bottom
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_logScrollController.hasClients) {
-          _logScrollController.jumpTo(_logScrollController.position.maxScrollExtent);
+          _logScrollController.jumpTo(
+            _logScrollController.position.maxScrollExtent,
+          );
         }
       });
     }
@@ -252,9 +255,14 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
       if (_random.nextDouble() > 0.4) {
         final bool isAsk = _random.nextBool();
         final int targetIdx = _random.nextInt(8);
-        final Map<String, dynamic> row = isAsk ? _asks[targetIdx] : _bids[targetIdx];
+        final Map<String, dynamic> row = isAsk
+            ? _asks[targetIdx]
+            : _bids[targetIdx];
 
-        row['size'] = math.max(0.01, row['size'] + (_random.nextDouble() - 0.5) * 0.2);
+        row['size'] = math.max(
+          0.01,
+          row['size'] + (_random.nextDouble() - 0.5) * 0.2,
+        );
         row['flash'] = true;
         Future.delayed(const Duration(milliseconds: 200), () {
           if (mounted) {
@@ -269,7 +277,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
       if (_random.nextDouble() > 0.7) {
         final double flowSize = 0.1 + _random.nextDouble() * 4.5;
         final String sym = _random.nextBool() ? "BTC/USDT" : "ETH/USDT";
-        _addLog("MATCHED FLOW: Order block synced size ${flowSize.toStringAsFixed(3)} on $sym.");
+        _addLog(
+          "MATCHED FLOW: Order block synced size ${flowSize.toStringAsFixed(3)} on $sym.",
+        );
       }
     });
   }
@@ -279,7 +289,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
     final amount = double.tryParse(_amountCtrl.text) ?? 0.0;
 
     if (amount <= 0) {
-      DexToast.showPushNotification(context, title: 'Error', body: 'Invalid order size format.');
+      DexToast.showPushNotification(
+        context,
+        title: 'Error',
+        body: 'Invalid order size format.',
+      );
       return;
     }
 
@@ -306,8 +320,14 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
         );
       });
 
-      _addLog("ORDER EXECUTED: Added new position side ${_sideTab == 0 ? 'LONG' : 'SHORT'} sizing $amount BTC.");
-      DexToast.showPushNotification(context, title: 'Order Executed', body: 'Order matching completed instantly!');
+      _addLog(
+        "ORDER EXECUTED: Added new position side ${_sideTab == 0 ? 'LONG' : 'SHORT'} sizing $amount BTC.",
+      );
+      DexToast.showPushNotification(
+        context,
+        title: 'Order Executed',
+        body: 'Order matching completed instantly!',
+      );
     }
   }
 
@@ -317,19 +337,27 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
     setState(() {
       _positions.removeAt(idx);
     });
-    _addLog("POSITION RESOLVED: Closed ${pos.symbol} ${pos.side} sizing ${pos.size} with P&L: \$${pos.unrealizedPnL.toStringAsFixed(2)}");
-    DexToast.showPushNotification(context, title: 'Position Closed', body: 'Position cleared from terminal.');
+    _addLog(
+      "POSITION RESOLVED: Closed ${pos.symbol} ${pos.side} sizing ${pos.size} with P&L: \$${pos.unrealizedPnL.toStringAsFixed(2)}",
+    );
+    DexToast.showPushNotification(
+      context,
+      title: 'Position Closed',
+      body: 'Position cleared from terminal.',
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final isDesktop = screenSize.width > 900;
-    
+
     final cryptosAsync = ref.watch(cryptosProvider);
 
     // Initial setup of real crypto data
-    if (cryptosAsync.value != null && cryptosAsync.value!.isNotEmpty && !_cryptoLoaded) {
+    if (cryptosAsync.value != null &&
+        cryptosAsync.value!.isNotEmpty &&
+        !_cryptoLoaded) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         setState(() {
@@ -368,10 +396,7 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                             child: Column(
                               children: [
                                 // Interactive Candlestick Chart panel
-                                Expanded(
-                                  flex: 6,
-                                  child: _buildChartPanel(),
-                                ),
+                                Expanded(flex: 6, child: _buildChartPanel()),
                                 const SizedBox(height: 16),
                                 // Bottom Logs / Positions Panel
                                 Expanded(
@@ -411,9 +436,15 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                             const SizedBox(height: 16),
                             _buildOrderFormConsole(),
                             const SizedBox(height: 16),
-                            SizedBox(height: 300, child: _buildOrderBookPanel()),
+                            SizedBox(
+                              height: 300,
+                              child: _buildOrderBookPanel(),
+                            ),
                             const SizedBox(height: 16),
-                            SizedBox(height: 300, child: _buildBottomTabPanel()),
+                            SizedBox(
+                              height: 300,
+                              child: _buildBottomTabPanel(),
+                            ),
                           ],
                         ),
                       ),
@@ -437,12 +468,16 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
       ),
       child: Flex(
         direction: isDesktop ? Axis.horizontal : Axis.vertical,
-        crossAxisAlignment: isDesktop ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+        crossAxisAlignment: isDesktop
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
         children: [
           PopupMenuButton<CryptoModel>(
             position: PopupMenuPosition.under,
             color: DexColors.surfaceLight,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             onSelected: (crypto) {
               setState(() {
                 _selectedCrypto = crypto;
@@ -456,20 +491,38 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
               });
               _addLog("MARKET SWITCHED: Connected to ${crypto.symbol} node.");
             },
-            itemBuilder: (context) => cryptos.map((c) => PopupMenuItem(
-              value: c,
-              child: Row(
-                children: [
-                  CryptoIcon(symbol: c.symbol, colorHex: c.iconColor, size: 24),
-                  const SizedBox(width: 12),
-                  Text(c.symbol, style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold)),
-                ],
-              ),
-            )).toList(),
+            itemBuilder: (context) => cryptos
+                .map(
+                  (c) => PopupMenuItem(
+                    value: c,
+                    child: Row(
+                      children: [
+                        CryptoIcon(
+                          symbol: c.symbol,
+                          colorHex: c.iconColor,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          c.symbol,
+                          style: GoogleFonts.spaceGrotesk(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
             child: Row(
               children: [
                 if (_selectedCrypto != null)
-                  CryptoIcon(symbol: _selectedCrypto!.symbol, colorHex: _selectedCrypto!.iconColor, size: 32)
+                  CryptoIcon(
+                    symbol: _selectedCrypto!.symbol,
+                    colorHex: _selectedCrypto!.iconColor,
+                    size: 32,
+                  )
                 else
                   Container(
                     width: 32,
@@ -479,7 +532,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                       color: DexColors.primary.withOpacity(0.12),
                     ),
                     child: const Center(
-                      child: Icon(Icons.flash_on_rounded, color: DexColors.primary, size: 16),
+                      child: Icon(
+                        Icons.flash_on_rounded,
+                        color: DexColors.primary,
+                        size: 16,
+                      ),
                     ),
                   ),
                 const SizedBox(width: 12),
@@ -489,7 +546,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                     Row(
                       children: [
                         Text(
-                          _selectedCrypto != null ? '${_selectedCrypto!.symbol}/USDT' : 'LOADING...',
+                          _selectedCrypto != null
+                              ? '${_selectedCrypto!.symbol}/USDT'
+                              : 'LOADING...',
                           style: GoogleFonts.spaceGrotesk(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
@@ -497,7 +556,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white54, size: 16),
+                        const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: Colors.white54,
+                          size: 16,
+                        ),
                       ],
                     ),
                     Text(
@@ -592,16 +655,25 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                         _timeframe = tf;
                         _generateMockChartData();
                       });
-                      _addLog("TIMEFRAME RECONFIGURED: Reloaded matching nodes to $tf interval.");
+                      _addLog(
+                        "TIMEFRAME RECONFIGURED: Reloaded matching nodes to $tf interval.",
+                      );
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: active ? DexColors.primary.withOpacity(0.12) : Colors.transparent,
+                        color: active
+                            ? DexColors.primary.withOpacity(0.12)
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: active ? DexColors.primary.withOpacity(0.25) : Colors.transparent,
+                          color: active
+                              ? DexColors.primary.withOpacity(0.25)
+                              : Colors.transparent,
                         ),
                       ),
                       child: Text(
@@ -724,12 +796,17 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
             child: TextField(
               controller: _priceCtrl,
               enabled: _orderTab == 1, // Disable price editing in market mode
-              style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 14),
+              style: GoogleFonts.jetBrainsMono(
+                color: Colors.white,
+                fontSize: 14,
+              ),
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 hintText: "0.00",
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -754,12 +831,17 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
             ),
             child: TextField(
               controller: _amountCtrl,
-              style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 14),
+              style: GoogleFonts.jetBrainsMono(
+                color: Colors.white,
+                fontSize: 14,
+              ),
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 hintText: "0.00",
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -782,7 +864,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: _leverage >= 25 ? DexColors.errorGlow : DexColors.accent,
+                  color: _leverage >= 25
+                      ? DexColors.errorGlow
+                      : DexColors.accent,
                 ),
               ),
             ],
@@ -793,7 +877,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
               activeTrackColor: isBuy ? DexColors.success : DexColors.error,
               inactiveTrackColor: Colors.white.withOpacity(0.08),
               thumbColor: Colors.white,
-              overlayColor: isBuy ? DexColors.success.withOpacity(0.2) : DexColors.error.withOpacity(0.2),
+              overlayColor: isBuy
+                  ? DexColors.success.withOpacity(0.2)
+                  : DexColors.error.withOpacity(0.2),
             ),
             child: Slider(
               value: _leverage,
@@ -820,7 +906,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.warning_amber_rounded, color: DexColors.error, size: 14),
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    color: DexColors.error,
+                    size: 14,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -874,17 +964,26 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
     );
   }
 
-  Widget _buildFormToggleTab(String label, bool active, Color activeColor, VoidCallback onTap) {
+  Widget _buildFormToggleTab(
+    String label,
+    bool active,
+    Color activeColor,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: active ? activeColor.withOpacity(0.12) : Colors.white.withOpacity(0.01),
+          color: active
+              ? activeColor.withOpacity(0.12)
+              : Colors.white.withOpacity(0.01),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: active ? activeColor.withOpacity(0.3) : Colors.white.withOpacity(0.04),
+            color: active
+                ? activeColor.withOpacity(0.3)
+                : Colors.white.withOpacity(0.04),
           ),
         ),
         child: Center(
@@ -901,7 +1000,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
     );
   }
 
-  Widget _buildLimitMarketButton(String label, bool active, VoidCallback onTap) {
+  Widget _buildLimitMarketButton(
+    String label,
+    bool active,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -947,11 +1050,19 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
             children: [
               Text(
                 'PRICE (USDT)',
-                style: GoogleFonts.orbitron(fontSize: 8, color: Colors.white30, letterSpacing: 0.5),
+                style: GoogleFonts.orbitron(
+                  fontSize: 8,
+                  color: Colors.white30,
+                  letterSpacing: 0.5,
+                ),
               ),
               Text(
                 'SIZE (BTC)',
-                style: GoogleFonts.orbitron(fontSize: 8, color: Colors.white30, letterSpacing: 0.5),
+                style: GoogleFonts.orbitron(
+                  fontSize: 8,
+                  color: Colors.white30,
+                  letterSpacing: 0.5,
+                ),
               ),
             ],
           ),
@@ -964,7 +1075,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
               itemCount: 4,
               itemBuilder: (context, idx) {
                 final ask = _asks[idx + 4]; // Render lower asks closer to spot
-                return _buildOrderBookRow(ask, DexColors.errorGlow, isAsk: true);
+                return _buildOrderBookRow(
+                  ask,
+                  DexColors.errorGlow,
+                  isAsk: true,
+                );
               },
             ),
           ),
@@ -985,7 +1100,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 15,
                     fontWeight: FontWeight.w900,
-                    color: _priceChangePercent >= 0 ? DexColors.successGlow : DexColors.errorGlow,
+                    color: _priceChangePercent >= 0
+                        ? DexColors.successGlow
+                        : DexColors.errorGlow,
                   ),
                 ),
                 Text(
@@ -1007,7 +1124,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
               itemCount: 4,
               itemBuilder: (context, idx) {
                 final bid = _bids[idx];
-                return _buildOrderBookRow(bid, DexColors.successGlow, isAsk: false);
+                return _buildOrderBookRow(
+                  bid,
+                  DexColors.successGlow,
+                  isAsk: false,
+                );
               },
             ),
           ),
@@ -1016,7 +1137,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
     );
   }
 
-  Widget _buildOrderBookRow(Map<String, dynamic> data, Color priceColor, {required bool isAsk}) {
+  Widget _buildOrderBookRow(
+    Map<String, dynamic> data,
+    Color priceColor, {
+    required bool isAsk,
+  }) {
     final double size = data['size'];
     final double price = data['price'];
     final bool flash = data['flash'];
@@ -1026,7 +1151,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
       decoration: BoxDecoration(
         color: flash
-            ? (isAsk ? DexColors.error.withOpacity(0.12) : DexColors.success.withOpacity(0.12))
+            ? (isAsk
+                  ? DexColors.error.withOpacity(0.12)
+                  : DexColors.success.withOpacity(0.12))
             : Colors.transparent,
         borderRadius: BorderRadius.circular(4),
       ),
@@ -1065,18 +1192,28 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
           // Panel Navigation headers
           Row(
             children: [
-              _buildBottomNavTab('ACTIVE POSITIONS (${_positions.length})', _bottomTab == 0, () {
-                setState(() => _bottomTab = 0);
-              }),
+              _buildBottomNavTab(
+                'ACTIVE POSITIONS (${_positions.length})',
+                _bottomTab == 0,
+                () {
+                  setState(() => _bottomTab = 0);
+                },
+              ),
               const SizedBox(width: 16),
-              _buildBottomNavTab('MATCH CODES SYNC RECORD', _bottomTab == 1, () {
-                setState(() => _bottomTab = 1);
-              }),
+              _buildBottomNavTab(
+                'MATCH CODES SYNC RECORD',
+                _bottomTab == 1,
+                () {
+                  setState(() => _bottomTab = 1);
+                },
+              ),
             ],
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: _bottomTab == 0 ? _buildPositionsTable() : _buildActivityLogsPanel(),
+            child: _bottomTab == 0
+                ? _buildPositionsTable()
+                : _buildActivityLogsPanel(),
           ),
         ],
       ),
@@ -1115,10 +1252,7 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
       return Center(
         child: Text(
           'No active matching positions located in this node.',
-          style: GoogleFonts.spaceGrotesk(
-            color: Colors.white24,
-            fontSize: 13,
-          ),
+          style: GoogleFonts.spaceGrotesk(color: Colors.white24, fontSize: 13),
         ),
       );
     }
@@ -1147,12 +1281,19 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: isLong ? DexColors.success.withOpacity(0.08) : DexColors.error.withOpacity(0.08),
+                      color: isLong
+                          ? DexColors.success.withOpacity(0.08)
+                          : DexColors.error.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: isLong ? DexColors.success.withOpacity(0.2) : DexColors.error.withOpacity(0.2),
+                        color: isLong
+                            ? DexColors.success.withOpacity(0.2)
+                            : DexColors.error.withOpacity(0.2),
                       ),
                     ),
                     child: Text(
@@ -1160,7 +1301,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 9,
                         fontWeight: FontWeight.w900,
-                        color: isLong ? DexColors.successGlow : DexColors.errorGlow,
+                        color: isLong
+                            ? DexColors.successGlow
+                            : DexColors.errorGlow,
                       ),
                     ),
                   ),
@@ -1194,11 +1337,17 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                 children: [
                   Text(
                     'Entry: \$${pos.entryPrice.toStringAsFixed(2)}',
-                    style: GoogleFonts.jetBrainsMono(fontSize: 11, color: Colors.white54),
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 11,
+                      color: Colors.white54,
+                    ),
                   ),
                   Text(
                     'Mark: \$${pos.markPrice.toStringAsFixed(2)}',
-                    style: GoogleFonts.jetBrainsMono(fontSize: 11, color: Colors.white54),
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 11,
+                      color: Colors.white54,
+                    ),
                   ),
                 ],
               ),
@@ -1212,7 +1361,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                     style: GoogleFonts.jetBrainsMono(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w900,
-                      color: posUp ? DexColors.successGlow : DexColors.errorGlow,
+                      color: posUp
+                          ? DexColors.successGlow
+                          : DexColors.errorGlow,
                     ),
                   ),
                   Text(
@@ -1220,7 +1371,9 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: posUp ? DexColors.successGlow : DexColors.errorGlow,
+                      color: posUp
+                          ? DexColors.successGlow
+                          : DexColors.errorGlow,
                     ),
                   ),
                 ],
@@ -1228,7 +1381,11 @@ class _TradeScreenState extends ConsumerState<TradeScreen> with TickerProviderSt
 
               // Action buttons
               IconButton(
-                icon: const Icon(Icons.cancel_outlined, color: Colors.white38, size: 20),
+                icon: const Icon(
+                  Icons.cancel_outlined,
+                  color: Colors.white38,
+                  size: 20,
+                ),
                 onPressed: () => _closePosition(idx),
               ),
             ],
@@ -1338,17 +1495,29 @@ class _CandlestickPainter extends CustomPainter {
       wickPaint.color = color;
 
       // Draw high/low wicks
-      canvas.drawLine(Offset(x, mapY(c.high)), Offset(x, mapY(c.low)), wickPaint);
+      canvas.drawLine(
+        Offset(x, mapY(c.high)),
+        Offset(x, mapY(c.low)),
+        wickPaint,
+      );
 
       // Draw body rect
       final double top = mapY(math.max(c.open, c.close));
       final double bottom = mapY(math.min(c.open, c.close));
       final Rect bodyRect = Rect.fromLTRB(left, top, right, bottom);
-      canvas.drawRRect(RRect.fromRectAndRadius(bodyRect, const Radius.circular(3)), candlePaint);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(bodyRect, const Radius.circular(3)),
+        candlePaint,
+      );
 
       // Draw Volume Bar underneath (bottom 20% of canvas)
       final double volHeight = (c.volume / 100.0) * (height * 0.18);
-      final Rect volRect = Rect.fromLTRB(left, height - volHeight, right, height);
+      final Rect volRect = Rect.fromLTRB(
+        left,
+        height - volHeight,
+        right,
+        height,
+      );
       canvas.drawRRect(
         RRect.fromRectAndRadius(volRect, const Radius.circular(2)),
         Paint()..color = color.withOpacity(0.12),
@@ -1366,12 +1535,19 @@ class _CandlestickPainter extends CustomPainter {
     // Draw small spot pill on the right
     final Paint spotPillPaint = Paint()..color = DexColors.primary;
     final Rect spotPill = Rect.fromLTWH(width - 60, spotY - 8, 60, 16);
-    canvas.drawRRect(RRect.fromRectAndRadius(spotPill, const Radius.circular(4)), spotPillPaint);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(spotPill, const Radius.circular(4)),
+      spotPillPaint,
+    );
 
     final TextPainter spotTP = TextPainter(
       text: TextSpan(
         text: spotPrice.toStringAsFixed(1),
-        style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 8.5, fontWeight: FontWeight.bold),
+        style: GoogleFonts.jetBrainsMono(
+          color: Colors.white,
+          fontSize: 8.5,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
@@ -1384,9 +1560,17 @@ class _CandlestickPainter extends CustomPainter {
         ..strokeWidth = 1.0;
 
       // Draw horizontal crosshair
-      canvas.drawLine(Offset(0, hoverOffset.dy), Offset(width, hoverOffset.dy), crosshairPaint);
+      canvas.drawLine(
+        Offset(0, hoverOffset.dy),
+        Offset(width, hoverOffset.dy),
+        crosshairPaint,
+      );
       // Draw vertical crosshair
-      canvas.drawLine(Offset(hoverOffset.dx, 0), Offset(hoverOffset.dx, height), crosshairPaint);
+      canvas.drawLine(
+        Offset(hoverOffset.dx, 0),
+        Offset(hoverOffset.dx, height),
+        crosshairPaint,
+      );
 
       // Resolve price coordinates
       final double pctY = 1.0 - (hoverOffset.dy / height);
@@ -1395,12 +1579,19 @@ class _CandlestickPainter extends CustomPainter {
       // Price indicator bubble
       final Paint bubblePaint = Paint()..color = Colors.white24;
       final Rect bubble = Rect.fromLTWH(width - 65, hoverOffset.dy - 8, 65, 16);
-      canvas.drawRRect(RRect.fromRectAndRadius(bubble, const Radius.circular(4)), bubblePaint);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(bubble, const Radius.circular(4)),
+        bubblePaint,
+      );
 
       final TextPainter priceTP = TextPainter(
         text: TextSpan(
           text: hoverPrice.toStringAsFixed(1),
-          style: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 8.5, fontWeight: FontWeight.bold),
+          style: GoogleFonts.jetBrainsMono(
+            color: Colors.white,
+            fontSize: 8.5,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         textDirection: TextDirection.ltr,
       )..layout();

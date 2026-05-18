@@ -61,7 +61,11 @@ class _GlowMorphLoaderState extends State<GlowMorphLoader>
       width: widget.size,
       height: widget.size,
       child: AnimatedBuilder(
-        animation: Listenable.merge([_morphController, _pingController, _rotateController]),
+        animation: Listenable.merge([
+          _morphController,
+          _pingController,
+          _rotateController,
+        ]),
         builder: (context, _) {
           return CustomPaint(
             painter: _GlowMorphPainter(
@@ -97,7 +101,11 @@ class _GlowMorphPainter extends CustomPainter {
   });
 
   // Calculate coordinates for 60 points representing a shape
-  List<Offset> _getPointsForShape(int shapeIndex, double radius, Offset center) {
+  List<Offset> _getPointsForShape(
+    int shapeIndex,
+    double radius,
+    Offset center,
+  ) {
     const int count = 60;
     final List<Offset> points = [];
 
@@ -106,34 +114,52 @@ class _GlowMorphPainter extends CustomPainter {
 
       switch (shapeIndex) {
         case 0: // Circle
-          points.add(center + Offset(radius * math.cos(angle), radius * math.sin(angle)));
+          points.add(
+            center + Offset(radius * math.cos(angle), radius * math.sin(angle)),
+          );
           break;
 
         case 1: // Squircle (Rounded Square)
           final double cosVal = math.cos(angle);
           final double sinVal = math.sin(angle);
           // Mathematical Superellipse mapping
-          final double r = radius * (1.0 / math.pow(math.pow(cosVal.abs(), 4.0) + math.pow(sinVal.abs(), 4.0), 0.25));
+          final double r =
+              radius *
+              (1.0 /
+                  math.pow(
+                    math.pow(cosVal.abs(), 4.0) + math.pow(sinVal.abs(), 4.0),
+                    0.25,
+                  ));
           points.add(center + Offset(r * cosVal, r * sinVal));
           break;
 
         case 2: // Triangle
           // Map to 3 vertices
-          final double k = (angle + math.pi / 6) % (2 * math.pi / 3) - (math.pi / 3);
+          final double k =
+              (angle + math.pi / 6) % (2 * math.pi / 3) - (math.pi / 3);
           final double r = radius * math.cos(math.pi / 3) / math.cos(k);
           // Rotate 90 deg so triangle points upwards
           final double adjustedAngle = angle - math.pi / 2;
-          points.add(center + Offset(r * math.cos(adjustedAngle), r * math.sin(adjustedAngle)));
+          points.add(
+            center +
+                Offset(
+                  r * math.cos(adjustedAngle),
+                  r * math.sin(adjustedAngle),
+                ),
+          );
           break;
 
         case 3: // Hexagon
-          final double k = (angle + math.pi / 6) % (2 * math.pi / 6) - (math.pi / 6);
+          final double k =
+              (angle + math.pi / 6) % (2 * math.pi / 6) - (math.pi / 6);
           final double r = radius * math.cos(math.pi / 6) / math.cos(k);
           points.add(center + Offset(r * math.cos(angle), r * math.sin(angle)));
           break;
 
         default: // Circle default fallback
-          points.add(center + Offset(radius * math.cos(angle), radius * math.sin(angle)));
+          points.add(
+            center + Offset(radius * math.cos(angle), radius * math.sin(angle)),
+          );
           break;
       }
     }
@@ -176,14 +202,20 @@ class _GlowMorphPainter extends CustomPainter {
 
     final int nextStage = (currentStage + 1) % 4;
 
-    final List<Offset> p1 = _getPointsForShape(currentStage, baseRadius, center);
+    final List<Offset> p1 = _getPointsForShape(
+      currentStage,
+      baseRadius,
+      center,
+    );
     final List<Offset> p2 = _getPointsForShape(nextStage, baseRadius, center);
 
     final List<Offset> morphedPoints = [];
     for (int i = 0; i < 60; i++) {
       // Rotate coordinates slightly for organic motion
       final rotatedIndex = (i + (rotation * 60 / (2 * math.pi)).floor()) % 60;
-      morphedPoints.add(Offset.lerp(p1[i], p2[rotatedIndex], Curves.easeInOut.transform(t))!);
+      morphedPoints.add(
+        Offset.lerp(p1[i], p2[rotatedIndex], Curves.easeInOut.transform(t))!,
+      );
     }
 
     final path = Path()..moveTo(morphedPoints[0].dx, morphedPoints[0].dy);

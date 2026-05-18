@@ -22,7 +22,7 @@ class PremiumPushNotification extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeColor = color ?? DexColors.primary;
-    
+
     return GestureDetector(
       onTap: onTap,
       child: SafeArea(
@@ -50,12 +50,10 @@ class PremiumPushNotification extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Center(
-                    child: Icon(icon, color: themeColor, size: 22),
-                  ),
+                  child: Center(child: Icon(icon, color: themeColor, size: 22)),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // Text Content
                 Expanded(
                   child: Column(
@@ -92,7 +90,8 @@ class PremiumPushNotification extends StatelessWidget {
     );
   }
 
-  static void show(BuildContext context, {
+  static void show(
+    BuildContext context, {
     required String title,
     required String message,
     required IconData icon,
@@ -102,7 +101,7 @@ class PremiumPushNotification extends StatelessWidget {
   }) {
     final overlay = Overlay.of(context);
     late OverlayEntry entry;
-    
+
     entry = OverlayEntry(
       builder: (context) {
         return TweenAnimationBuilder<double>(
@@ -114,10 +113,7 @@ class PremiumPushNotification extends StatelessWidget {
               top: -100 + (100 * value),
               left: 0,
               right: 0,
-              child: Opacity(
-                opacity: value.clamp(0.0, 1.0),
-                child: child,
-              ),
+              child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
             );
           },
           child: PremiumPushNotification(
@@ -135,7 +131,7 @@ class PremiumPushNotification extends StatelessWidget {
     );
 
     overlay.insert(entry);
-    
+
     Future.delayed(duration, () {
       if (entry.mounted) {
         entry.remove();

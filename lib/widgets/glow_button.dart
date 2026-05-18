@@ -39,9 +39,10 @@ class _GlowButtonState extends State<GlowButton>
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-    _scaleAnim = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnim = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -72,10 +73,7 @@ class _GlowButtonState extends State<GlowButton>
     return AnimatedBuilder(
       animation: _scaleAnim,
       builder: (context, child) {
-        return Transform.scale(
-          scale: _scaleAnim.value,
-          child: child,
-        );
+        return Transform.scale(scale: _scaleAnim.value, child: child);
       },
       child: GestureDetector(
         onTapDown: widget.onPressed != null ? _handleTapDown : null,
@@ -107,14 +105,14 @@ class _GlowButtonState extends State<GlowButton>
                     ),
                   ]
                 : widget.isPrimary
-                    ? [
-                        BoxShadow(
-                          color: DexColors.primary.withValues(alpha: 0.2),
-                          blurRadius: 16,
-                          spreadRadius: 0,
-                        ),
-                      ]
-                    : null,
+                ? [
+                    BoxShadow(
+                      color: DexColors.primary.withValues(alpha: 0.2),
+                      blurRadius: 16,
+                      spreadRadius: 0,
+                    ),
+                  ]
+                : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -123,7 +121,9 @@ class _GlowButtonState extends State<GlowButton>
               if (widget.isLoading) ...[
                 GlowMorphLoader(
                   size: 20,
-                  color: widget.isPrimary ? DexColors.background : DexColors.primary,
+                  color: widget.isPrimary
+                      ? DexColors.background
+                      : DexColors.primary,
                   glowStrength: 4,
                 ),
                 const SizedBox(width: 12),
@@ -131,7 +131,9 @@ class _GlowButtonState extends State<GlowButton>
                 Icon(
                   widget.icon,
                   size: 18,
-                  color: widget.isPrimary ? DexColors.background : DexColors.textPrimary,
+                  color: widget.isPrimary
+                      ? DexColors.background
+                      : DexColors.textPrimary,
                 ),
                 const SizedBox(width: 10),
               ],

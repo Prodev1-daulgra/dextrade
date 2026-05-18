@@ -54,7 +54,9 @@ class _StatusBadgeState extends State<StatusBadge>
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            color: config.color.withValues(alpha: 0.12 + _pulseController.value * 0.08),
+            color: config.color.withValues(
+              alpha: 0.12 + _pulseController.value * 0.08,
+            ),
             border: Border.all(
               color: config.color.withValues(alpha: 0.25),
               width: 1,
@@ -64,7 +66,8 @@ class _StatusBadgeState extends State<StatusBadge>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 6, height: 6,
+                width: 6,
+                height: 6,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: config.color,

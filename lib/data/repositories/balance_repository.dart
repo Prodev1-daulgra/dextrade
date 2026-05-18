@@ -16,7 +16,11 @@ class BalanceRepository {
     return BalanceModel.fromJson(res);
   }
 
-  Future<void> updateBalance(String balanceId, {double? balanceUsd, double? totalInvested}) async {
+  Future<void> updateBalance(
+    String balanceId, {
+    double? balanceUsd,
+    double? totalInvested,
+  }) async {
     final updates = <String, dynamic>{
       'updated_at': DateTime.now().toIso8601String(),
     };
@@ -26,14 +30,21 @@ class BalanceRepository {
   }
 
   /// Subscribe to realtime balance changes
-  RealtimeChannel subscribeToBalance(String email, void Function(dynamic) onUpdate) {
+  RealtimeChannel subscribeToBalance(
+    String email,
+    void Function(dynamic) onUpdate,
+  ) {
     return _client
         .channel('balance:$email')
         .onPostgresChanges(
           event: PostgresChangeEvent.update,
           schema: 'public',
           table: 'user_balances',
-          filter: PostgresChangeFilter(type: PostgresChangeFilterType.eq, column: 'user_email', value: email),
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_email',
+            value: email,
+          ),
           callback: (payload) => onUpdate(payload),
         )
         .subscribe();

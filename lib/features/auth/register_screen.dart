@@ -88,10 +88,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
       _loading = true;
       _error = null;
     });
-    final err = await ref.read(authProvider.notifier).register(
+    final err = await ref
+        .read(authProvider.notifier)
+        .register(
           _emailCtrl.text.trim(),
           _passCtrl.text,
-          fullName: _nameCtrl.text.trim().isNotEmpty ? _nameCtrl.text.trim() : null,
+          fullName: _nameCtrl.text.trim().isNotEmpty
+              ? _nameCtrl.text.trim()
+              : null,
         );
     if (mounted) {
       setState(() => _loading = false);
@@ -99,7 +103,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
         setState(() => _error = err);
         DexToast.showPushNotification(context, title: 'Error', body: err);
       } else {
-        DexToast.showPushNotification(context, title: 'Success', body: 'Terminal node acquired! Syncing credentials...');
+        DexToast.showPushNotification(
+          context,
+          title: 'Success',
+          body: 'Terminal node acquired! Syncing credentials...',
+        );
       }
     }
   }
@@ -127,7 +135,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                   // 1. Drifting Star Particles Background + Ambient Glow Blobs
                   Positioned.fill(
                     child: AnimatedBuilder(
-                      animation: Listenable.merge([_bgController, _starController]),
+                      animation: Listenable.merge([
+                        _bgController,
+                        _starController,
+                      ]),
                       builder: (context, _) {
                         return CustomPaint(
                           painter: _AuthBackgroundPainter(
@@ -145,7 +156,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                   // 2. Interactive Form Content
                   Center(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 28,
+                        vertical: 32,
+                      ),
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 440),
                         child: Column(
@@ -154,7 +168,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                           children: [
                             // Premium Brand Watermark
                             Padding(
-                              padding: const EdgeInsets.only(left: 8, bottom: 28),
+                              padding: const EdgeInsets.only(
+                                left: 8,
+                                bottom: 28,
+                              ),
                               child: Row(
                                 children: [
                                   Container(
@@ -169,7 +186,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: DexColors.primary.withOpacity(0.3),
+                                          color: DexColors.primary.withOpacity(
+                                            0.3,
+                                          ),
                                           blurRadius: 15,
                                         ),
                                       ],
@@ -187,7 +206,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                   ),
                                   const SizedBox(width: 14),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'DEXTRADE',
@@ -249,7 +269,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                       fontSize: 9,
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5,
-                                      color: _nameHasFocus ? DexColors.accent : DexColors.textMuted,
+                                      color: _nameHasFocus
+                                          ? DexColors.accent
+                                          : DexColors.textMuted,
                                     ),
                                   ),
                                   const SizedBox(height: 10),
@@ -267,10 +289,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                       boxShadow: _nameHasFocus
                                           ? [
                                               BoxShadow(
-                                                color: DexColors.accent.withOpacity(0.1),
+                                                color: DexColors.accent
+                                                    .withOpacity(0.1),
                                                 blurRadius: 12,
                                                 spreadRadius: 1,
-                                              )
+                                              ),
                                             ]
                                           : [],
                                     ),
@@ -287,7 +310,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                         prefixIcon: Icon(
                                           Icons.person_outline_rounded,
                                           size: 20,
-                                          color: _nameHasFocus ? DexColors.accent : DexColors.textMuted,
+                                          color: _nameHasFocus
+                                              ? DexColors.accent
+                                              : DexColors.textMuted,
                                         ),
                                         border: InputBorder.none,
                                         enabledBorder: InputBorder.none,
@@ -304,7 +329,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                       fontSize: 9,
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5,
-                                      color: _emailHasFocus ? DexColors.primaryGlow : DexColors.textMuted,
+                                      color: _emailHasFocus
+                                          ? DexColors.primaryGlow
+                                          : DexColors.textMuted,
                                     ),
                                   ),
                                   const SizedBox(height: 10),
@@ -322,10 +349,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                       boxShadow: _emailHasFocus
                                           ? [
                                               BoxShadow(
-                                                color: DexColors.primary.withOpacity(0.1),
+                                                color: DexColors.primary
+                                                    .withOpacity(0.1),
                                                 blurRadius: 12,
                                                 spreadRadius: 1,
-                                              )
+                                              ),
                                             ]
                                           : [],
                                     ),
@@ -343,7 +371,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                         prefixIcon: Icon(
                                           Icons.alternate_email_rounded,
                                           size: 20,
-                                          color: _emailHasFocus ? DexColors.primary : DexColors.textMuted,
+                                          color: _emailHasFocus
+                                              ? DexColors.primary
+                                              : DexColors.textMuted,
                                         ),
                                         border: InputBorder.none,
                                         enabledBorder: InputBorder.none,
@@ -360,7 +390,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                       fontSize: 9,
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5,
-                                      color: _passHasFocus ? DexColors.accent : DexColors.textMuted,
+                                      color: _passHasFocus
+                                          ? DexColors.accent
+                                          : DexColors.textMuted,
                                     ),
                                   ),
                                   const SizedBox(height: 10),
@@ -378,10 +410,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                       boxShadow: _passHasFocus
                                           ? [
                                               BoxShadow(
-                                                color: DexColors.accent.withOpacity(0.1),
+                                                color: DexColors.accent
+                                                    .withOpacity(0.1),
                                                 blurRadius: 12,
                                                 spreadRadius: 1,
-                                              )
+                                              ),
                                             ]
                                           : [],
                                     ),
@@ -397,19 +430,27 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                       decoration: InputDecoration(
                                         fillColor: Colors.transparent,
                                         hintText: '••••••••',
-                                        hintStyle: GoogleFonts.jetBrainsMono(letterSpacing: 4.0),
+                                        hintStyle: GoogleFonts.jetBrainsMono(
+                                          letterSpacing: 4.0,
+                                        ),
                                         prefixIcon: Icon(
                                           Icons.lock_outline_rounded,
                                           size: 20,
-                                          color: _passHasFocus ? DexColors.accent : DexColors.textMuted,
+                                          color: _passHasFocus
+                                              ? DexColors.accent
+                                              : DexColors.textMuted,
                                         ),
                                         suffixIcon: IconButton(
                                           icon: Icon(
-                                            _obscure ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                                            _obscure
+                                                ? Icons.visibility_off_rounded
+                                                : Icons.visibility_rounded,
                                             size: 20,
                                             color: DexColors.textMuted,
                                           ),
-                                          onPressed: () => setState(() => _obscure = !_obscure),
+                                          onPressed: () => setState(
+                                            () => _obscure = !_obscure,
+                                          ),
                                         ),
                                         border: InputBorder.none,
                                         enabledBorder: InputBorder.none,
@@ -422,15 +463,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                   if (_error != null) ...[
                                     const SizedBox(height: 20),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(14),
-                                        color: DexColors.error.withOpacity(0.08),
-                                        border: Border.all(color: DexColors.error.withOpacity(0.2)),
+                                        color: DexColors.error.withOpacity(
+                                          0.08,
+                                        ),
+                                        border: Border.all(
+                                          color: DexColors.error.withOpacity(
+                                            0.2,
+                                          ),
+                                        ),
                                       ),
                                       child: Row(
                                         children: [
-                                          const Icon(Icons.error_outline_rounded, color: DexColors.error, size: 18),
+                                          const Icon(
+                                            Icons.error_outline_rounded,
+                                            color: DexColors.error,
+                                            size: 18,
+                                          ),
                                           const SizedBox(width: 10),
                                           Expanded(
                                             child: Text(
@@ -474,7 +528,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                                             color: DexColors.accent,
                                             fontWeight: FontWeight.w800,
                                             fontSize: 13,
-                                            decoration: TextDecoration.underline,
+                                            decoration:
+                                                TextDecoration.underline,
                                           ),
                                         ),
                                       ),
@@ -520,9 +575,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                         ),
 
                         // Rotating 3D chromatic node system
-                        const Center(
-                          child: Stunning3DGraphic(),
-                        ),
+                        const Center(child: Stunning3DGraphic()),
 
                         // Bottom copywriting panel
                         Positioned(
@@ -533,11 +586,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   color: DexColors.primary.withOpacity(0.12),
-                                  border: Border.all(color: DexColors.primary.withOpacity(0.25)),
+                                  border: Border.all(
+                                    color: DexColors.primary.withOpacity(0.25),
+                                  ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -669,13 +727,17 @@ class _AuthBackgroundPainter extends CustomPainter {
       if (distToMouse < 280 && mousePos != Offset.zero) {
         final double attractionStrength = (1.0 - (distToMouse / 280.0)) * 25.0;
         final Offset diff = mousePos - Offset(finalX, finalY);
-        final Offset direction = diff.distance == 0 ? Offset.zero : diff / diff.distance;
+        final Offset direction = diff.distance == 0
+            ? Offset.zero
+            : diff / diff.distance;
         finalX += direction.dx * attractionStrength;
         finalY += direction.dy * attractionStrength;
       }
 
-      final double sparkle = math.sin((starValue * 2 * math.pi * 3) + i) * 0.5 + 0.5;
-      final double radius = (1.2 + random.nextDouble() * 2.0) * (0.8 + sparkle * 0.4);
+      final double sparkle =
+          math.sin((starValue * 2 * math.pi * 3) + i) * 0.5 + 0.5;
+      final double radius =
+          (1.2 + random.nextDouble() * 2.0) * (0.8 + sparkle * 0.4);
 
       final Color color = Color.lerp(
         primaryColor,
@@ -766,7 +828,8 @@ class _3DGraphicPainter extends CustomPainter {
     final List<Offset> nodeOffsets = [];
 
     for (int i = 0; i < nodeCount; i++) {
-      final double phi = (i * math.pi / (nodeCount / 2)) + (progress * 2 * math.pi * 0.5);
+      final double phi =
+          (i * math.pi / (nodeCount / 2)) + (progress * 2 * math.pi * 0.5);
       final double theta = (i * math.pi / 5.0) + (progress * 2 * math.pi * 0.2);
 
       final double x = baseRadius * 1.25 * math.sin(theta) * math.cos(phi);
@@ -786,21 +849,26 @@ class _3DGraphicPainter extends CustomPainter {
       )!.withOpacity(0.1 + depthScale * 0.8);
 
       if (i > 0) {
-        linePaint.color = DexColors.primary.withOpacity(0.05 + depthScale * 0.1);
+        linePaint.color = DexColors.primary.withOpacity(
+          0.05 + depthScale * 0.1,
+        );
         canvas.drawLine(nodeOffsets[i - 1], projectedOffset, linePaint);
       }
 
       canvas.drawCircle(projectedOffset, sizeMultiplier, nodePaint);
 
       if (i % 3 == 0) {
-        final double pulse = math.sin((progress * 2 * math.pi * 2) + i) * 0.5 + 0.5;
+        final double pulse =
+            math.sin((progress * 2 * math.pi * 2) + i) * 0.5 + 0.5;
         canvas.drawCircle(
           projectedOffset,
           sizeMultiplier + pulse * 12.0,
           Paint()
             ..style = PaintingStyle.stroke
             ..strokeWidth = 1.0
-            ..color = DexColors.accent.withOpacity((1.0 - pulse) * 0.3 * depthScale),
+            ..color = DexColors.accent.withOpacity(
+              (1.0 - pulse) * 0.3 * depthScale,
+            ),
         );
       }
     }
@@ -808,21 +876,30 @@ class _3DGraphicPainter extends CustomPainter {
     for (int i = 0; i < 4; i++) {
       final double angle = (progress * 2 * math.pi) + (i * math.pi / 2);
       final double offsetDist = 12.0 * (4 - i);
-      final Offset ringOffset = Offset(math.cos(angle) * offsetDist, math.sin(angle) * offsetDist);
+      final Offset ringOffset = Offset(
+        math.cos(angle) * offsetDist,
+        math.sin(angle) * offsetDist,
+      );
 
       final double currentRadius = baseRadius - (i * 16.0);
 
       final ringPaint = Paint()
         ..style = PaintingStyle.fill
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            DexColors.primary.withOpacity(0.68 - (i * 0.12)),
-            DexColors.accent.withOpacity(0.32 - (i * 0.08)),
-            Colors.white.withOpacity(0.01),
-          ],
-        ).createShader(Rect.fromCircle(center: center + ringOffset, radius: currentRadius));
+        ..shader =
+            LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                DexColors.primary.withOpacity(0.68 - (i * 0.12)),
+                DexColors.accent.withOpacity(0.32 - (i * 0.08)),
+                Colors.white.withOpacity(0.01),
+              ],
+            ).createShader(
+              Rect.fromCircle(
+                center: center + ringOffset,
+                radius: currentRadius,
+              ),
+            );
 
       canvas.drawCircle(
         center + ringOffset + const Offset(12, 18),
@@ -837,16 +914,22 @@ class _3DGraphicPainter extends CustomPainter {
       final highlightPaint = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withOpacity(0.55),
-            Colors.transparent,
-            DexColors.accent.withOpacity(0.3),
-            Colors.transparent,
-          ],
-        ).createShader(Rect.fromCircle(center: center + ringOffset, radius: currentRadius));
+        ..shader =
+            LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withOpacity(0.55),
+                Colors.transparent,
+                DexColors.accent.withOpacity(0.3),
+                Colors.transparent,
+              ],
+            ).createShader(
+              Rect.fromCircle(
+                center: center + ringOffset,
+                radius: currentRadius,
+              ),
+            );
 
       canvas.drawCircle(center + ringOffset, currentRadius, highlightPaint);
     }

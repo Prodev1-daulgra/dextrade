@@ -5,11 +5,7 @@ class PulseDot extends StatefulWidget {
   final Color color;
   final double size;
 
-  const PulseDot({
-    super.key,
-    this.color = DexColors.success,
-    this.size = 8,
-  });
+  const PulseDot({super.key, this.color = DexColors.success, this.size = 8});
 
   @override
   State<PulseDot> createState() => _PulseDotState();
@@ -47,7 +43,9 @@ class _PulseDotState extends State<PulseDot>
             color: widget.color,
             boxShadow: [
               BoxShadow(
-                color: widget.color.withValues(alpha: 0.3 + _controller.value * 0.4),
+                color: widget.color.withValues(
+                  alpha: 0.3 + _controller.value * 0.4,
+                ),
                 blurRadius: 6 + _controller.value * 6,
                 spreadRadius: _controller.value * 2,
               ),
