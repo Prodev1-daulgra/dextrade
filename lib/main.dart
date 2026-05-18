@@ -5,11 +5,22 @@ import 'data/supabase_client.dart';
 import 'core/theme/dex_theme.dart';
 import 'core/router/app_router.dart';
 
+import 'dart:js' as js;
+import 'package:flutter/foundation.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   await SupabaseConfig.initialize();
   runApp(const ProviderScope(child: DextradeApp()));
+
+  if (kIsWeb) {
+    try {
+      js.context.callMethod('eval', ["document.getElementById('loading-indicator')?.remove()"]);
+    } catch (e) {
+      // Avoid crash on non-js environments if any
+    }
+  }
 }
 
 class DextradeApp extends ConsumerWidget {

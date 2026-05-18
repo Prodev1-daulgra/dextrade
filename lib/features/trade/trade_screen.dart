@@ -7,6 +7,7 @@ import '../../core/theme/dex_typography.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/custom_toast.dart';
+import '../../widgets/dex_keypad.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/providers.dart';
@@ -131,6 +132,34 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
     _amountCtrl.dispose();
     _logScrollController.dispose();
     super.dispose();
+  }
+
+  void _showCustomKeypad(BuildContext context, TextEditingController controller, String label) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return DexKeypad(
+          submitLabel: 'CONFIRM $label',
+          onKeyPressed: (key) {
+            if (key == '.') {
+              if (!controller.text.contains('.')) {
+                controller.text += '.';
+              }
+            } else {
+              controller.text += key;
+            }
+          },
+          onBackspace: () {
+            if (controller.text.isNotEmpty) {
+              controller.text = controller.text.substring(0, controller.text.length - 1);
+            }
+          },
+          onSubmit: () => Navigator.pop(context),
+        );
+      },
+    );
   }
 
   void _generateMockChartData() {
@@ -796,6 +825,10 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
             child: TextField(
               controller: _priceCtrl,
               enabled: _orderTab == 1, // Disable price editing in market mode
+              readOnly: MediaQuery.of(context).size.width < 600,
+              onTap: MediaQuery.of(context).size.width < 600 && _orderTab == 1
+                  ? () => _showCustomKeypad(context, _priceCtrl, 'PRICE')
+                  : null,
               style: GoogleFonts.jetBrainsMono(
                 color: Colors.white,
                 fontSize: 14,
@@ -831,6 +864,10 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
             ),
             child: TextField(
               controller: _amountCtrl,
+              readOnly: MediaQuery.of(context).size.width < 600,
+              onTap: MediaQuery.of(context).size.width < 600
+                  ? () => _showCustomKeypad(context, _amountCtrl, 'ORDER AMOUNT')
+                  : null,
               style: GoogleFonts.jetBrainsMono(
                 color: Colors.white,
                 fontSize: 14,

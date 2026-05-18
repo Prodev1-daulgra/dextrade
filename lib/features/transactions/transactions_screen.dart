@@ -13,6 +13,7 @@ import '../../widgets/transaction_status_modal.dart';
 import '../../data/models/transaction_model.dart';
 import '../../widgets/status_badge.dart';
 import '../../widgets/empty_state_widget.dart';
+import '../../widgets/dex_keypad.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -45,6 +46,34 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     _amountCtrl.dispose();
     _walletCtrl.dispose();
     super.dispose();
+  }
+
+  void _showCustomKeypad(BuildContext context, TextEditingController controller, String label) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return DexKeypad(
+          submitLabel: 'CONFIRM $label',
+          onKeyPressed: (key) {
+            if (key == '.') {
+              if (!controller.text.contains('.')) {
+                controller.text += '.';
+              }
+            } else {
+              controller.text += key;
+            }
+          },
+          onBackspace: () {
+            if (controller.text.isNotEmpty) {
+              controller.text = controller.text.substring(0, controller.text.length - 1);
+            }
+          },
+          onSubmit: () => Navigator.pop(context),
+        );
+      },
+    );
   }
 
   void _resetForms() {
@@ -465,6 +494,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               ),
               child: TextField(
                 controller: _amountCtrl,
+                readOnly: MediaQuery.of(context).size.width < 600,
+                onTap: MediaQuery.of(context).size.width < 600
+                    ? () => _showCustomKeypad(context, _amountCtrl, 'DEPOSIT AMOUNT')
+                    : null,
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
@@ -640,6 +673,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
             ),
             child: TextField(
               controller: _amountCtrl,
+              readOnly: MediaQuery.of(context).size.width < 600,
+              onTap: MediaQuery.of(context).size.width < 600
+                  ? () => _showCustomKeypad(context, _amountCtrl, 'WITHDRAW AMOUNT')
+                  : null,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
