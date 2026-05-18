@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
+import '../../widgets/animated_mesh_gradient.dart';
 import 'marketing_shell.dart';
 
 class ContactScreen extends StatelessWidget {
@@ -15,15 +16,17 @@ class ContactScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 120),
-            _buildHero(isDesktop),
-            _buildContactFormAndInfo(isDesktop),
-            _buildGlobalOffices(isDesktop),
-            const MarketingFooter(),
-          ],
+      body: AnimatedMeshGradient(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 120),
+              _buildHero(isDesktop),
+              _buildContactFormAndInfo(isDesktop),
+              _buildGlobalOffices(isDesktop),
+              const MarketingFooter(),
+            ],
+          ),
         ),
       ),
     );
@@ -55,11 +58,11 @@ class ContactScreen extends StatelessWidget {
                 'We\'re Here to Help',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.spaceGrotesk(
-                  fontSize: isDesktop ? 56 : 36,
+                  fontSize: isDesktop ? 80 : 56,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                   height: 1.05,
-                  letterSpacing: -2,
+                  letterSpacing: -3,
                 ),
               ).animate().fade(delay: 100.ms).slideY(begin: 0.1),
               const SizedBox(height: 16),
@@ -204,22 +207,25 @@ class ContactScreen extends StatelessWidget {
   Widget _buildContactInfo() {
     final items = [
       (
-        Icons.chat_bubble_outline_rounded,
-        'Support',
-        'Our friendly team is here to help.',
-        'support@dextrade.com',
+        Icons.discord,
+        'Discord Community',
+        'Join 50K+ traders and core devs.',
+        'discord.gg/dextrade',
+        DexColors.primary,
       ),
       (
-        Icons.business_rounded,
-        'Sales',
-        'Questions or queries? Get in touch.',
-        'sales@dextrade.com',
+        Icons.telegram,
+        'Telegram Alpha',
+        'Real-time updates and market signals.',
+        't.me/dextrade',
+        DexColors.accent,
       ),
       (
-        Icons.phone_outlined,
-        'Phone',
-        'Mon-Fri from 8am to 5pm.',
-        '+1 (555) 000-0000',
+        Icons.flutter_dash, // X icon placeholder
+        'X (Twitter)',
+        'Latest announcements and features.',
+        '@dextrade',
+        Colors.white,
       ),
     ];
 
@@ -227,53 +233,68 @@ class ContactScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: items.map((item) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: 32),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: DexColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: DexColors.primary.withOpacity(0.2)),
+          padding: const EdgeInsets.only(bottom: 24),
+          child: GlassCard(
+            padding: const EdgeInsets.all(24),
+            borderRadius: 20,
+            borderColor: item.$5.withOpacity(0.1),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: item.$5.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: item.$5.withOpacity(0.2)),
+                  ),
+                  child: Icon(item.$1, color: item.$5, size: 24),
                 ),
-                child: Icon(item.$1, color: DexColors.primary, size: 20),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.$2,
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.$2,
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item.$3,
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 14,
-                        color: DexColors.textSecondary,
+                      const SizedBox(height: 6),
+                      Text(
+                        item.$3,
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 14,
+                          color: DexColors.textSecondary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item.$4,
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: DexColors.primary,
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Text(
+                            item.$4,
+                            style: GoogleFonts.spaceGrotesk(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: item.$5,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 14,
+                            color: item.$5,
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       }).toList(),
