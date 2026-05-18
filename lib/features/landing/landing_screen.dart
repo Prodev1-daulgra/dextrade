@@ -1046,9 +1046,11 @@ class _LandingScreenState extends State<LandingScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GlowButton(
-                          label: 'OPEN FREE ACCOUNT',
-                          onPressed: () => context.push('/register'),
-                          width: 240,
+                          label: 'DOWNLOAD ANDROID (APK)',
+                          onPressed: () {
+                            // Link to APK when ready
+                          },
+                          width: 260,
                         ),
                         const SizedBox(width: 16),
                         _buildSecondaryCTA(context),
@@ -1057,8 +1059,10 @@ class _LandingScreenState extends State<LandingScreen>
                   : Column(
                       children: [
                         GlowButton(
-                          label: 'OPEN FREE ACCOUNT',
-                          onPressed: () => context.push('/register'),
+                          label: 'DOWNLOAD ANDROID (APK)',
+                          onPressed: () {
+                            // Link to APK when ready
+                          },
                           width: double.infinity,
                         ),
                         const SizedBox(height: 16),
@@ -1076,25 +1080,32 @@ class _LandingScreenState extends State<LandingScreen>
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => context.push('/pricing'),
+        onTap: () {},
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          width: fullWidth ? double.infinity : 200,
+          width: fullWidth ? double.infinity : 220,
           height: 48,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.15)),
-            color: Colors.white.withOpacity(0.05),
+            border: Border.all(color: Colors.white.withOpacity(0.08)),
+            color: Colors.white.withOpacity(0.02),
           ),
           child: Center(
-            child: Text(
-              'VIEW PRICING',
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-                letterSpacing: 0.5,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.apple, color: Colors.white38, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  'COMING SOON TO iOS',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white54,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
