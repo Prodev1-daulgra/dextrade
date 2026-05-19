@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glow_button.dart';
 
@@ -685,8 +686,14 @@ class MarketingFooter extends StatelessWidget {
             _buildDownloadButton(
               icon: Icons.android_rounded,
               label: 'Download APK',
-              onTap: () {
-                // Future: launchUrl(Uri.parse('https://dextrade.com/app-release.apk'));
+              onTap: () async {
+                final url = Uri.parse('/app-release.apk');
+                if (!await launchUrl(
+                  url,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  debugPrint('Could not launch $url');
+                }
               },
             ),
             const SizedBox(width: 12),

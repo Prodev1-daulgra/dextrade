@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
@@ -114,20 +115,21 @@ class _LandingScreenState extends State<LandingScreen>
         child: SmoothScrollWrapper(
           controller: _scrollController,
           child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Column(
-            children: [
-              const SizedBox(height: 100), // Space for MarketingShell navbar
-              _buildHero(isDesktop),
-              _buildExecutionTape(),
-              _buildTrustMarquee(),
-              _buildWhyDextradeBento(isDesktop),
-              _buildHowItWorks(isDesktop),
-              _buildTestimonials(),
-              _buildMassiveCTA(isDesktop),
-              // Footer is provided by MarketingShell wrapper in router
-              const SizedBox(height: 40),
-            ],
+            controller: _scrollController,
+            child: Column(
+              children: [
+                const SizedBox(height: 100), // Space for MarketingShell navbar
+                _buildHero(isDesktop),
+                _buildExecutionTape(),
+                _buildTrustMarquee(),
+                _buildWhyDextradeBento(isDesktop),
+                _buildHowItWorks(isDesktop),
+                _buildTestimonials(),
+                _buildMassiveCTA(isDesktop),
+                // Footer is provided by MarketingShell wrapper in router
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
@@ -220,7 +222,6 @@ class _LandingScreenState extends State<LandingScreen>
               label: 'LAUNCH TERMINAL',
               onPressed: () => context.push('/register'),
               width: 220,
-              height: 56,
             ),
             const SizedBox(width: 16),
             Material(
@@ -1047,8 +1048,14 @@ class _LandingScreenState extends State<LandingScreen>
                       children: [
                         GlowButton(
                           label: 'DOWNLOAD ANDROID (APK)',
-                          onPressed: () {
-                            // Link to APK when ready
+                          onPressed: () async {
+                            final url = Uri.parse('/app-release.apk');
+                            if (!await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            )) {
+                              debugPrint('Could not launch $url');
+                            }
                           },
                           width: 260,
                         ),
@@ -1060,8 +1067,14 @@ class _LandingScreenState extends State<LandingScreen>
                       children: [
                         GlowButton(
                           label: 'DOWNLOAD ANDROID (APK)',
-                          onPressed: () {
-                            // Link to APK when ready
+                          onPressed: () async {
+                            final url = Uri.parse('/app-release.apk');
+                            if (!await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            )) {
+                              debugPrint('Could not launch $url');
+                            }
                           },
                           width: double.infinity,
                         ),

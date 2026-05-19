@@ -13,7 +13,7 @@ class AnimatedMeshGradient extends StatefulWidget {
     this.colors = const [
       DexColors.primary,
       DexColors.accent,
-      DexColors.secondary,
+      DexColors.info,
     ],
   });
 
