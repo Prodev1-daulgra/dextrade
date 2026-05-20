@@ -79,9 +79,9 @@ class _AnimatedMeshGradientState extends State<AnimatedMeshGradient>
                   x: (w * 0.8) + math.sin(t * math.pi * 2 + math.pi) * (w * 0.2),
                   y: (h * 0.2) + math.cos(t * math.pi * 2 + math.pi) * (h * 0.3),
                 ),
-                // Deep Dark Purple/Cyan mix for depth
+                // Deep Dark Purple for depth
                 _buildOrb(
-                  color: const Color(0xFF00C6FB).withValues(alpha: 0.10),
+                  color: DexColors.primaryDark.withValues(alpha: 0.12),
                   size: math.max(w, h) * 1.5,
                   x: (w * 0.2) + math.cos(t * math.pi * 2 + math.pi*1.5) * (w * 0.4),
                   y: (h * 0.8) + math.sin(t * math.pi * 2 + math.pi*1.5) * (h * 0.2),
