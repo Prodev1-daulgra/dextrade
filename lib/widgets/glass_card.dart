@@ -56,20 +56,19 @@ class _GlassCardState extends State<GlassCard> {
           borderRadius: BorderRadius.circular(widget.borderRadius),
           child: BackdropFilter(
             filter: ImageFilter.blur(
-              sigmaX:
-                  widget.blurAmount + 6.0, // extra soft premium frosting blur
-              sigmaY: widget.blurAmount + 6.0,
+              sigmaX: widget.blurAmount + 16.0, // High-end frost blur
+              sigmaY: widget.blurAmount + 16.0,
             ),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 color: _isHovered
-                    ? DexColors.surfaceGlass.withValues(alpha: 0.15)
-                    : DexColors.surfaceGlass.withValues(alpha: 0.08),
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : Colors.white.withValues(alpha: 0.01),
                 border: Border.all(
                   color: _isHovered 
                     ? DexColors.primary.withValues(alpha: 0.3) 
-                    : Colors.white.withValues(alpha: 0.05), 
+                    : Colors.white.withValues(alpha: 0.08), 
                   width: 1,
                 ),
                 gradient: LinearGradient(
@@ -77,27 +76,32 @@ class _GlassCardState extends State<GlassCard> {
                   end: Alignment.bottomRight,
                   colors: _isHovered
                       ? [
-                          Colors.white.withValues(alpha: 0.12),
-                          Colors.transparent,
+                          Colors.white.withValues(alpha: 0.15),
+                          Colors.white.withValues(alpha: 0.02),
                           DexColors.primary.withValues(alpha: 0.05),
                         ]
                       : [
-                          Colors.white.withValues(alpha: 0.06),
+                          Colors.white.withValues(alpha: 0.08),
                           Colors.transparent,
-                          Colors.white.withValues(alpha: 0.01),
+                          Colors.white.withValues(alpha: 0.02),
                         ],
                   stops: const [0.0, 0.5, 1.0],
                 ),
                 boxShadow: [
-                  // Inner top highlight
+                  // Inner top/left highlight for 3D bevel effect
                   BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.08),
-                    offset: const Offset(0, 1),
+                    color: Colors.white.withValues(alpha: 0.12),
+                    offset: const Offset(-1, -1),
                     blurRadius: 1,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    offset: const Offset(2, 4),
+                    blurRadius: 12,
                   ),
                 ],
               ),
-              padding: widget.padding ?? const EdgeInsets.all(20),
+              padding: widget.padding ?? const EdgeInsets.all(24),
               child: widget.child,
             ),
           ),

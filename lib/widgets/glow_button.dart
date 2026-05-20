@@ -31,6 +31,7 @@ class _GlowButtonState extends State<GlowButton>
   late AnimationController _controller;
   late Animation<double> _scaleAnim;
   bool _isPressed = false;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -70,80 +71,80 @@ class _GlowButtonState extends State<GlowButton>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _scaleAnim,
-      builder: (context, child) {
-        return Transform.scale(scale: _scaleAnim.value, child: child);
-      },
-      child: GestureDetector(
-        onTapDown: widget.onPressed != null ? _handleTapDown : null,
-        onTapUp: widget.onPressed != null ? _handleTapUp : null,
-        onTapCancel: widget.onPressed != null ? _handleTapCancel : null,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          width: widget.width,
-          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: widget.isPrimary
-                ? const LinearGradient(
-                    colors: DexColors.primaryGradient,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                : null,
-            color: widget.isPrimary ? null : DexColors.surfaceLight,
-            border: widget.isPrimary
-                ? null
-                : Border.all(color: DexColors.border),
-            boxShadow: widget.isPrimary && _isPressed
-                ? [
-                    BoxShadow(
-                      color: DexColors.primary.withValues(alpha: 0.4),
-                      blurRadius: 24,
-                      spreadRadius: 0,
-                    ),
-                  ]
-                : widget.isPrimary
-                ? [
-                    BoxShadow(
-                      color: DexColors.primary.withValues(alpha: 0.2),
-                      blurRadius: 16,
-                      spreadRadius: 0,
-                    ),
-                  ]
-                : null,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (widget.isLoading) ...[
-                GlowMorphLoader(
-                  size: 20,
-                  color: widget.isPrimary
-                      ? DexColors.background
-                      : DexColors.primary,
-                  glowStrength: 4,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: widget.onPressed != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      child: AnimatedBuilder(
+        animation: _scaleAnim,
+        builder: (context, child) {
+          // Scale down when pressed, scale up slightly when hovered
+          final currentScale = _isPressed ? _scaleAnim.value : (_isHovered ? 1.05 : 1.0);
+          return Transform.scale(scale: currentScale, child: child);
+        },
+        child: GestureDetector(
+          onTapDown: widget.onPressed != null ? _handleTapDown : null,
+          onTapUp: widget.onPressed != null ? _handleTapUp : null,
+          onTapCancel: widget.onPressed != null ? _handleTapCancel : null,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: widget.width,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: widget.isPrimary
+                  ? const LinearGradient(
+                      colors: DexColors.primaryGradient,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              color: widget.isPrimary ? null : (_isHovered ? Colors.white.withValues(alpha: 0.05) : DexColors.surfaceLight),
+              border: widget.isPrimary
+                  ? (_isHovered ? Border.all(color: Colors.white.withValues(alpha: 0.5), width: 1.5) : null)
+                  : Border.all(color: _isHovered ? DexColors.primary.withValues(alpha: 0.5) : DexColors.border),
+              boxShadow: widget.isPrimary
+                  ? [
+                      BoxShadow(
+                        color: DexColors.primary.withValues(alpha: _isHovered ? 0.6 : 0.3),
+                        blurRadius: _isHovered ? 32 : 16,
+                        spreadRadius: _isHovered ? 4 : 0,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (widget.isLoading) ...[
+                  GlowMorphLoader(
+                    size: 20,
+                    color: widget.isPrimary
+                        ? DexColors.background
+                        : DexColors.primary,
+                    glowStrength: 4,
+                  ),
+                  const SizedBox(width: 12),
+                ] else if (widget.icon != null) ...[
+                  Icon(
+                    widget.icon,
+                    size: 18,
+                    color: widget.isPrimary
+                        ? DexColors.background
+                        : DexColors.textPrimary,
+                  ),
+                  const SizedBox(width: 10),
+                ],
+                Text(
+                  widget.label.toUpperCase(),
+                  style: widget.isPrimary
+                      ? DexTypography.buttonLarge
+                      : DexTypography.button,
                 ),
-                const SizedBox(width: 12),
-              ] else if (widget.icon != null) ...[
-                Icon(
-                  widget.icon,
-                  size: 18,
-                  color: widget.isPrimary
-                      ? DexColors.background
-                      : DexColors.textPrimary,
-                ),
-                const SizedBox(width: 10),
               ],
-              Text(
-                widget.label.toUpperCase(),
-                style: widget.isPrimary
-                    ? DexTypography.buttonLarge
-                    : DexTypography.button,
-              ),
-            ],
+            ),
           ),
         ),
       ),

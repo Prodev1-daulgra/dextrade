@@ -173,26 +173,61 @@ class _LandingScreenState extends State<LandingScreen>
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       children: [
+        // Premium Pill Badge
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
-            color: DexColors.primary.withOpacity(0.08),
-            border: Border.all(color: DexColors.primary.withOpacity(0.15)),
-          ),
-          child: Text(
-            'INSTITUTIONAL LIQUIDITY PROTOCOL',
-            style: GoogleFonts.orbitron(
-              fontSize: 10,
-              fontWeight: FontWeight.w900,
-              color: DexColors.primary,
-              letterSpacing: 2,
+            gradient: LinearGradient(
+              colors: [
+                DexColors.primary.withValues(alpha: 0.15),
+                DexColors.accent.withValues(alpha: 0.05),
+              ],
             ),
+            border: Border.all(color: DexColors.primary.withValues(alpha: 0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: DexColors.primary.withValues(alpha: 0.2),
+                blurRadius: 20,
+                spreadRadius: -5,
+              )
+            ],
           ),
-        ).animate().fade().slideY(begin: 0.1),
-        const SizedBox(height: 32),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: DexColors.primary,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: DexColors.primary.withValues(alpha: 0.8),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'NEXT-GEN INSTITUTIONAL LIQUIDITY',
+                style: GoogleFonts.orbitron(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  color: DexColors.primary,
+                  letterSpacing: 3,
+                ),
+              ),
+            ],
+          ),
+        ).animate().fade().slideY(begin: 0.2, curve: Curves.easeOutCirc),
+        const SizedBox(height: 40),
+        
+        // Hero Typography
         Text(
-          'Trade with Sovereign Authority.',
+          'Trade with',
           textAlign: isMobile ? TextAlign.center : TextAlign.left,
           style: GoogleFonts.spaceGrotesk(
             fontSize: isMobile ? 56 : 96,
@@ -201,18 +236,45 @@ class _LandingScreenState extends State<LandingScreen>
             height: 1.0,
             letterSpacing: -3.0,
           ),
-        ).animate().fade(delay: 100.ms).slideY(begin: 0.1),
-        const SizedBox(height: 24),
+        ).animate().fade(delay: 100.ms).slideX(begin: -0.05),
+        
+        // Gradient Text
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Colors.white, DexColors.primaryGlow],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(bounds),
+          child: Text(
+            'Sovereign Authority.',
+            textAlign: isMobile ? TextAlign.center : TextAlign.left,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: isMobile ? 56 : 96,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              height: 1.0,
+              letterSpacing: -3.0,
+            ),
+          ),
+        ).animate().fade(delay: 150.ms).slideX(begin: -0.05),
+        
+        const SizedBox(height: 32),
+        
+        // Subtitle
         Text(
-          'Direct matching engine access, sub-15ms execution latency, and mathematically verifiable cold custody. No front-running. No slippage cascades.',
+          'Direct matching engine access. Sub-14ms execution latency.\nMathematically verifiable cold custody with zero front-running.',
           textAlign: isMobile ? TextAlign.center : TextAlign.left,
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: isMobile ? 16 : 18,
+          style: GoogleFonts.inter(
+            fontSize: isMobile ? 16 : 20,
+            fontWeight: FontWeight.w400,
             color: DexColors.textSecondary,
             height: 1.6,
+            letterSpacing: -0.2,
           ),
-        ).animate().fade(delay: 200.ms),
-        const SizedBox(height: 48),
+        ).animate().fade(delay: 200.ms).slideY(begin: 0.1),
+        const SizedBox(height: 56),
+        
+        // CTAs
         Row(
           mainAxisAlignment: isMobile
               ? MainAxisAlignment.center
@@ -220,38 +282,38 @@ class _LandingScreenState extends State<LandingScreen>
           children: [
             GlowButton(
               label: 'LAUNCH TERMINAL',
+              icon: Icons.rocket_launch_rounded,
               onPressed: () => context.push('/register'),
-              width: 220,
+              width: isMobile ? null : 260,
             ),
-            const SizedBox(width: 16),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
+            const SizedBox(width: 24),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
                 onTap: () => context.push('/features'),
-                borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  height: 56,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  height: 60,
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
-                    color: Colors.white.withOpacity(0.02),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                    color: Colors.white.withValues(alpha: 0.03),
                   ),
                   child: Center(
                     child: Row(
                       children: [
                         const Icon(
-                          Icons.play_arrow_rounded,
+                          Icons.play_circle_fill_rounded,
                           color: Colors.white,
-                          size: 20,
+                          size: 24,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         Text(
-                          'HOW IT WORKS',
+                          'VIEW DEMO',
                           style: GoogleFonts.spaceGrotesk(
-                            fontSize: 13,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
+                            letterSpacing: 1.5,
                             color: Colors.white,
                           ),
                         ),
@@ -262,7 +324,7 @@ class _LandingScreenState extends State<LandingScreen>
               ),
             ),
           ],
-        ).animate().fade(delay: 300.ms),
+        ).animate().fade(delay: 300.ms).scale(begin: const Offset(0.95, 0.95)),
       ],
     );
   }
@@ -279,65 +341,48 @@ class _LandingScreenState extends State<LandingScreen>
         if (!isMobile) {
           final w = MediaQuery.of(context).size.width;
           final h = MediaQuery.of(context).size.height;
+          // Increased sensitivity for a more dynamic 3D feel
           setState(() {
-            _consoleTiltX = (e.position.dy - h / 2) / (h / 2) * -0.05;
-            _consoleTiltY = (e.position.dx - w / 2) / (w / 2) * 0.05;
+            _consoleTiltX = (e.position.dy - h / 2) / (h / 2) * -0.12;
+            _consoleTiltY = (e.position.dx - w / 2) / (w / 2) * 0.12;
           });
         }
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCirc,
         transform: Matrix4.identity()
           ..setEntry(3, 2, 0.001)
           ..rotateX(_consoleTiltX)
-          ..rotateY(_consoleTiltY),
+          ..rotateY(_consoleTiltY)
+          ..scale(_isConsoleHovered ? 1.05 : 1.0),
         transformAlignment: FractionalOffset.center,
         child: GlassCard(
           padding: EdgeInsets.zero,
-          borderRadius: 24,
-          borderColor: DexColors.primary.withOpacity(0.2),
+          borderRadius: 32,
+          blurAmount: 40, // Extreme frost
+          borderColor: DexColors.primary.withValues(alpha: 0.3),
           child: Container(
-            height: isMobile ? 300 : 450,
+            height: isMobile ? 350 : 550,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(32),
               gradient: RadialGradient(
                 center: Alignment.topLeft,
                 radius: 1.5,
                 colors: [
-                  DexColors.primary.withOpacity(0.2),
+                  DexColors.primary.withValues(alpha: 0.15),
                   Colors.transparent,
                 ],
               ),
             ),
             child: Stack(
               children: [
-                // Abstract 3D Hero Image
+                // Abstract Grid Pattern inside the console
                 Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Opacity(
-                      opacity: 0.6,
-                      child: Image.asset(
-                        'assets/images/hero_abstract_1779065799138.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                // Overlay Gradient
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.1),
-                          Colors.black.withOpacity(0.8),
-                        ],
-                      ),
+                  child: Opacity(
+                    opacity: 0.1,
+                    child: CustomPaint(
+                      painter: _GridPainter(),
                     ),
                   ),
                 ),
@@ -345,81 +390,139 @@ class _LandingScreenState extends State<LandingScreen>
                 Positioned.fill(
                   child: CustomPaint(painter: _MockChartPainter()),
                 ),
-                // Overlay HUD
+                // Central Glowing Orb for depth
                 Positioned(
-                  top: 24,
-                  left: 24,
+                  top: 100,
+                  right: 50,
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: DexColors.primary.withValues(alpha: 0.2),
+                          blurRadius: 100,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                // Overlay HUD Top Left
+                Positioned(
+                  top: 32,
+                  left: 32,
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
+                          horizontal: 12,
+                          vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: DexColors.success.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(6),
+                          color: DexColors.success.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: DexColors.success.withOpacity(0.2),
+                            color: DexColors.success.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
                           children: [
                             Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
                                 color: DexColors.success,
                                 shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: DexColors.success.withValues(alpha: 0.6),
+                                    blurRadius: 6,
+                                  )
+                                ],
                               ),
                             ),
-                            const SizedBox(width: 6),
+                            const SizedBox(width: 8),
                             Text(
-                              'LIVE',
+                              'MAINNET',
                               style: GoogleFonts.spaceGrotesk(
-                                fontSize: 10,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w900,
                                 color: DexColors.success,
+                                letterSpacing: 1,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                    ],
+                  ),
+                ),
+                // Overlay HUD Bottom Right
+                Positioned(
+                  bottom: 32,
+                  right: 32,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
                       Text(
-                        'BTC/USD  97,240.50',
+                        'LATENCY / ROUTING',
+                        style: GoogleFonts.orbitron(
+                          fontSize: 10,
+                          color: Colors.white54,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '12.4ms',
                         style: GoogleFonts.jetBrainsMono(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
+                          fontSize: 36,
+                          fontWeight: FontWeight.w900,
+                          color: DexColors.primary,
+                          shadows: [
+                            Shadow(
+                              color: DexColors.primary.withValues(alpha: 0.5),
+                              blurRadius: 20,
+                            )
+                          ]
                         ),
                       ),
                     ],
                   ),
                 ),
+                // Mock Orderbook Side Panel
                 Positioned(
-                  bottom: 24,
-                  right: 24,
+                  right: 32,
+                  top: 100,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'LATENCY',
-                        style: GoogleFonts.orbitron(
-                          fontSize: 8,
-                          color: Colors.white30,
-                          fontWeight: FontWeight.w900,
+                    children: List.generate(5, (i) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              (0.4532 - (i * 0.0011)).toStringAsFixed(4),
+                              style: GoogleFonts.jetBrainsMono(
+                                color: DexColors.error,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              (12.4 + (i * 2.1)).toStringAsFixed(1),
+                              style: GoogleFonts.jetBrainsMono(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Text(
-                        '14.2ms',
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
-                          color: DexColors.primary,
-                        ),
-                      ),
-                    ],
+                      );
+                    }),
                   ),
                 ),
               ],
@@ -427,7 +530,7 @@ class _LandingScreenState extends State<LandingScreen>
           ),
         ),
       ),
-    ).animate().fade(delay: 400.ms).slideX(begin: 0.1);
+    ).animate().fade(delay: 400.ms).slideX(begin: 0.1, curve: Curves.easeOutCirc);
   }
 
   // 2. Trust Bar — Logo marquee
@@ -553,35 +656,55 @@ class _LandingScreenState extends State<LandingScreen>
       width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 40 : 24,
-        vertical: 80,
+        vertical: 120,
       ),
       child: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
           child: Column(
             children: [
-              Text(
-                'THE DEXTRADE EDGE',
-                style: GoogleFonts.orbitron(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 3,
-                  color: DexColors.accent,
+              // Section Header
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(color: DexColors.primary.withValues(alpha: 0.2)),
+                  color: DexColors.primary.withValues(alpha: 0.05),
+                ),
+                child: Text(
+                  'THE DEXTRADE EDGE',
+                  style: GoogleFonts.orbitron(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 3,
+                    color: DexColors.primary,
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 24),
               Text(
                 'Institutional Tooling.\nZero Compromises.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.spaceGrotesk(
-                  fontSize: isDesktop ? 48 : 32,
+                  fontSize: isDesktop ? 56 : 40,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
-                  height: 1.1,
-                  letterSpacing: -1,
+                  height: 1.0,
+                  letterSpacing: -2,
                 ),
               ),
-              const SizedBox(height: 60),
+              const SizedBox(height: 16),
+              Text(
+                'Built for high-frequency traders, engineered for sovereign security.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: isDesktop ? 18 : 16,
+                  color: DexColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 80),
+              
+              // Bento Grid
               if (isDesktop)
                 Column(
                   children: [
@@ -591,21 +714,23 @@ class _LandingScreenState extends State<LandingScreen>
                           flex: 3,
                           child: _buildBentoCard(
                             'Cold Custody MPC Vaults',
-                            'Geographically distributed signing nodes.',
-                            Icons.shield,
+                            'Geographically distributed signing nodes. Your keys never touch hot storage. Mathematical certainty built-in.',
+                            Icons.shield_outlined,
                             DexColors.success,
                             imagePath: 'assets/images/bento_security_1779065769073.png',
+                            height: 380,
                           ),
                         ),
                         const SizedBox(width: 24),
                         Expanded(
                           flex: 2,
                           child: _buildBentoCard(
-                            '14ms Execution',
-                            'Zero-slippage matching.',
-                            Icons.speed,
+                            '12.4ms Execution',
+                            'Direct engine routing with zero-slippage guarantees.',
+                            Icons.bolt_rounded,
                             DexColors.primary,
                             imagePath: 'assets/images/bento_routing_1779065754132.png',
+                            height: 380,
                           ),
                         ),
                       ],
@@ -616,10 +741,11 @@ class _LandingScreenState extends State<LandingScreen>
                         Expanded(
                           flex: 2,
                           child: _buildBentoCard(
-                            '0.1% Max Fees',
-                            'Tiered volume discounts.',
-                            Icons.account_balance_wallet,
-                            DexColors.warning,
+                            'Volume Discounts',
+                            'Maker rebates up to 0.02% for top tier liquidity providers.',
+                            Icons.pie_chart_outline_rounded,
+                            DexColors.accent,
+                            height: 340,
                           ),
                         ),
                         const SizedBox(width: 24),
@@ -627,10 +753,11 @@ class _LandingScreenState extends State<LandingScreen>
                           flex: 3,
                           child: _buildBentoCard(
                             'Mirror Protocol',
-                            'Automated strategy replication.',
-                            Icons.people,
-                            DexColors.info,
+                            'Automated strategy replication with sub-millisecond sync.',
+                            Icons.hub_outlined,
+                            DexColors.primaryGlow,
                             imagePath: 'assets/images/bento_analytics_1779065784478.png',
+                            height: 340,
                           ),
                         ),
                       ],
@@ -643,31 +770,31 @@ class _LandingScreenState extends State<LandingScreen>
                     _buildBentoCard(
                       'Cold Custody MPC Vaults',
                       'Geographically distributed signing nodes.',
-                      Icons.shield,
+                      Icons.shield_outlined,
                       DexColors.success,
                       imagePath: 'assets/images/bento_security_1779065769073.png',
                     ),
                     const SizedBox(height: 16),
                     _buildBentoCard(
-                      '14ms Execution',
+                      '12.4ms Execution',
                       'Zero-slippage matching.',
-                      Icons.speed,
+                      Icons.bolt_rounded,
                       DexColors.primary,
                       imagePath: 'assets/images/bento_routing_1779065754132.png',
                     ),
                     const SizedBox(height: 16),
                     _buildBentoCard(
-                      '0.1% Max Fees',
-                      'Tiered volume discounts.',
-                      Icons.account_balance_wallet,
-                      DexColors.warning,
+                      'Volume Discounts',
+                      'Maker rebates up to 0.02%.',
+                      Icons.pie_chart_outline_rounded,
+                      DexColors.accent,
                     ),
                     const SizedBox(height: 16),
                     _buildBentoCard(
                       'Mirror Protocol',
                       'Automated strategy replication.',
-                      Icons.people,
-                      DexColors.info,
+                      Icons.hub_outlined,
+                      DexColors.primaryGlow,
                       imagePath: 'assets/images/bento_analytics_1779065784478.png',
                     ),
                   ],
@@ -684,63 +811,89 @@ class _LandingScreenState extends State<LandingScreen>
     String desc,
     IconData icon,
     Color color,
-    {String? imagePath}
+    {String? imagePath, double height = 300}
   ) {
-    return GlassCard(
-      padding: EdgeInsets.zero,
-      borderRadius: 24,
-      borderColor: color.withOpacity(0.1),
-      child: Stack(
-        children: [
-          if (imagePath != null)
+    return SizedBox(
+      height: height,
+      child: GlassCard(
+        padding: EdgeInsets.zero,
+        borderRadius: 32,
+        blurAmount: 24,
+        borderColor: color.withValues(alpha: 0.2),
+        child: Stack(
+          children: [
+            // Ambient Glow Behind Content
             Positioned(
-              right: -40,
-              bottom: -40,
-              width: 300,
-              height: 300,
-              child: Opacity(
-                opacity: 0.7,
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
+              top: -50,
+              left: -50,
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color.withValues(alpha: 0.1),
+                  boxShadow: [
+                    BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 100)
+                  ]
                 ),
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: color.withOpacity(0.2)),
-                  ),
-                  child: Icon(icon, color: color, size: 24),
-                ),
-                const SizedBox(height: 120),
-                Text(
-                  title,
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
+            if (imagePath != null)
+              Positioned(
+                right: -20,
+                bottom: -20,
+                width: 280,
+                height: 280,
+                child: Opacity(
+                  opacity: 0.6,
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  desc,
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 14,
-                    color: DexColors.textSecondary,
+              ),
+            Padding(
+              padding: const EdgeInsets.all(40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: color.withValues(alpha: 0.3)),
+                      boxShadow: [
+                        BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 20)
+                      ]
+                    ),
+                    child: Icon(icon, color: color, size: 28),
                   ),
-                ),
-              ],
+                  const Spacer(),
+                  Text(
+                    title,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    desc,
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      color: DexColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1174,3 +1327,28 @@ class _MockChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+class _GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = DexColors.primary.withValues(alpha: 0.15)
+      ..strokeWidth = 1.0;
+
+    const step = 30.0;
+    
+    // Horizontal lines
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+    
+    // Vertical lines
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
