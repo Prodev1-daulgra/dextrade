@@ -102,63 +102,71 @@ class _MarketingShellState extends State<MarketingShell>
           horizontal: isDesktop ? 40 : 16,
           vertical: isDesktop ? 16 : 10,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 28 : 18,
-                vertical: isDesktop ? 16 : 12,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0A0A12).withOpacity(0.75),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
-                boxShadow: [
-                  BoxShadow(
-                    color: DexColors.primary.withOpacity(0.05),
-                    blurRadius: 40,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  // Logo
-                  _buildLogo(context, isDesktop),
-                  const Spacer(),
-
-                  // Desktop nav links
-                  if (isDesktop) ...[
-                    for (final item in _navItems) _buildDesktopLink(item),
-                    const SizedBox(width: 24),
-                    // Auth buttons
-                    _buildNavAuthButton(
-                      'Log In',
-                      onTap: () => context.push('/login'),
-                      ghost: true,
-                    ),
-                    const SizedBox(width: 12),
-                    GlowButton(
-                      label: 'GET STARTED',
-                      onPressed: () => context.push('/register'),
-                      width: 140,
+        child: CustomPaint(
+          foregroundPainter: _NavbarPainter(glowColor: DexColors.primary),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? 28 : 18,
+                  vertical: isDesktop ? 16 : 12,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0A0A12).withOpacity(0.75),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: DexColors.primary.withOpacity(0.05),
+                      blurRadius: 40,
+                      offset: const Offset(0, 8),
                     ),
                   ],
+                ),
+                child: Row(
+                  children: [
+                    // Logo
+                    _buildLogo(context, isDesktop),
+                    const Spacer(),
 
-                  // Mobile hamburger
-                  if (!isDesktop) ...[
-                    _buildNavAuthButton(
-                      'Login',
-                      onTap: () => context.push('/login'),
-                      ghost: true,
-                      compact: true,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildHamburger(),
+                    // Desktop nav links
+                    if (isDesktop) ...[
+                      for (final item in _navItems)
+                        _NavBarLink(
+                          item: item,
+                          isActive: _currentPath == item.path,
+                          onTap: () => context.go(item.path),
+                        ),
+                      const SizedBox(width: 24),
+                      // Auth buttons
+                      _buildNavAuthButton(
+                        'Log In',
+                        onTap: () => context.push('/login'),
+                        ghost: true,
+                      ),
+                      const SizedBox(width: 12),
+                      GlowButton(
+                        label: 'GET STARTED',
+                        onPressed: () => context.push('/register'),
+                        width: 140,
+                      ),
+                    ],
+
+                    // Mobile hamburger
+                    if (!isDesktop) ...[
+                      _buildNavAuthButton(
+                        'Login',
+                        onTap: () => context.push('/login'),
+                        ghost: true,
+                        compact: true,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildHamburger(),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
@@ -196,43 +204,31 @@ class _MarketingShellState extends State<MarketingShell>
             child: const Icon(Icons.flash_on, color: Colors.white, size: 16),
           ),
           const SizedBox(width: 10),
-          Text(
-            'DEXTRADE',
-            style: GoogleFonts.orbitron(
-              fontSize: isDesktop ? 16 : 13,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.5,
-              color: Colors.white,
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'DEX',
+                  style: GoogleFonts.orbitron(
+                    fontSize: isDesktop ? 17 : 14,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                    color: DexColors.primary,
+                  ),
+                ),
+                TextSpan(
+                  text: 'TRADE',
+                  style: GoogleFonts.orbitron(
+                    fontSize: isDesktop ? 17 : 14,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildDesktopLink(_NavItem item) {
-    final isActive = _currentPath == item.path;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => context.go(item.path),
-          borderRadius: BorderRadius.circular(10),
-          hoverColor: Colors.white.withOpacity(0.04),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Text(
-              item.label.toUpperCase(),
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
-                letterSpacing: 0.8,
-                color: isActive ? DexColors.primary : Colors.white54,
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -797,4 +793,146 @@ class MarketingFooter extends StatelessWidget {
       child: Icon(icon, color: Colors.white30, size: 16),
     );
   }
+}
+
+class _NavBarLink extends StatefulWidget {
+  final _NavItem item;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _NavBarLink({
+    required this.item,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  State<_NavBarLink> createState() => _NavBarLinkState();
+}
+
+class _NavBarLinkState extends State<_NavBarLink> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _isHovered ? 1.05 : 1.0,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: widget.isActive
+                    ? [
+                        DexColors.primary.withOpacity(0.15),
+                        DexColors.accent.withOpacity(0.05),
+                      ]
+                    : _isHovered
+                        ? [
+                            Colors.white.withOpacity(0.06),
+                            Colors.white.withOpacity(0.02),
+                          ]
+                        : [
+                            Colors.transparent,
+                            Colors.transparent,
+                          ],
+              ),
+              border: Border.all(
+                color: widget.isActive
+                    ? DexColors.primary.withOpacity(0.4)
+                    : _isHovered
+                        ? Colors.white.withOpacity(0.15)
+                        : Colors.transparent,
+              ),
+              boxShadow: widget.isActive
+                  ? [
+                      BoxShadow(
+                        color: DexColors.primary.withOpacity(0.15),
+                        blurRadius: 12,
+                        spreadRadius: -2,
+                      )
+                    ]
+                  : null,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.isActive) ...[
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: DexColors.primary,
+                      boxShadow: [
+                        BoxShadow(
+                          color: DexColors.primary,
+                          blurRadius: 6,
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  widget.item.label.toUpperCase(),
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 12,
+                    fontWeight: widget.isActive ? FontWeight.w800 : FontWeight.w600,
+                    letterSpacing: 1.0,
+                    color: widget.isActive ? Colors.white : Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavbarPainter extends CustomPainter {
+  final Color glowColor;
+
+  _NavbarPainter({required this.glowColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = glowColor.withOpacity(0.5)
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+
+    final double R = 20.0; // matching border radius
+    final double L = 20.0; // length of the bracket lines
+
+    // Top-left bracket
+    final pathTL = Path()
+      ..moveTo(0, R + L)
+      ..lineTo(0, R)
+      ..arcToPoint(Offset(R, 0), radius: Radius.circular(R))
+      ..lineTo(R + L, 0);
+    canvas.drawPath(pathTL, paint);
+
+    // Bottom-right bracket
+    final pathBR = Path()
+      ..moveTo(size.width, size.height - (R + L))
+      ..lineTo(size.width, size.height - R)
+      ..arcToPoint(Offset(size.width - R, size.height), radius: Radius.circular(R))
+      ..lineTo(size.width - (R + L), size.height);
+    canvas.drawPath(pathBR, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -900,20 +900,12 @@ class _LandingScreenState extends State<LandingScreen>
 
   // 5. How It Works Stepper
   Widget _buildHowItWorks(bool isDesktop) {
-    final steps = [
-      ('1. Create Account', 'Sign up and verify your identity in minutes.'),
-      ('2. Fund Wallet', 'Deposit crypto or fiat securely.'),
-      ('3. Trade or Copy', 'Execute manually or follow top traders.'),
-      ('4. Scale Portfolio', 'Analyze performance and scale margin.'),
-    ];
-
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 40 : 24,
-        vertical: 80,
+        vertical: 100,
       ),
-      color: Colors.white.withOpacity(0.01),
       child: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
@@ -930,7 +922,7 @@ class _LandingScreenState extends State<LandingScreen>
               ),
               const SizedBox(height: 12),
               Text(
-                'From Zero to Alpha',
+                'Sovereign Integration',
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: isDesktop ? 42 : 32,
                   fontWeight: FontWeight.w900,
@@ -938,76 +930,288 @@ class _LandingScreenState extends State<LandingScreen>
                 ),
               ),
               const SizedBox(height: 60),
-              isDesktop
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: steps
-                          .map(
-                            (s) => Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      s.$1,
-                                      style: GoogleFonts.spaceGrotesk(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      s.$2,
-                                      style: GoogleFonts.spaceGrotesk(
-                                        fontSize: 14,
-                                        color: DexColors.textSecondary,
-                                        height: 1.5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    )
-                  : Column(
-                      children: steps
-                          .map(
-                            (s) => Padding(
-                              padding: const EdgeInsets.only(bottom: 32),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    s.$1,
-                                    style: GoogleFonts.spaceGrotesk(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    s.$2,
-                                    style: GoogleFonts.spaceGrotesk(
-                                      fontSize: 15,
-                                      color: DexColors.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                          .toList(),
+              if (isDesktop)
+                Stack(
+                  children: [
+                    // Gradient Connecting Timeline line
+                    Positioned(
+                      top: 45,
+                      left: 120,
+                      right: 120,
+                      child: Container(
+                        height: 2,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              DexColors.success.withOpacity(0.5),
+                              DexColors.primaryGlow.withOpacity(0.5),
+                              DexColors.primary.withOpacity(0.5),
+                              DexColors.warning.withOpacity(0.5),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _buildStepCard(
+                            '01',
+                            'CREATE IDENTITY',
+                            'Register your secure account and complete sovereign verification in minutes.',
+                            Icons.person_add_alt_1_rounded,
+                            DexColors.success,
+                            isDesktop,
+                          ),
+                        ),
+                        const SizedBox(width: 24),
+                        Expanded(
+                          child: _buildStepCard(
+                            '02',
+                            'LINK CAPITALS',
+                            'Securely connect your institutional custodian or deposit assets directly to cold storage.',
+                            Icons.account_balance_wallet_outlined,
+                            DexColors.primaryGlow,
+                            isDesktop,
+                          ),
+                        ),
+                        const SizedBox(width: 24),
+                        Expanded(
+                          child: _buildStepCard(
+                            '03',
+                            'SYNC MIRROR',
+                            'Choose to mirror verified master strategies or configure custom API triggers.',
+                            Icons.hub_outlined,
+                            DexColors.primary,
+                            isDesktop,
+                          ),
+                        ),
+                        const SizedBox(width: 24),
+                        Expanded(
+                          child: _buildStepCard(
+                            '04',
+                            'SCALE MARGIN',
+                            'Monitor latency-optimized real-time yield and safely scale your global margin.',
+                            Icons.insights_rounded,
+                            DexColors.warning,
+                            isDesktop,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              else
+                Column(
+                  children: [
+                    _buildMobileStepCard(
+                      '01',
+                      'CREATE IDENTITY',
+                      'Register your secure account and complete sovereign verification in minutes.',
+                      Icons.person_add_alt_1_rounded,
+                      DexColors.success,
+                    ),
+                    _buildMobileStepCard(
+                      '02',
+                      'LINK CAPITALS',
+                      'Securely connect your institutional custodian or deposit assets directly to cold storage.',
+                      Icons.account_balance_wallet_outlined,
+                      DexColors.primaryGlow,
+                    ),
+                    _buildMobileStepCard(
+                      '03',
+                      'SYNC MIRROR',
+                      'Choose to mirror verified master strategies or configure custom API triggers.',
+                      Icons.hub_outlined,
+                      DexColors.primary,
+                    ),
+                    _buildMobileStepCard(
+                      '04',
+                      'SCALE MARGIN',
+                      'Monitor latency-optimized real-time yield and safely scale your global margin.',
+                      Icons.insights_rounded,
+                      DexColors.warning,
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildStepCard(
+    String number,
+    String title,
+    String desc,
+    IconData icon,
+    Color color,
+    bool isDesktop,
+  ) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Glowing Badge Node
+        Container(
+          width: 90,
+          height: 90,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFF07070F),
+            border: Border.all(color: color.withOpacity(0.6), width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(0.3),
+                blurRadius: 15,
+                spreadRadius: 2,
+              )
+            ],
+          ),
+          child: Center(
+            child: Icon(icon, color: color, size: 28),
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Step number indicator
+        Text(
+          'STEP $number',
+          style: GoogleFonts.orbitron(
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            color: color,
+            letterSpacing: 2,
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Glass Card Content
+        SizedBox(
+          height: 180,
+          child: GlassCard(
+            borderRadius: 24,
+            blurAmount: 20,
+            borderColor: color.withOpacity(0.1),
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: Text(
+                    desc,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: DexColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileStepCard(
+    String number,
+    String title,
+    String desc,
+    IconData icon,
+    Color color,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Timeline indicator with badge
+          Column(
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF07070F),
+                  border: Border.all(color: color.withOpacity(0.6), width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(0.2),
+                      blurRadius: 10,
+                    )
+                  ],
+                ),
+                child: Center(
+                  child: Icon(icon, color: color, size: 20),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: 2,
+                height: 120,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [color.withOpacity(0.4), Colors.transparent],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: GlassCard(
+              borderRadius: 20,
+              blurAmount: 15,
+              borderColor: color.withOpacity(0.1),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'STEP $number',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      color: color,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    desc,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: DexColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1019,26 +1223,31 @@ class _LandingScreenState extends State<LandingScreen>
         'Alex M.',
         'Fund Manager',
         'Dextrade completely eliminated our execution latency issues.',
+        DexColors.success,
       ),
       (
         'Sarah K.',
         'Prop Trader',
         'The cross-margin engine is the best in the industry.',
+        DexColors.primary,
       ),
       (
         'James R.',
         'Algorithmic Trader',
         'API reliability is unmatched. 10K req/s without a single drop.',
+        DexColors.accent,
       ),
       (
         'Elena V.',
         'Copy Trader',
         'Mirror protocol made it so easy to follow the alpha.',
+        DexColors.primaryGlow,
       ),
       (
         'David H.',
         'Whale',
         'The MPC vault gives me peace of mind for cold storage.',
+        DexColors.warning,
       ),
     ];
 
@@ -1067,78 +1276,14 @@ class _LandingScreenState extends State<LandingScreen>
           ),
           const SizedBox(height: 48),
           SizedBox(
-            height: 200,
+            height: 240,
             child: ListView.builder(
               controller: _testimonialController,
               scrollDirection: Axis.horizontal,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 final t = tests[index % tests.length];
-                return Container(
-                  width: 350,
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.all(28),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    color: Colors.white.withOpacity(0.02),
-                    border: Border.all(color: Colors.white.withOpacity(0.05)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: DexColors.primary.withOpacity(0.2),
-                            ),
-                            child: Center(
-                              child: Text(
-                                t.$1[0],
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontWeight: FontWeight.w800,
-                                  color: DexColors.primary,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                t.$1,
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                t.$2,
-                                style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 12,
-                                  color: DexColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      Text(
-                        '"${t.$3}"',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 15,
-                          color: Colors.white70,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return _buildTestimonialCard(t.$1, t.$2, t.$3, t.$4);
               },
             ),
           ),
@@ -1147,95 +1292,258 @@ class _LandingScreenState extends State<LandingScreen>
     );
   }
 
+  Widget _buildTestimonialCard(
+    String name,
+    String role,
+    String quote,
+    Color accentColor,
+  ) {
+    return Container(
+      width: 380,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: GlassCard(
+        borderRadius: 24,
+        blurAmount: 20,
+        borderColor: accentColor.withOpacity(0.12),
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                // Star rating indicator
+                for (int i = 0; i < 5; i++)
+                  Icon(
+                    Icons.star_rounded,
+                    color: DexColors.warning,
+                    size: 16,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Text(
+                '"$quote"',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 15,
+                  color: Colors.white.withOpacity(0.85),
+                  height: 1.5,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [accentColor.withOpacity(0.4), accentColor.withOpacity(0.1)],
+                    ),
+                    border: Border.all(color: accentColor.withOpacity(0.6), width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: accentColor.withOpacity(0.2),
+                        blurRadius: 8,
+                      )
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      name[0],
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      name,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      role,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: 12,
+                        color: DexColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // 7. Massive CTA Banner
   Widget _buildMassiveCTA(bool isDesktop) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 40 : 24,
-        vertical: 40,
+        vertical: 80,
       ),
       child: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 1200),
-          padding: EdgeInsets.all(isDesktop ? 80 : 40),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                DexColors.primary.withOpacity(0.2),
-                DexColors.primaryDark.withOpacity(0.1),
-                Colors.transparent,
-              ],
+          child: GlassCard(
+            borderRadius: 32,
+            blurAmount: 24,
+            borderColor: DexColors.primary.withOpacity(0.18),
+            padding: EdgeInsets.symmetric(
+              horizontal: isDesktop ? 80 : 32,
+              vertical: isDesktop ? 80 : 48,
             ),
-            border: Border.all(color: DexColors.primary.withOpacity(0.15)),
-          ),
-          child: Column(
-            children: [
-              Text(
-                'Ready to Upgrade?',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: isDesktop ? 56 : 36,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  letterSpacing: -1,
-                  height: 1.1,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Create your free account today and experience sovereign performance.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: isDesktop ? 18 : 16,
-                  color: DexColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 40),
-              isDesktop
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GlowButton(
-                          label: 'DOWNLOAD ANDROID (APK)',
-                          onPressed: () async {
-                            final url = Uri.parse('/app-release.apk');
-                            if (!await launchUrl(
-                              url,
-                              mode: LaunchMode.externalApplication,
-                            )) {
-                              debugPrint('Could not launch $url');
-                            }
-                          },
-                          width: 260,
-                        ),
-                        const SizedBox(width: 16),
-                        _buildSecondaryCTA(context),
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        GlowButton(
-                          label: 'DOWNLOAD ANDROID (APK)',
-                          onPressed: () async {
-                            final url = Uri.parse('/app-release.apk');
-                            if (!await launchUrl(
-                              url,
-                              mode: LaunchMode.externalApplication,
-                            )) {
-                              debugPrint('Could not launch $url');
-                            }
-                          },
-                          width: double.infinity,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildSecondaryCTA(context, fullWidth: true),
+            child: Stack(
+              children: [
+                // Top-right glowing radial background
+                Positioned(
+                  top: -100,
+                  right: -100,
+                  child: Container(
+                    width: 300,
+                    height: 300,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: DexColors.primary.withOpacity(0.15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: DexColors.primary.withOpacity(0.15),
+                          blurRadius: 100,
+                        )
                       ],
                     ),
-            ],
+                  ),
+                ),
+                // Left glowing radial background
+                Positioned(
+                  bottom: -100,
+                  left: -100,
+                  child: Container(
+                    width: 300,
+                    height: 300,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: DexColors.accent.withOpacity(0.1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: DexColors.accent.withOpacity(0.1),
+                          blurRadius: 100,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Column(
+                  children: [
+                    // Glowing lightning pill badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: DexColors.primary.withOpacity(0.1),
+                        border: Border.all(color: DexColors.primary.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.flash_on, color: DexColors.primary, size: 14),
+                          const SizedBox(width: 6),
+                          Text(
+                            'UPGRADE PROTOCOL',
+                            style: GoogleFonts.orbitron(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: DexColors.primary,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Ready to Experience Sovereign Performance?',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: isDesktop ? 48 : 32,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: -1,
+                        height: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Deploy institutional grade trading and zero-slippage copy systems today.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.spaceGrotesk(
+                        fontSize: isDesktop ? 18 : 15,
+                        color: DexColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+                    isDesktop
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GlowButton(
+                                label: 'DOWNLOAD ANDROID (APK)',
+                                onPressed: () async {
+                                  final url = Uri.parse('/app-release.apk');
+                                  if (!await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  )) {
+                                    debugPrint('Could not launch $url');
+                                  }
+                                },
+                                width: 260,
+                              ),
+                              const SizedBox(width: 16),
+                              _buildSecondaryCTA(context),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              GlowButton(
+                                label: 'DOWNLOAD ANDROID (APK)',
+                                onPressed: () async {
+                                  final url = Uri.parse('/app-release.apk');
+                                  if (!await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  )) {
+                                    debugPrint('Could not launch $url');
+                                  }
+                                },
+                                width: double.infinity,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildSecondaryCTA(context, fullWidth: true),
+                            ],
+                          ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1243,38 +1551,30 @@ class _LandingScreenState extends State<LandingScreen>
   }
 
   Widget _buildSecondaryCTA(BuildContext context, {bool fullWidth = false}) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {},
+    return Container(
+      width: fullWidth ? double.infinity : 240,
+      height: 52,
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: fullWidth ? double.infinity : 220,
-          height: 48,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
-            color: Colors.white.withOpacity(0.02),
-          ),
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.apple, color: Colors.white38, size: 18),
-                const SizedBox(width: 8),
-                Text(
-                  'COMING SOON TO iOS',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white54,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        color: Colors.white.withOpacity(0.02),
+      ),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.apple_rounded, color: Colors.white.withOpacity(0.3), size: 18),
+          const SizedBox(width: 8),
+          Text(
+            'COMING SOON TO iOS',
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: Colors.white.withOpacity(0.3),
+              letterSpacing: 1.5,
             ),
           ),
-        ),
+        ],
       ),
     );
   }
