@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dextrade | Next-Gen Decentralized Trading</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- Three.js Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+      <div class="container nav-container">
+        <a href="#" class="logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-accent-cyan)">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          DEX<span>TRADE</span>
+        </a>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#markets">Markets</a>
+          <a href="#pro">Pro Terminal</a>
+          <a href="#about">About</a>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1.5rem; font-size: 0.8rem;">Log In</a>
+          <a href="#" class="btn btn-primary" style="padding: 0.5rem 1.5rem; font-size: 0.8rem;">Launch App</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="container">
+        <h1 class="hero-title">
+          Trade the Future.<br/>
+          <span>Decentralized & Limitless.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Experience institutional-grade execution on a decentralized architecture. Zero latency, maximum security, and a beautiful pro trading terminal.
+        </p>
+        <div style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 2rem;">
+          <a href="#" class="btn btn-primary">Start Trading Now</a>
+          <a href="#features" class="btn btn-secondary">Explore Platform</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Bento Grid -->
+    <section id="features">
+      <div class="container">
+        <h2>Unrivaled Performance</h2>
+        <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 2rem;">
+          Built for professional traders who demand execution speed and deep liquidity without giving up custody.
+        </p>
+        
+        <div class="bento-grid">
+          <div class="bento-item large" style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(0, 0, 0, 0.8));">
+            <h3>Hyper-Liquid Engine</h3>
+            <p>Access deep liquidity pools powered by our proprietary cross-chain matching engine. Execute massive orders with zero slippage.</p>
+          </div>
+          
+          <div class="bento-item">
+            <h3>Zero Gas Fees</h3>
+            <p>Gasless trades powered by our L2 validium architecture. You only pay for what you trade.</p>
+          </div>
+          
+          <div class="bento-item">
+            <h3>Self-Custodial</h3>
+            <p>Your keys, your crypto. Dextrade never holds your assets, ensuring absolute security at all times.</p>
+          </div>
+          
+          <div class="bento-item medium" style="background: linear-gradient(135deg, rgba(217, 70, 239, 0.1), rgba(0, 0, 0, 0.8));">
+            <h3>Pro Terminal UI</h3>
+            <p>A fully customizable workspace with advanced charting, DOM, and multi-monitor support built directly into the browser.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
