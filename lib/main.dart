@@ -5,14 +5,11 @@ import 'data/supabase_client.dart';
 import 'core/theme/dex_theme.dart';
 import 'core/router/app_router.dart';
 
-import 'utils/web_utils.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   await SupabaseConfig.initialize();
   runApp(const ProviderScope(child: DextradeApp()));
-  removeLoadingIndicator();
 }
 
 class DextradeApp extends ConsumerWidget {
