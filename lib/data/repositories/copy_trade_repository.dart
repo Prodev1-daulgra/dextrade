@@ -52,8 +52,9 @@ class CopyTradeRepository {
         .select()
         .eq('id', tradeId)
         .single();
-    if (tx['status'] != 'pending')
+    if (tx['status'] != 'pending') {
       throw Exception('Copy trade already ${tx['status']}');
+    }
 
     final bal = await _client
         .from('user_balances')

@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/transaction_model.dart';
-import '../models/balance_model.dart';
 
 class TransactionRepository {
   final SupabaseClient _client;
@@ -107,8 +106,9 @@ class TransactionRepository {
         .select()
         .eq('id', txId)
         .single();
-    if (tx['status'] != 'pending')
+    if (tx['status'] != 'pending') {
       throw Exception('Transaction is already ${tx['status']}');
+    }
 
     // 2. Lock: mark approved first
     await _client

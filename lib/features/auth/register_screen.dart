@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
-import '../../core/theme/dex_typography.dart';
 import '../../providers/providers.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/glass_card.dart';

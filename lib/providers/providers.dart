@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/supabase_client.dart';
@@ -17,7 +16,6 @@ import '../data/repositories/user_repository.dart';
 import '../data/repositories/portfolio_repository.dart';
 import '../data/repositories/platform_settings_repository.dart';
 import '../data/models/portfolio_model.dart';
-import '../data/models/stock_model.dart';
 import '../data/models/futures_model.dart';
 import '../data/models/options_model.dart';
 import '../data/models/stock_portfolio_model.dart';

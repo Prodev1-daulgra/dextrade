@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/providers.dart';
@@ -26,7 +25,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: authState.isAuthenticated ? '/' : '/landing',
     debugLogDiagnostics: false,
     redirect: (context, state) {
       final isAuth = authState.isAuthenticated;

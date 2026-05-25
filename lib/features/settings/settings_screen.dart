@@ -267,9 +267,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               isPrimary: false,
               icon: Icons.logout_rounded,
               width: double.infinity,
-              onPressed: () {
+              onPressed: () async {
                 HapticFeedback.heavyImpact();
-                ref.read(authProvider.notifier).logout();
+                await ref.read(authProvider.notifier).logout();
+                if (context.mounted) context.go('/landing');
               },
             ).animate().fade(delay: 500.ms),
             const SizedBox(height: 40),

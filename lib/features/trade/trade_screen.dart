@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
-import '../../core/theme/dex_typography.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/custom_toast.dart';

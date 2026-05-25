@@ -38,24 +38,45 @@ class _AppShellState extends ConsumerState<AppShell> {
     _NavItem('/settings', Icons.settings_rounded, 'Settings'),
   ];
 
+  List<_NavItem> _navItemsFor(AuthState auth) {
+    if (!kIsWeb) return _mobileNavItems;
+    final items = List<_NavItem>.from(_webNavItems);
+    if (auth.isSuperAdmin) {
+      items.add(
+        const _NavItem(
+          '/superadmin',
+          Icons.admin_panel_settings_rounded,
+          'Super Admin',
+        ),
+      );
+    }
+    return items;
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final location = GoRouterState.of(context).matchedLocation;
-    final items = kIsWeb ? _webNavItems : _mobileNavItems;
+    final auth = ref.read(authProvider);
+    final items = _navItemsFor(auth);
     final idx = items.indexWhere((e) => e.path == location);
     if (idx >= 0 && idx != _currentIndex) {
       setState(() => _currentIndex = idx);
     }
   }
 
-  void _onNavTap(int index) {
-    final items = kIsWeb ? _webNavItems : _mobileNavItems;
+  void _onNavTap(int index, AuthState auth) {
+    final items = _navItemsFor(auth);
     if (index < items.length) {
       HapticFeedback.selectionClick();
       setState(() => _currentIndex = index);
       context.go(items[index].path);
     }
+  }
+
+  Future<void> _logout() async {
+    await ref.read(authProvider.notifier).logout();
+    if (mounted) context.go('/landing');
   }
 
   @override
@@ -66,10 +87,10 @@ class _AppShellState extends ConsumerState<AppShell> {
     if (isWide && kIsWeb) {
       return _buildWebLayout(auth);
     }
-    return _buildMobileLayout();
+    return _buildMobileLayout(auth);
   }
 
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(AuthState auth) {
     return Scaffold(
       body: widget.child,
       bottomNavigationBar: Container(
@@ -98,7 +119,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                   icon: item.icon,
                   label: item.label,
                   isActive: isActive,
-                  onTap: () => _onNavTap(i),
+                  onTap: () => _onNavTap(i, auth),
                 );
               }),
             ),
@@ -109,17 +130,7 @@ class _AppShellState extends ConsumerState<AppShell> {
   }
 
   Widget _buildWebLayout(AuthState auth) {
-    var navItems = List<_NavItem>.from(_webNavItems);
-    // Add superadmin link for the superadmin
-    if (auth.isSuperAdmin) {
-      navItems.add(
-        const _NavItem(
-          '/superadmin',
-          Icons.admin_panel_settings_rounded,
-          'Super Admin',
-        ),
-      );
-    }
+    final navItems = _navItemsFor(auth);
 
     return Scaffold(
       body: Row(
@@ -234,7 +245,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                           icon: item.icon,
                           label: item.label,
                           isActive: isActive,
-                          onTap: () => _onNavTap(i),
+                          onTap: () => _onNavTap(i, auth),
                         ),
                       );
                     },
@@ -304,8 +315,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                           size: 18,
                           color: DexColors.textMuted,
                         ),
-                        onPressed: () =>
-                            ref.read(authProvider.notifier).logout(),
+                        onPressed: _logout,
                         tooltip: 'Logout',
                       ),
                     ],

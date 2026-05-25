@@ -124,7 +124,6 @@ class _ToastWidgetState extends State<_ToastWidget> {
         icon = Icons.error_rounded;
         break;
       case ToastType.info:
-      default:
         accentColor = DexColors.primary;
         icon = Icons.info_rounded;
         break;

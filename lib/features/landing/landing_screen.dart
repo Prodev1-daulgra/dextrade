@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
@@ -54,24 +53,22 @@ class _LandingScreenState extends State<LandingScreen>
     _testimonialController = ScrollController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startAutoScroll(_tapeController, _tapeTimer, 30);
-      _startAutoScroll(_marqueeController, _marqueeTimer, 40);
-      _startAutoScroll(
+      _tapeTimer = _startAutoScroll(_tapeController, 30);
+      _marqueeTimer = _startAutoScroll(_marqueeController, 40);
+      _testimonialTimer = _startAutoScroll(
         _testimonialController,
-        _testimonialTimer,
         50,
         reverse: true,
       );
     });
   }
 
-  void _startAutoScroll(
+  Timer _startAutoScroll(
     ScrollController controller,
-    Timer? timer,
     int ms, {
     bool reverse = false,
   }) {
-    timer = Timer.periodic(Duration(milliseconds: ms), (timer) {
+    return Timer.periodic(Duration(milliseconds: ms), (timer) {
       if (!controller.hasClients) return;
 
       final maxScroll = controller.position.maxScrollExtent;

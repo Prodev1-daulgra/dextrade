@@ -29,11 +29,6 @@ class _GlassCardState extends State<GlassCard> {
 
   @override
   Widget build(BuildContext context) {
-    final defaultBorder = widget.borderColor ?? DexColors.border;
-    final activeBorder = _isHovered
-        ? DexColors.primary.withValues(alpha: 0.6)
-        : defaultBorder;
-
     final card = AnimatedScale(
       scale: _isHovered ? 1.02 : 1.0,
       duration: const Duration(milliseconds: 200),

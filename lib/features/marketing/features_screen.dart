@@ -1,12 +1,9 @@
-import 'dart:math' as math;
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
-import '../../widgets/pulse_dot.dart';
 import '../../widgets/animated_mesh_gradient.dart';
 import 'marketing_shell.dart';
 
@@ -17,11 +14,7 @@ class FeaturesScreen extends StatefulWidget {
   State<FeaturesScreen> createState() => _FeaturesScreenState();
 }
 
-class _FeaturesScreenState extends State<FeaturesScreen>
-    with SingleTickerProviderStateMixin {
-  int _activeTab = 0;
-  final _tabs = ['Trade Engine', 'Copy Protocol', 'Cold Custody'];
-
+class _FeaturesScreenState extends State<FeaturesScreen> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 900;
