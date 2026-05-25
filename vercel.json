@@ -1,6 +1,6 @@
 {
-  "buildCommand": "bash scripts/vercel-build.sh",
-  "installCommand": "echo \"Flutter build runs in buildCommand\"",
+  "buildCommand": "test -f build/web/main.dart.js && echo \"Deploying prebuilt Flutter web from build/web\"",
+  "installCommand": "echo \"Using committed build/web — no install step\"",
   "outputDirectory": "build/web",
   "framework": null,
   "headers": [
