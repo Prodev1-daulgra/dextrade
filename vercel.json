@@ -1,61 +1,41 @@
 {
-  "cleanUrls": true,
-  "routes": [
+  "buildCommand": "bash scripts/vercel-build.sh",
+  "installCommand": "echo \"Flutter build runs in buildCommand\"",
+  "outputDirectory": "build/web",
+  "framework": null,
+  "headers": [
     {
-      "src": "/app-release.apk",
-      "dest": "/build/web/app-release.apk"
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
     },
     {
-      "src": "/app/assets/(.*)",
-      "dest": "/build/web/app/assets/$1"
+      "source": "/main.dart.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
     },
     {
-      "src": "/app/canvaskit/(.*)",
-      "dest": "/build/web/app/canvaskit/$1"
-    },
+      "source": "/flutter_service_worker.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
     {
-      "src": "/app/icons/(.*)",
-      "dest": "/build/web/app/icons/$1"
-    },
-    {
-      "src": "/app/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|json|wasm|xml|txt|ttf|otf)",
-      "dest": "/build/web/app/$1.$2"
-    },
-    {
-      "src": "/app",
-      "dest": "/build/web/app/index.html"
-    },
-    {
-      "src": "/app/(.*)",
-      "dest": "/build/web/app/index.html"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/build/web/assets/$1"
-    },
-    {
-      "src": "/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|json|wasm|xml|txt|ttf|otf)",
-      "dest": "/build/web/$1.$2"
-    },
-    {
-      "src": "/technology",
-      "dest": "/build/web/technology.html"
-    },
-    {
-      "src": "/assets",
-      "dest": "/build/web/assets.html"
-    },
-    {
-      "src": "/security",
-      "dest": "/build/web/security.html"
-    },
-    {
-      "src": "/institutional",
-      "dest": "/build/web/institutional.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/build/web/index.html"
+      "source": "/((?!.*\\..*).*)",
+      "destination": "/index.html"
     }
   ]
 }
