@@ -1,7 +1,7 @@
 {
-  "buildCommand": "test -f build/web/main.dart.js && echo \"Deploying prebuilt Flutter web from build/web\"",
-  "installCommand": "echo \"Using committed build/web — no install step\"",
-  "outputDirectory": "build/web",
+  "buildCommand": "rm -rf .vercel-output && mkdir -p .vercel-output && if [ -f build/web/main.dart.js ]; then cp -r build/web/. .vercel-output/; elif [ -f main.dart.js ]; then find . -mindepth 1 -maxdepth 1 ! -name .vercel-output -exec cp -r {} .vercel-output/ \\;; else echo ERROR missing main.dart.js && pwd && ls -la && exit 1; fi && test -f .vercel-output/main.dart.js && echo STAGED_OK",
+  "installCommand": "echo staging-flutter-web",
+  "outputDirectory": ".vercel-output",
   "framework": null,
   "headers": [
     {

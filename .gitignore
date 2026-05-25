@@ -33,6 +33,7 @@ migrate_working_dir/
 /build/*
 !/build/web/
 .flutter-sdk/
+.vercel-output/
 !/build/web/**
 !/build/web/
 /coverage/

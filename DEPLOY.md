@@ -10,7 +10,7 @@ If you only committed `lib/` changes, GitHub still had the **old** `build/web/ma
 
 `vercel.json` deploys the **committed** folder `build/web/` (no Flutter install on Vercel).
 
-**Vercel project settings → Root Directory** must be **empty** (repository root). If it is set to `build/web` or anything else, the build will fail.
+**Vercel Root Directory** can be empty **or** `build/web` — `vercel-stage.sh` detects both. Recommended: leave Root Directory **empty** (repo root).
 
 Push any commit that includes an updated `build/web/main.dart.js`.
 
