@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
-import '../../widgets/animated_mesh_gradient.dart';
+import 'design/marketing_download_cta.dart';
+import 'design/marketing_page_scaffold.dart';
 import 'marketing_shell.dart';
 
 class ContactScreen extends StatelessWidget {
@@ -14,21 +15,15 @@ class ContactScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 900;
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: AnimatedMeshGradient(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 120),
-              _buildHero(isDesktop),
-              _buildContactFormAndInfo(isDesktop),
-              _buildGlobalOffices(isDesktop),
-              const MarketingFooter(),
-            ],
-          ),
-        ),
-      ),
+    return MarketingPageScaffold(
+      showFooter: false,
+      children: [
+        _buildHero(isDesktop),
+        _buildContactFormAndInfo(isDesktop),
+        _buildGlobalOffices(isDesktop),
+        const MarketingDownloadCta(),
+        const MarketingFooter(),
+      ],
     );
   }
 

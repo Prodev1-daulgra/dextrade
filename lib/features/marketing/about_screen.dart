@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
-import '../../widgets/animated_mesh_gradient.dart';
+import 'design/marketing_page_scaffold.dart';
+import 'design/marketing_download_cta.dart';
 import 'marketing_shell.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -14,26 +15,20 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 900;
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: AnimatedMeshGradient(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 120),
-              _buildManifesto(isDesktop),
-              _buildGlobalPresence(isDesktop),
-              _buildMissionCards(isDesktop),
-              _buildStats(isDesktop),
-              _buildTeamGrid(isDesktop),
-              _buildComplianceBadges(isDesktop),
-              _buildTimeline(isDesktop),
-              _buildCTA(isDesktop),
-              const MarketingFooter(),
-            ],
-          ),
-        ),
-      ),
+    return MarketingPageScaffold(
+      showFooter: false,
+      children: [
+        _buildManifesto(isDesktop),
+        _buildGlobalPresence(isDesktop),
+        _buildMissionCards(isDesktop),
+        _buildStats(isDesktop),
+        _buildTeamGrid(isDesktop),
+        _buildComplianceBadges(isDesktop),
+        _buildTimeline(isDesktop),
+        _buildCTA(isDesktop),
+        const MarketingDownloadCta(),
+        const MarketingFooter(),
+      ],
     );
   }
 

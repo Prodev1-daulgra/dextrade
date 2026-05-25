@@ -34,11 +34,7 @@
   <title>Dextrade | High-Performance Sovereign Web3 Terminal</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Force high-performance CanvasKit renderer to ensure beautiful frosted glass & shaders -->
-  <script>
-    window.flutterWebRenderer = "canvaskit";
-  </script>
-
+  <!-- Let Flutter pick the fastest renderer (skwasm / canvaskit) for this device -->
   <!-- Premium Glassmorphic Loading Screen CSS -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800&family=Space+Grotesk:wght@500;700&display=swap');

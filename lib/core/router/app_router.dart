@@ -10,6 +10,7 @@ import '../../features/marketing/features_screen.dart';
 import '../../features/marketing/pricing_screen.dart';
 import '../../features/marketing/about_screen.dart';
 import '../../features/marketing/contact_screen.dart';
+import '../../features/marketing/technology_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/transactions/transactions_screen.dart';
 import '../../features/copy_trading/copy_trading_screen.dart';
@@ -42,6 +43,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/pricing',
         '/about',
         '/contact',
+        '/technology',
       ];
       final isPublicPath = publicPaths.contains(path);
 
@@ -96,6 +98,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/contact',
             pageBuilder: (_, __) =>
                 DexPageTransition(child: const ContactScreen()),
+          ),
+          GoRoute(
+            path: '/technology',
+            pageBuilder: (_, __) =>
+                DexPageTransition(child: const TechnologyScreen()),
           ),
         ],
       ),

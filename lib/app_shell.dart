@@ -26,6 +26,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     _NavItem('/trade', Icons.candlestick_chart_rounded, 'Trade'),
     _NavItem('/copy-trading', Icons.people_rounded, 'Mirror'),
     _NavItem('/transactions', Icons.receipt_long_rounded, 'Vault'),
+    _NavItem('/settings', Icons.tune_rounded, 'Settings'),
   ];
 
   static const _webNavItems = [

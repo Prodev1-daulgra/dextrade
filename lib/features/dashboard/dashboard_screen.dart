@@ -79,16 +79,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── Premium Header with Greeting ───
-            _buildHeader(auth, isEmptyState),
+            _buildHeader(auth, isEmptyState)
+                .animate()
+                .fadeIn(duration: 500.ms)
+                .slideY(begin: 0.05, curve: Curves.easeOutCubic),
             const SizedBox(height: 28),
 
-            // ─── Balance Hero Card ───
-            _buildBalanceHero(balanceAsync, isEmptyState),
+            _buildBalanceHero(balanceAsync, isEmptyState)
+                .animate()
+                .fadeIn(delay: 80.ms, duration: 600.ms)
+                .slideY(begin: 0.06, curve: Curves.easeOutCubic),
             const SizedBox(height: 24),
 
-            // ─── Quick Actions Grid ───
-            _buildQuickActions(context),
+            _buildQuickActions(context)
+                .animate()
+                .fadeIn(delay: 160.ms, duration: 600.ms),
             const SizedBox(height: 28),
 
             if (isEmptyState) ...[

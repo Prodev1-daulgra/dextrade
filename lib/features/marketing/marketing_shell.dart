@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../widgets/glow_button.dart';
+import 'design/marketing_download_cta.dart';
 
 /// Shared marketing website shell — premium glass navbar + fullscreen mobile menu + footer.
 /// Wraps all public marketing pages (/landing, /features, /pricing, /about, /contact).
@@ -24,7 +25,8 @@ class _MarketingShellState extends State<MarketingShell>
 
   static const _navItems = [
     _NavItem('Home', '/landing', Icons.home_rounded),
-    _NavItem('Features', '/features', Icons.auto_awesome_rounded),
+    _NavItem('Platform', '/features', Icons.auto_awesome_rounded),
+    _NavItem('Technology', '/technology', Icons.memory_rounded),
     _NavItem('Pricing', '/pricing', Icons.diamond_rounded),
     _NavItem('About', '/about', Icons.info_outline_rounded),
     _NavItem('Contact', '/contact', Icons.mail_outline_rounded),
@@ -680,21 +682,17 @@ class MarketingFooter extends StatelessWidget {
           children: [
             _buildDownloadButton(
               icon: Icons.android_rounded,
-              label: 'Download APK',
+              label: 'Download for Android',
               onTap: () async {
-                final url = Uri.parse('/app-release.apk');
-                if (!await launchUrl(
-                  url,
-                  mode: LaunchMode.externalApplication,
-                )) {
-                  debugPrint('Could not launch $url');
-                }
+                final url = Uri.parse(MarketingDownloadCta.androidApkUrl);
+                await launchUrl(url, mode: LaunchMode.externalApplication);
               },
             ),
             const SizedBox(width: 12),
             _buildDownloadButton(
               icon: Icons.apple_rounded,
-              label: 'iOS (Coming Soon)',
+              label: 'Download for iOS',
+              sublabel: 'Coming Soon',
               disabled: true,
             ),
           ],
@@ -706,6 +704,7 @@ class MarketingFooter extends StatelessWidget {
   Widget _buildDownloadButton({
     required IconData icon,
     required String label,
+    String? sublabel,
     VoidCallback? onTap,
     bool disabled = false,
   }) {
@@ -718,22 +717,43 @@ class MarketingFooter extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: disabled ? Colors.white.withOpacity(0.02) : DexColors.primary.withOpacity(0.1),
+            color: disabled
+                ? Colors.white.withValues(alpha: 0.02)
+                : DexColors.primary.withValues(alpha: 0.1),
             border: Border.all(
-              color: disabled ? Colors.white.withOpacity(0.05) : DexColors.primary.withOpacity(0.2),
+              color: disabled
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : DexColors.primary.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 16, color: disabled ? Colors.white30 : DexColors.primary),
+              Icon(
+                icon,
+                size: 16,
+                color: disabled ? Colors.white30 : DexColors.primary,
+              ),
               const SizedBox(width: 8),
-              Text(
-                label,
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: disabled ? Colors.white30 : Colors.white,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: disabled ? Colors.white30 : Colors.white,
+                    ),
+                  ),
+                  if (sublabel != null)
+                    Text(
+                      sublabel,
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        color: DexColors.textMuted,
+                      ),
+                    ),
+                ],
               ),
             ],
           ),
