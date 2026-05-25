@@ -1,34 +1,42 @@
 # Deploying Dextrade to Vercel
 
-Vercel serves the **compiled** Flutter web app from `build/web/`, not your Dart source.
+Vercel publishes the **compiled** Flutter app in `build/web/` (not Dart source).
 
-## Why the site looked unchanged after push
+**No build script** — avoids `exit 127` / schema errors. Push `build/web/main.dart.js` with your code.
 
-If you only committed `lib/` changes, GitHub still had the **old** `build/web/main.dart.js`. The live site at [dextrade-tau.vercel.app](https://dextrade-tau.vercel.app) reads that file.
+## Vercel settings (pick ONE)
 
-## Option A — Vercel (recommended)
+### A — Recommended
 
-`vercel.json` deploys the **committed** folder `build/web/` (no Flutter install on Vercel).
+| Setting | Value |
+|--------|--------|
+| **Root Directory** | *(leave empty)* |
+| **Build Command** | *(override OFF — use repo `vercel.json`)* |
+| **Output Directory** | *(override OFF)* |
 
-**Vercel Root Directory** can be empty **or** `build/web` — `vercel-stage.sh` detects both. Recommended: leave Root Directory **empty** (repo root).
+Repo root `vercel.json` uses `"outputDirectory": "build/web"`.
 
-Push any commit that includes an updated `build/web/main.dart.js`.
+### B — If Root Directory is `build/web`
 
-## Option B — Refresh the web bundle before push
+Set **Root Directory** to `build/web` in Vercel → Settings → General.
+
+`build/web/vercel.json` uses `"outputDirectory": "."`.
+
+Do **not** set a custom Build Command.
+
+## After UI changes
 
 ```bash
 flutter build web --release
-copy build\app\outputs\flutter-apk\app-release.apk build\web\app-release.apk
+copy web\app-release.apk build\web\app-release.apk
+git add build/web
+git commit -m "chore: update web build"
+git push
 ```
 
-Then commit **all** of `build/web/` and push.
+## Live URLs
 
-## Optional — Build Flutter on Vercel
-
-Only if you need CI to compile Dart (slower). Use `scripts/vercel-build.sh` from repo root with LF line endings, or set Root Directory to `.`.
-
-## After deploy
-
-- Open: `https://dextrade-tau.vercel.app/landing` (path URLs, not `#/landing`)
-- Hard refresh: `Ctrl+Shift+R` or clear site data (old service worker cache)
+- App: `https://dextrade-tau.vercel.app/landing`
 - APK: `https://dextrade-tau.vercel.app/app-release.apk`
+
+Hard refresh after deploy: **Ctrl+Shift+R**.

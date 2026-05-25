@@ -1,6 +1,6 @@
 {
   "installCommand": "echo ok",
-  "outputDirectory": "build/web",
+  "outputDirectory": ".",
   "framework": null,
   "headers": [
     {
