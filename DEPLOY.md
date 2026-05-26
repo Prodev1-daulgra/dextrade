@@ -1,42 +1,87 @@
-# Deploying Dextrade to Vercel
+# Deploying Dextrade (engineering checklist)
 
-Vercel publishes the **compiled** Flutter app in `build/web/` (not Dart source).
+## Why the site showed only “Connecting Engine”
 
-**No build script** — avoids `exit 127` / schema errors. Push `build/web/main.dart.js` with your code.
+The HTML splash is **not** the app — it shows until Flutter paints the first frame.
 
-## Vercel settings (pick ONE)
+Production was deploying `build/web/` **without** `assets/.env`, so `main()` crashed before startup. You only saw the loader.
 
-### A — Recommended
+**Fixed in code:** `AppEnv` + boot error screen + build scripts that always bake `.env` into `build/web/assets/`.
 
-| Setting | Value |
-|--------|--------|
-| **Root Directory** | *(leave empty)* |
-| **Build Command** | *(override OFF — use repo `vercel.json`)* |
-| **Output Directory** | *(override OFF)* |
+---
 
-Repo root `vercel.json` uses `"outputDirectory": "build/web"`.
+## Path A — Vercel builds on push (recommended)
 
-### B — If Root Directory is `build/web`
+1. **Vercel → Settings → Environment Variables** (Production + Preview):
+   - `SUPABASE_URL` = your Supabase project URL  
+   - `SUPABASE_ANON_KEY` = your anon key  
 
-Set **Root Directory** to `build/web` in Vercel → Settings → General.
+2. **Vercel → Settings → General:**
+   - Root Directory: **empty** (repo root)
+   - Build Command: **leave empty** (uses repo `vercel.json` → `bash scripts/vercel-build.sh`)
+   - Output Directory: **leave empty** (`build/web` from `vercel.json`)
 
-`build/web/vercel.json` uses `"outputDirectory": "."`.
+3. Push to `main`. Vercel runs Flutter on Linux and outputs fresh `build/web/`.
 
-Do **not** set a custom Build Command.
+4. Verify deploy:
+   - https://dextrade-tau.vercel.app/version.json — must show current `version` + `builtAt`
+   - https://dextrade-tau.vercel.app/landing — must show new marketing UI (not stuck splash)
+   - Hard refresh: **Ctrl+Shift+R**
 
-## After UI changes
+---
 
-```bash
-flutter build web --release
-copy web\app-release.apk build\web\app-release.apk
-git add build/web
-git commit -m "chore: update web build"
+## Path B — Pre-built `build/web` in git (GitHub Desktop)
+
+Use when Vercel does not run Flutter (or you build locally):
+
+```powershell
+cd c:\Users\hp\Desktop\Dexglow\projects\dextrade
+.\scripts\build-web.ps1
+git add build/web web/app-release.apk
+git commit -m "chore: web release $(Get-Date -Format yyyy-MM-dd)"
 git push
 ```
 
-## Live URLs
+**Required:** `build-web.ps1` copies `.env` → `build/web/assets/.env`.  
+If you skip this script, production **will** break again.
 
-- App: `https://dextrade-tau.vercel.app/landing`
-- APK: `https://dextrade-tau.vercel.app/app-release.apk`
+Force-add env if gitignored:
 
-Hard refresh after deploy: **Ctrl+Shift+R**.
+```powershell
+git add -f build/web/assets/.env
+```
+
+---
+
+## Android APK
+
+```powershell
+flutter build apk --release
+copy build\app\outputs\flutter-apk\app-release.apk web\app-release.apk
+.\scripts\build-web.ps1   # also copies APK into build/web
+```
+
+Download: https://dextrade-tau.vercel.app/app-release.apk
+
+---
+
+## Supabase SQL (run once, in order)
+
+| # | File |
+|---|------|
+| 1 | `supabase/dextrade_mvp_schema.sql` |
+| 2 | `supabase/ensure_profile_v1.sql` |
+| 3 | `supabase/micro_features_v1.sql` |
+
+Not `micro_features_v1.sql` alone on an empty database.
+
+---
+
+## Release checklist (every ship)
+
+- [ ] `flutter analyze` — no errors  
+- [ ] `.\scripts\build-web.ps1` — passes post-build checks  
+- [ ] `/version.json` on live site matches `pubspec.yaml` version  
+- [ ] `/landing` loads past splash  
+- [ ] Login works (schema applied)  
+- [ ] APK URL downloads ~54MB file (not placeholder)

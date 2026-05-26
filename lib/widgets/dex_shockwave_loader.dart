@@ -141,9 +141,8 @@ class _DexShockwaveLoaderState extends State<DexShockwaveLoader>
                 ],
               ],
             );
-          },
-        ),
-      );
+        },
+      ),
     );
   }
 }

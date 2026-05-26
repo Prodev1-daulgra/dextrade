@@ -155,6 +155,27 @@
         setTimeout(function() { loader.remove(); }, 500);
       }
     });
+
+    // If Flutter never boots (missing .env, JS error), show actionable error.
+    setTimeout(function() {
+      var loader = document.getElementById('loading-indicator');
+      if (!loader) return;
+      var status = loader.querySelector('.status-text');
+      if (status) {
+        status.textContent = 'Boot timeout — check console / redeploy with build-web script';
+        status.style.color = '#ff6b6b';
+      }
+    }, 25000);
+
+    window.addEventListener('error', function(e) {
+      var loader = document.getElementById('loading-indicator');
+      if (!loader) return;
+      var status = loader.querySelector('.status-text');
+      if (status) {
+        status.textContent = 'Engine error — see browser console';
+        status.style.color = '#ff6b6b';
+      }
+    });
   </script>
 </body>
 </html>

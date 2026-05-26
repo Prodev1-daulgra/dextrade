@@ -1,4 +1,5 @@
 {
+  "buildCommand": "bash scripts/vercel-build.sh",
   "installCommand": "echo ok",
   "outputDirectory": "build/web",
   "framework": null,
@@ -13,6 +14,10 @@
     },
     {
       "source": "/flutter_service_worker.js",
+      "headers": [{ "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }]
+    },
+    {
+      "source": "/version.json",
       "headers": [{ "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }]
     }
   ],
