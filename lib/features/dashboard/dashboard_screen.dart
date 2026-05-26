@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,10 @@ import '../../widgets/pulse_dot.dart';
 import '../../widgets/shimmer_loader.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/crypto_icon.dart';
-import '../../widgets/glow_morph_loader.dart';
+import '../../widgets/dex_shockwave_loader.dart';
+import '../../widgets/hud/hud_panel.dart';
+import '../../widgets/hud/hud_status_pill.dart';
+import '../../widgets/hud/stateful_action_tile.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -66,6 +70,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
     final balanceAsync = ref.watch(balanceProvider(email));
     final cryptosAsync = ref.watch(cryptosProvider);
+    final geckoAsync = ref.watch(coinGeckoTopMarketsProvider);
     final txAsync = ref.watch(transactionsProvider(email));
 
     // Determine if user has any funds/history
@@ -83,7 +88,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 .animate()
                 .fadeIn(duration: 500.ms)
                 .slideY(begin: 0.05, curve: Curves.easeOutCubic),
-            const SizedBox(height: 28),
+            const SizedBox(height: 14),
+            _buildHudStatusStrip(isEmptyState)
+                .animate()
+                .fadeIn(delay: 60.ms, duration: 500.ms),
+            const SizedBox(height: 22),
 
             _buildBalanceHero(balanceAsync, isEmptyState)
                 .animate()
@@ -97,18 +106,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             const SizedBox(height: 28),
 
             if (isEmptyState) ...[
-              // ─── Empty State Guidance ───
               _buildOnboardingCard(context),
+              const SizedBox(height: 28),
             ] else ...[
-              // ─── Live Activity Feed ───
               _buildLiveActivityHeader(),
               const SizedBox(height: 12),
               _buildRecentActivity(txAsync),
               const SizedBox(height: 28),
-
-              // ─── Market Pulse ───
-              _buildMarketPulse(cryptosAsync),
             ],
+
+            HudPanel(
+              title: 'Alpha Feed',
+              subtitle: 'Live market pulse · CoinGecko + desk',
+              accentColor: DexColors.accent,
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: _buildMarketPulse(cryptosAsync, geckoAsync),
+            ),
           ],
         ),
       ),
@@ -148,6 +161,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   .animate(controller: _greetingController)
                   .fade(delay: 150.ms, duration: 600.ms)
                   .slideX(begin: -0.1),
+              const SizedBox(height: 4),
+              Text(
+                'Institutional matrix · global asset overview',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: DexColors.textMuted,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ),
@@ -192,6 +214,38 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             .fade(delay: 300.ms)
             .scale(begin: const Offset(0.8, 0.8)),
       ],
+    );
+  }
+
+  Widget _buildHudStatusStrip(bool isEmptyState) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          HudStatusPill(
+            label: 'Vault protocol',
+            value: isEmptyState ? 'AWAITING LIQ' : 'ENCRYPTED',
+            color: DexColors.primary,
+            icon: Icons.shield_rounded,
+            pulse: !isEmptyState,
+          ),
+          const SizedBox(width: 10),
+          HudStatusPill(
+            label: 'Global node',
+            value: 'OPTIMAL',
+            color: DexColors.success,
+            icon: Icons.hub_rounded,
+            pulse: true,
+          ),
+          const SizedBox(width: 10),
+          HudStatusPill(
+            label: 'Mirror desk',
+            value: isEmptyState ? 'STANDBY' : '3 ACTIVE',
+            color: DexColors.accent,
+            icon: Icons.auto_graph_rounded,
+          ),
+        ],
+      ),
     );
   }
 
@@ -306,8 +360,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                               value: bal?.balanceUsd ?? 0,
                               style: DexTypography.monoHero,
                             ),
-                      loading: () =>
-                          const ShimmerLoader(height: 52, width: 200),
+                      loading: () => const SizedBox(
+                        height: 52,
+                        child: Center(
+                          child: DexShockwaveLoader(size: 56),
+                        ),
+                      ),
                       error: (_, __) =>
                           Text('\$0.00', style: DexTypography.monoHero),
                     ),
@@ -419,54 +477,121 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   Widget _buildQuickActions(BuildContext context) {
+    final actions = [
+      (
+        Icons.shield_rounded,
+        'Vault',
+        DexColors.primary,
+        () => context.go('/transactions'),
+      ),
+      (
+        Icons.arrow_downward_rounded,
+        'Deposit',
+        DexColors.success,
+        () => context.go('/transactions'),
+      ),
+      (
+        Icons.arrow_upward_rounded,
+        'Withdraw',
+        DexColors.error,
+        () => context.go('/transactions'),
+      ),
+      (
+        Icons.candlestick_chart_rounded,
+        'Trade',
+        DexColors.accent,
+        () => context.go('/trade'),
+      ),
+      (
+        Icons.people_rounded,
+        'Mirror',
+        DexColors.accentGlow,
+        () => context.go('/copy-trading'),
+      ),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('QUICK ACTIONS', style: DexTypography.label),
+        Text('QUICK ACCESS MATRIX', style: DexTypography.label),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            _QuickAction(
-              icon: Icons.arrow_downward_rounded,
-              label: 'Deposit',
-              color: DexColors.success,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.go('/transactions');
-              },
-            ),
-            const SizedBox(width: 10),
-            _QuickAction(
-              icon: Icons.arrow_upward_rounded,
-              label: 'Withdraw',
-              color: DexColors.error,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.go('/transactions');
-              },
-            ),
-            const SizedBox(width: 10),
-            _QuickAction(
-              icon: Icons.candlestick_chart_rounded,
-              label: 'Trade',
-              color: DexColors.accent,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.go('/trade');
-              },
-            ),
-            const SizedBox(width: 10),
-            _QuickAction(
-              icon: Icons.people_rounded,
-              label: 'Mirror',
-              color: DexColors.primary,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                context.go('/copy-trading');
-              },
-            ),
-          ],
+        LayoutBuilder(
+          builder: (context, c) {
+            final wide = c.maxWidth > 520;
+            if (wide) {
+              return Row(
+                children: [
+                  for (var i = 0; i < actions.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 8),
+                    Expanded(
+                      child: StatefulActionTile(
+                        icon: actions[i].$1,
+                        label: actions[i].$2,
+                        accent: actions[i].$3,
+                        onTap: actions[i].$4,
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            }
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final a in actions) ...[
+                    SizedBox(
+                      width: 88,
+                      child: StatefulActionTile(
+                        icon: a.$1,
+                        label: a.$2,
+                        accent: a.$3,
+                        onTap: a.$4,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                ],
+              ),
+            );
+          },
         ).animate().fade(delay: 200.ms),
+        if (kIsWeb) ...[
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () => context.go('/state-admin'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: DexColors.accent.withValues(alpha: 0.35),
+                ),
+                color: DexColors.accent.withValues(alpha: 0.06),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.terminal_rounded,
+                    size: 16,
+                    color: DexColors.accent,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'OPEN TERMINAL OPS (WEB)',
+                    style: GoogleFonts.orbitron(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                      color: DexColors.accent,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -478,7 +603,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       borderColor: DexColors.primary.withValues(alpha: 0.2),
       child: Column(
         children: [
-          const GlowMorphLoader(size: 64, glowStrength: 16),
+          const DexShockwaveLoader(size: 88, brandLabel: 'Dextrade'),
           const SizedBox(height: 24),
           Text(
             'Initialize Your Node',
@@ -536,6 +661,35 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   ),
                 ),
               ),
+              if (kIsWeb) ...[
+                const SizedBox(width: 10),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => context.go('/state-admin'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: DexColors.accent.withValues(alpha: 0.4),
+                        ),
+                        color: DexColors.accent.withValues(alpha: 0.08),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'TERMINAL OPS',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: DexColors.accent,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ],
@@ -677,139 +831,137 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     );
   }
 
-  Widget _buildMarketPulse(AsyncValue cryptosAsync) {
+  Widget _buildMarketPulse(AsyncValue cryptosAsync, AsyncValue geckoAsync) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('MARKET PULSE', style: DexTypography.label),
-            GestureDetector(
-              onTap: () => context.go('/trade'),
-              child: Text(
-                'View All',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: DexColors.primary,
-                ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: GestureDetector(
+            onTap: () => context.go('/trade'),
+            child: Text(
+              'View desk →',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: DexColors.primary,
               ),
             ),
-          ],
+          ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         cryptosAsync.when(
-          data: (cryptos) => Column(
-            children: cryptos.take(5).toList().asMap().entries.map((entry) {
-              final i = entry.key;
-              final c = entry.value;
-              return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: GlassCard(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      borderRadius: 16,
-                      child: Row(
-                        children: [
-                          CryptoIcon(
-                            symbol: c.symbol,
-                            colorHex: c.iconColor,
-                            size: 40,
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  c.name,
-                                  style: DexTypography.bodyMedium.copyWith(
-                                    color: DexColors.textPrimary,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                Text(c.symbol, style: DexTypography.caption),
-                              ],
-                            ),
-                          ),
-                          // Mini sparkline
-                          SizedBox(
-                            width: 60,
-                            height: 28,
-                            child: LineChart(
-                              LineChartData(
-                                gridData: const FlGridData(show: false),
-                                titlesData: const FlTitlesData(show: false),
-                                borderData: FlBorderData(show: false),
-                                lineBarsData: [
-                                  LineChartBarData(
-                                    spots: List.generate(
-                                      8,
-                                      (j) => FlSpot(
-                                        j.toDouble(),
-                                        3 + Random(i * 8 + j).nextDouble() * 4,
-                                      ),
-                                    ),
-                                    isCurved: true,
-                                    color: c.isPositive
-                                        ? DexColors.success
-                                        : DexColors.error,
-                                    barWidth: 1.5,
-                                    dotData: const FlDotData(show: false),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '\$${c.price.toStringAsFixed(2)}',
-                                style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                '${c.isPositive ? '+' : ''}${c.change24h.toStringAsFixed(2)}%',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: c.isPositive
-                                      ? DexColors.success
-                                      : DexColors.error,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                  .animate()
-                  .fade(delay: Duration(milliseconds: (350 + (i * 80)).toInt()))
-                  .slideX(begin: 0.05);
-            }).toList(),
-          ),
-          loading: () => Column(
-            children: List.generate(
-              3,
-              (_) => const Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: ShimmerLoader(height: 68, borderRadius: 16),
-              ),
+          data: (cryptos) {
+            if (cryptos.isEmpty) {
+              return geckoAsync.when(
+                data: (tokens) => Column(
+                  children: tokens.take(5).toList().asMap().entries.map((entry) {
+                    final i = entry.key;
+                    final t = entry.value;
+                    return _MarketRow(
+                      i: i,
+                      name: t.name,
+                      symbol: t.symbol,
+                      price: t.currentPrice,
+                      changePct: t.priceChangePercentage24h,
+                      sparkline: t.sparkline7d,
+                      iconColorHex: '#00F2FE',
+                    );
+                  }).toList(),
+                ),
+                loading: () => _marketLoading(),
+                error: (_, __) => _marketEmpty(
+                  title: 'Market feed offline',
+                  subtitle: 'Seed `cryptocurrencies` in Supabase or check network.',
+                ),
+              );
+            }
+
+            return Column(
+              children: cryptos.take(5).toList().asMap().entries.map((entry) {
+                final i = entry.key;
+                final c = entry.value;
+                return _MarketRow(
+                  i: i,
+                  name: c.name,
+                  symbol: c.symbol,
+                  price: c.price,
+                  changePct: c.change24h,
+                  sparkline: const [],
+                  iconColorHex: c.iconColor,
+                );
+              }).toList(),
+            );
+          },
+          loading: () => _marketLoading(),
+          error: (_, __) => geckoAsync.when(
+            data: (tokens) => Column(
+              children: tokens.take(5).toList().asMap().entries.map((entry) {
+                final i = entry.key;
+                final t = entry.value;
+                return _MarketRow(
+                  i: i,
+                  name: t.name,
+                  symbol: t.symbol,
+                  price: t.currentPrice,
+                  changePct: t.priceChangePercentage24h,
+                  sparkline: t.sparkline7d,
+                  iconColorHex: '#00F2FE',
+                );
+              }).toList(),
+            ),
+            loading: () => _marketLoading(),
+            error: (_, __) => _marketEmpty(
+              title: 'Market feed unavailable',
+              subtitle: 'Connect Supabase seed or check network.',
             ),
           ),
-          error: (_, __) => const Text('Failed to load market data'),
         ),
       ],
     ).animate().fade(delay: 300.ms);
+  }
+
+  Widget _marketLoading() => Column(
+        children: List.generate(
+          3,
+          (_) => const Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: ShimmerLoader(height: 68, borderRadius: 16),
+          ),
+        ),
+      );
+
+  Widget _marketEmpty({required String title, required String subtitle}) {
+    return GlassCard(
+      borderRadius: 16,
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              color: DexColors.primary.withValues(alpha: 0.12),
+              border:
+                  Border.all(color: DexColors.primary.withValues(alpha: 0.25)),
+            ),
+            child: const Icon(Icons.public_rounded, color: DexColors.primary),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: DexTypography.bodyMedium),
+                const SizedBox(height: 2),
+                Text(subtitle, style: DexTypography.caption),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatDate(DateTime dt) {
@@ -828,6 +980,129 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       'Dec',
     ];
     return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
+  }
+}
+
+class _MarketRow extends StatelessWidget {
+  final int i;
+  final String name;
+  final String symbol;
+  final double price;
+  final double changePct;
+  final List<double> sparkline;
+  final String iconColorHex;
+
+  const _MarketRow({
+    required this.i,
+    required this.name,
+    required this.symbol,
+    required this.price,
+    required this.changePct,
+    required this.sparkline,
+    required this.iconColorHex,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isPositive = changePct >= 0;
+    final color = isPositive ? DexColors.success : DexColors.error;
+
+    List<FlSpot> spots;
+    if (sparkline.isNotEmpty) {
+      final step = (sparkline.length / 12).clamp(1, sparkline.length).toInt();
+      final sampled = <double>[];
+      for (var j = 0; j < sparkline.length; j += step) {
+        sampled.add(sparkline[j]);
+      }
+      final base = sampled.isEmpty
+          ? 1.0
+          : sampled.reduce((a, b) => a < b ? a : b);
+      spots = sampled
+          .asMap()
+          .entries
+          .map((e) => FlSpot(e.key.toDouble(), (e.value - base) + 1))
+          .toList();
+    } else {
+      spots = List.generate(
+        10,
+        (j) => FlSpot(j.toDouble(), 2 + Random(i * 31 + j).nextDouble() * 3),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: GlassCard(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        borderRadius: 16,
+        child: Row(
+          children: [
+            CryptoIcon(symbol: symbol, colorHex: iconColorHex, size: 40),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: DexTypography.bodyMedium.copyWith(
+                      color: DexColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(symbol, style: DexTypography.caption),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 70,
+              height: 28,
+              child: LineChart(
+                LineChartData(
+                  gridData: const FlGridData(show: false),
+                  titlesData: const FlTitlesData(show: false),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: spots,
+                      isCurved: true,
+                      color: color,
+                      barWidth: 1.6,
+                      dotData: const FlDotData(show: false),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '\$${price.toStringAsFixed(2)}',
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  '${isPositive ? '+' : ''}${changePct.toStringAsFixed(2)}%',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    )
+        .animate()
+        .fade(delay: Duration(milliseconds: (350 + (i * 80)).toInt()))
+        .slideX(begin: 0.05);
   }
 }
 

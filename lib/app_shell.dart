@@ -8,6 +8,7 @@ import 'core/theme/dex_colors.dart';
 import 'core/theme/dex_typography.dart';
 import 'providers/providers.dart';
 import 'widgets/pulse_dot.dart';
+import 'widgets/dex_app_background.dart';
 
 class AppShell extends ConsumerStatefulWidget {
   final Widget child;
@@ -93,7 +94,7 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   Widget _buildMobileLayout(AuthState auth) {
     return Scaffold(
-      body: widget.child,
+      body: DexAppBackground(child: widget.child),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: const Color(0xFF0D0D18),
@@ -327,7 +328,7 @@ class _AppShellState extends ConsumerState<AppShell> {
           ),
           // Main content
           Expanded(
-            child: Container(color: DexColors.background, child: widget.child),
+            child: DexAppBackground(child: widget.child),
           ),
         ],
       ),

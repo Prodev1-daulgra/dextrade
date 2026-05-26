@@ -14,6 +14,13 @@ import '../../data/models/transaction_model.dart';
 import '../../widgets/status_badge.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/dex_keypad.dart';
+import '../../widgets/hud/hud_screen_header.dart';
+import '../../widgets/hud/hud_segmented_control.dart';
+import '../../widgets/hud/hud_status_pill.dart';
+import '../../widgets/hud/hud_panel.dart';
+import '../../widgets/hud/notification_inbox_sheet.dart';
+import '../../widgets/dex_shockwave_loader.dart';
+import '../../core/utils/dex_feedback.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -93,41 +100,97 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     if (email == null) return const SizedBox();
     final txAsync = ref.watch(transactionsProvider(email));
 
+    final pendingCount = txAsync.valueOrNull
+            ?.where((t) => t.status == 'pending')
+            .length ??
+        0;
+    final unread = ref.watch(unreadNotificationsCountProvider(email));
+
     return SafeArea(
       child: Column(
         children: [
-          // Header
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Liquidity Hub',
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: -1,
+                HudScreenHeader(
+                  title: 'Liquidity Vault',
+                  subtitle: 'Capital rails · deposits · withdrawals · desk sync',
+                  trailing: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            DexFeedback.haptic(ref);
+                            NotificationInboxSheet.show(context);
+                          },
+                          icon: const Icon(Icons.notifications_active_outlined),
+                          color: DexColors.textMuted,
+                        ),
+                        if (unread > 0)
+                          Positioned(
+                            right: 8,
+                            top: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: DexColors.primary,
+                              ),
+                              child: Text(
+                                '$unread',
+                                style: const TextStyle(
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      HudStatusPill(
+                        label: 'Pending ops',
+                        value: '$pendingCount',
+                        color: DexColors.warning,
+                        icon: Icons.hourglass_top_rounded,
+                        pulse: pendingCount > 0,
+                      ),
+                      const SizedBox(width: 8),
+                      HudStatusPill(
+                        label: 'Vault rail',
+                        value: 'SYNCED',
+                        color: DexColors.success,
+                        icon: Icons.lock_rounded,
+                        pulse: true,
+                      ),
+                    ],
                   ),
-                ).animate().fade().slideY(begin: -0.2),
-                const SizedBox(height: 4),
-                Text(
-                  'Manage terminal capital & transfers',
-                  style: DexTypography.bodySmall,
-                ).animate().fade(delay: 100.ms),
-                const SizedBox(height: 20),
+                ),
+                const SizedBox(height: 18),
                 Row(
                   children: [
                     Expanded(
                       child: GlowButton(
                         label: 'Deposit',
                         icon: Icons.arrow_downward_rounded,
-                        onPressed: () => setState(() {
-                          _showDeposit = true;
-                          _showWithdraw = false;
-                          _depositStep = 1;
-                        }),
+                        onPressed: () {
+                          DexFeedback.haptic(ref);
+                          setState(() {
+                            _showDeposit = true;
+                            _showWithdraw = false;
+                            _depositStep = 1;
+                          });
+                        },
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -136,67 +199,39 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         label: 'Withdraw',
                         icon: Icons.arrow_upward_rounded,
                         isPrimary: false,
-                        onPressed: () => setState(() {
-                          _showWithdraw = true;
-                          _showDeposit = false;
-                        }),
+                        onPressed: () {
+                          DexFeedback.haptic(ref);
+                          setState(() {
+                            _showWithdraw = true;
+                            _showDeposit = false;
+                          });
+                        },
                       ),
                     ),
                   ],
                 ).animate().fade(delay: 200.ms),
-                const SizedBox(height: 20),
-                // Filter chips
-                SizedBox(
-                  height: 36,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: ['all', 'deposit', 'withdrawal', 'buy', 'sell']
-                        .map((f) {
-                          final isActive = _filter == f;
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: GestureDetector(
-                              onTap: () => setState(() => _filter = f),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: isActive
-                                      ? DexColors.primary.withValues(
-                                          alpha: 0.12,
-                                        )
-                                      : DexColors.surfaceLight,
-                                  border: Border.all(
-                                    color: isActive
-                                        ? DexColors.primary.withValues(
-                                            alpha: 0.3,
-                                          )
-                                        : DexColors.border,
-                                  ),
-                                ),
-                                child: Text(
-                                  f == 'all'
-                                      ? 'All'
-                                      : f[0].toUpperCase() + f.substring(1),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: isActive
-                                        ? DexColors.primary
-                                        : DexColors.textMuted,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        })
-                        .toList(),
-                  ),
-                ).animate().fade(delay: 300.ms),
+                const SizedBox(height: 16),
+                HudSegmentedControl(
+                  labels: const ['All', 'Deposit', 'Withdraw', 'Buy', 'Sell'],
+                  selectedIndex: [
+                    'all',
+                    'deposit',
+                    'withdrawal',
+                    'buy',
+                    'sell',
+                  ].indexOf(_filter),
+                  onChanged: (i) {
+                    setState(() {
+                      _filter = [
+                        'all',
+                        'deposit',
+                        'withdrawal',
+                        'buy',
+                        'sell',
+                      ][i];
+                    });
+                  },
+                ),
               ],
             ),
           ),
@@ -218,20 +253,44 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 
           // Transaction List
           Expanded(
-            child: txAsync.when(
+            child: RefreshIndicator(
+              color: DexColors.primary,
+              onRefresh: () async {
+                ref.invalidate(transactionsProvider(email));
+                await Future.delayed(const Duration(milliseconds: 400));
+              },
+              child: txAsync.when(
               data: (txns) {
                 final filtered = _filter == 'all'
                     ? txns
                     : txns.where((t) => t.type == _filter).toList();
                 if (filtered.isEmpty) {
-                  return const EmptyStateWidget(
-                    icon: Icons.receipt_long_rounded,
-                    title: 'No Logs Found',
-                    subtitle:
-                        'Terminal execution history is empty for the selected filter.',
-                  ).animate().fade(delay: 400.ms);
+                  return ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      const SizedBox(height: 40),
+                      HudPanel(
+                        title: 'Empty ledger',
+                        subtitle: 'No movements on this filter',
+                        child: Column(
+                          children: [
+                            const DexShockwaveLoader(size: 72),
+                            const SizedBox(height: 16),
+                            const EmptyStateWidget(
+                              icon: Icons.receipt_long_rounded,
+                              title: 'No Logs Found',
+                              subtitle:
+                                  'Deposit liquidity or change the filter rail.',
+                              isSmall: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
                 }
                 return ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                   itemCount: filtered.length,
                   itemBuilder: (_, i) {
@@ -332,6 +391,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               ),
               error: (_, __) =>
                   const Center(child: Text('Failed to load transaction nodes')),
+            ),
             ),
           ),
         ],
@@ -750,7 +810,18 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
       TransactionModel tx;
       if (_showDeposit) {
         // Mock generating wallet logic here - you can pass network inside the transaction metadata in the future
-        tx = await repo.createDeposit(email, amount);
+        tx = await repo.createDeposit(
+          email,
+          amount,
+          network: _selectedNetwork,
+        );
+        await DexFeedback.notify(
+          ref,
+          context,
+          title: 'Deposit queued',
+          body: '\$${amount.toStringAsFixed(2)} on $_selectedNetwork — awaiting desk approval.',
+          kind: 'deposit',
+        );
       } else {
         if (_walletCtrl.text.isEmpty) {
           DexToast.showPushNotification(
@@ -770,11 +841,15 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
       _resetForms();
 
       if (mounted) {
-        DexToast.showPushNotification(
-          context,
-          title: 'Syncing...',
-          body: 'Transfer Protocol Initiated. Syncing terminal...',
-        );
+        if (!_showDeposit) {
+          await DexFeedback.notify(
+            ref,
+            context,
+            title: 'Withdrawal queued',
+            body: 'Transfer protocol initiated — pending approval.',
+            kind: 'deposit',
+          );
+        }
         showDialog(
           context: context,
           barrierDismissible: false,

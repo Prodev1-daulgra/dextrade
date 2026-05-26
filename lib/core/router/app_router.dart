@@ -40,6 +40,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/register',
         '/landing',
         '/features',
+        '/product',
         '/pricing',
         '/about',
         '/contact',
@@ -81,6 +82,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/features',
+            pageBuilder: (_, __) =>
+                DexPageTransition(child: const FeaturesScreen()),
+          ),
+          GoRoute(
+            path: '/product',
             pageBuilder: (_, __) =>
                 DexPageTransition(child: const FeaturesScreen()),
           ),

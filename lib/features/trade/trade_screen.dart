@@ -6,7 +6,14 @@ import '../../core/theme/dex_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/custom_toast.dart';
+import '../../widgets/dex_notification.dart';
 import '../../widgets/dex_keypad.dart';
+import '../../widgets/hud/hud_panel.dart';
+import '../../widgets/hud/hud_segmented_control.dart';
+import '../../widgets/hud/hud_timeframe_chips.dart';
+import '../../widgets/hud/hud_depth_ladder.dart';
+import '../../widgets/hud/notification_inbox_sheet.dart';
+import '../../core/utils/dex_feedback.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/providers.dart';
@@ -98,6 +105,7 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
   double _priceChangePercent = 2.45;
   CryptoModel? _selectedCrypto;
   bool _cryptoLoaded = false;
+  bool _isWatchlisted = false;
 
   // Active positions & logs
   final List<ActivePosition> _positions = [];
@@ -122,6 +130,41 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
 
     _priceCtrl.addListener(_updateTotalCost);
     _amountCtrl.addListener(_updateTotalCost);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadTradePrefs());
+  }
+
+  Future<void> _loadTradePrefs() async {
+    final email = ref.read(authProvider).email;
+    if (email == null) return;
+    final prefs = await ref.read(microFeaturesRepoProvider).getPreferences(email);
+    final watchlist = await ref.read(microFeaturesRepoProvider).getWatchlist(email);
+    if (!mounted) return;
+    setState(() {
+      _timeframe = prefs.defaultTimeframe;
+      _isWatchlisted = watchlist.any(
+        (w) => w.symbol == (_selectedCrypto?.symbol ?? prefs.lastTradePair),
+      );
+    });
+  }
+
+  Future<void> _toggleWatchlist() async {
+    final sym = _selectedCrypto?.symbol ?? 'BTC';
+    final added = await ref.read(microFeaturesRepoProvider).toggleWatchlist(sym);
+    await ref.read(microFeaturesRepoProvider).upsertPreferences(
+          defaultTimeframe: _timeframe,
+          lastTradePair: sym,
+        );
+    final userEmail = ref.read(authProvider).email;
+    if (userEmail != null) ref.invalidate(watchlistProvider(userEmail));
+    if (mounted) {
+      setState(() => _isWatchlisted = added);
+      await DexFeedback.haptic(ref);
+      DexNotification.push(
+        context,
+        title: added ? 'Watchlist +' : 'Watchlist −',
+        body: '$sym ${added ? 'pinned to' : 'removed from'} desk favorites.',
+      );
+    }
   }
 
   @override
@@ -351,11 +394,26 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
       _addLog(
         "ORDER EXECUTED: Added new position side ${_sideTab == 0 ? 'LONG' : 'SHORT'} sizing $amount BTC.",
       );
-      DexToast.showPushNotification(
-        context,
-        title: 'Order Executed',
-        body: 'Order matching completed instantly!',
-      );
+      final userEmail = ref.read(authProvider).email;
+      if (userEmail != null) {
+        await ref.read(microFeaturesRepoProvider).createPaperOrder(
+              email: userEmail,
+              pairSymbol: '${_selectedCrypto?.symbol ?? 'BTC'}/USDT',
+              side: _sideTab == 0 ? 'LONG' : 'SHORT',
+              orderType: _orderTab == 0 ? 'market' : 'limit',
+              price: price,
+              size: amount,
+              leverage: _leverage.toInt(),
+              marginUsd: _totalCost,
+            );
+        await DexFeedback.notify(
+          ref,
+          context,
+          title: 'Order executed',
+          body: '${_sideTab == 0 ? 'LONG' : 'SHORT'} ${_selectedCrypto?.symbol ?? 'BTC'} · ${_leverage.toInt()}x',
+          kind: 'trade',
+        );
+      }
     }
   }
 
@@ -506,7 +564,7 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            onSelected: (crypto) {
+            onSelected: (crypto) async {
               setState(() {
                 _selectedCrypto = crypto;
                 _currentPrice = crypto.price;
@@ -517,6 +575,13 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
                 _generateMockChartData();
                 _generateMockOrderBook();
               });
+              final userEmail = ref.read(authProvider).email;
+              if (userEmail != null) {
+                final wl = await ref.read(microFeaturesRepoProvider).getWatchlist(userEmail);
+                if (mounted) {
+                  setState(() => _isWatchlisted = wl.any((w) => w.symbol == crypto.symbol));
+                }
+              }
               _addLog("MARKET SWITCHED: Connected to ${crypto.symbol} node.");
             },
             itemBuilder: (context) => cryptos
@@ -605,6 +670,20 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
               ],
             ),
           ),
+          IconButton(
+            onPressed: _toggleWatchlist,
+            icon: Icon(
+              _isWatchlisted ? Icons.star_rounded : Icons.star_border_rounded,
+              color: _isWatchlisted ? DexColors.warning : DexColors.textMuted,
+            ),
+          ),
+          IconButton(
+            onPressed: () => NotificationInboxSheet.show(context),
+            icon: const Icon(
+              Icons.notifications_none_rounded,
+              color: DexColors.textMuted,
+            ),
+          ),
           if (isDesktop) const Spacer() else const SizedBox(height: 12),
           _buildHeaderStat(
             'SPOT PRICE',
@@ -673,48 +752,21 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
                 ),
               ),
               const Spacer(),
-              // Timeframe selectors
-              Row(
-                children: ["1M", "5M", "15M", "1H", "4H", "1D"].map((tf) {
-                  final active = _timeframe == tf;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _timeframe = tf;
-                        _generateMockChartData();
-                      });
-                      _addLog(
-                        "TIMEFRAME RECONFIGURED: Reloaded matching nodes to $tf interval.",
+              HudTimeframeChips(
+                timeframes: const ["1M", "5M", "15M", "1H", "4H", "1D"],
+                selected: _timeframe,
+                onSelected: (tf) async {
+                  setState(() {
+                    _timeframe = tf;
+                    _generateMockChartData();
+                  });
+                  await ref.read(microFeaturesRepoProvider).upsertPreferences(
+                        defaultTimeframe: tf,
                       );
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: active
-                            ? DexColors.primary.withOpacity(0.12)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: active
-                              ? DexColors.primary.withOpacity(0.25)
-                              : Colors.transparent,
-                        ),
-                      ),
-                      child: Text(
-                        tf,
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          color: active ? Colors.white : Colors.white38,
-                        ),
-                      ),
-                    ),
+                  _addLog(
+                    "TIMEFRAME RECONFIGURED: Reloaded matching nodes to $tf interval.",
                   );
-                }).toList(),
+                },
               ),
             ],
           ),
@@ -789,16 +841,20 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
           // Limit / Market selectors
           Row(
             children: [
-              _buildLimitMarketButton('MARKET', _orderTab == 0, () {
-                setState(() {
-                  _orderTab = 0;
-                  _priceCtrl.text = _currentPrice.toStringAsFixed(2);
-                });
-              }),
-              const SizedBox(width: 8),
-              _buildLimitMarketButton('LIMIT', _orderTab == 1, () {
-                setState(() => _orderTab = 1);
-              }),
+              Expanded(
+                child: HudSegmentedControl(
+                  labels: const ['Market', 'Limit'],
+                  selectedIndex: _orderTab,
+                  onChanged: (i) {
+                    setState(() {
+                      _orderTab = i;
+                      if (i == 0) {
+                        _priceCtrl.text = _currentPrice.toStringAsFixed(2);
+                      }
+                    });
+                  },
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -1103,69 +1159,20 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
             ],
           ),
           const SizedBox(height: 10),
-
-          // Asks (Sells in Red)
           Expanded(
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 4,
-              itemBuilder: (context, idx) {
-                final ask = _asks[idx + 4]; // Render lower asks closer to spot
-                return _buildOrderBookRow(
-                  ask,
-                  DexColors.errorGlow,
-                  isAsk: true,
-                );
-              },
-            ),
-          ),
-
-          // Current spot center dividing line
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              border: Border.symmetric(
-                horizontal: BorderSide(color: Colors.white.withOpacity(0.05)),
+            child: HudDepthLadder(
+              asks: _asks,
+              bids: _bids,
+              maxSize: math.max(
+                _asks.fold<double>(
+                  0.01,
+                  (m, r) => math.max(m, r['size'] as double),
+                ),
+                _bids.fold<double>(
+                  0.01,
+                  (m, r) => math.max(m, r['size'] as double),
+                ),
               ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '\$${_currentPrice.toStringAsFixed(2)}',
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: _priceChangePercent >= 0
-                        ? DexColors.successGlow
-                        : DexColors.errorGlow,
-                  ),
-                ),
-                Text(
-                  'MATCH SPOT',
-                  style: GoogleFonts.orbitron(
-                    fontSize: 7,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white30,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Bids (Buys in Green)
-          Expanded(
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 4,
-              itemBuilder: (context, idx) {
-                final bid = _bids[idx];
-                return _buildOrderBookRow(
-                  bid,
-                  DexColors.successGlow,
-                  isAsk: false,
-                );
-              },
             ),
           ),
         ],

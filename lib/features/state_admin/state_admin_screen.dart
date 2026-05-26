@@ -62,7 +62,7 @@ class _StateAdminScreenState extends ConsumerState<StateAdminScreen> {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            'DIAGNOSTIC CONSOLE',
+                            'TERMINAL OPS',
                             style: GoogleFonts.orbitron(
                               fontSize: 22,
                               fontWeight: FontWeight.w900,
@@ -74,7 +74,7 @@ class _StateAdminScreenState extends ConsumerState<StateAdminScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'INFRASTRUCTURE HEALTH & STATE MANIPULATION',
+                        'YOUR ACCOUNT ONLY — DEPOSITS, WITHDRAWALS & STATE SYNC',
                         style: GoogleFonts.spaceGrotesk(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,

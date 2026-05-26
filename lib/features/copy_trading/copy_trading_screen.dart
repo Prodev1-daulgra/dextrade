@@ -9,6 +9,13 @@ import '../../widgets/glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/shimmer_loader.dart';
 import '../../widgets/custom_toast.dart';
+import '../../widgets/hud/hud_screen_header.dart';
+import '../../widgets/hud/hud_segmented_control.dart';
+import '../../widgets/hud/hud_panel.dart';
+import '../../widgets/hud/hud_timeframe_chips.dart';
+import '../../widgets/hud/notification_inbox_sheet.dart';
+import '../../widgets/dex_shockwave_loader.dart';
+import '../../core/utils/dex_feedback.dart';
 import '../../data/models/copy_trade_model.dart';
 
 class CopyTradingScreen extends ConsumerStatefulWidget {
@@ -20,6 +27,24 @@ class CopyTradingScreen extends ConsumerStatefulWidget {
 
 class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
   final Map<String, List<double>> _sparklineCache = {};
+  String _riskFilter = 'all';
+  String _sortMode = 'roi';
+  final Set<String> _pinnedTraders = {};
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadMirrorPrefs());
+  }
+
+  Future<void> _loadMirrorPrefs() async {
+    final email = ref.read(authProvider).email;
+    if (email == null) return;
+    final prefs = await ref.read(microFeaturesRepoProvider).getPreferences(email);
+    if (mounted) {
+      setState(() => _sortMode = prefs.mirrorSort);
+    }
+  }
 
   // Generate a consistent pseudo-random sparkline curve based on the trader ID
   List<double> _getSparklinePoints(String traderId, double profitPct) {
@@ -247,10 +272,12 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                                 ref.invalidate(userCopyTradesProvider(email));
                                 if (context.mounted) {
                                   Navigator.pop(context);
-                                  DexToast.showPushNotification(
+                                  await DexFeedback.notify(
+                                    ref,
                                     context,
-                                    title: 'Success',
-                                    body: 'Mirror sync initialized!',
+                                    title: 'Mirror active',
+                                    body: 'Capital allocated to ${trader.traderName}',
+                                    kind: 'mirror',
                                   );
                                 }
                               } catch (e) {
@@ -289,112 +316,121 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
       'medium': DexColors.warning,
       'high': DexColors.error,
     };
+    final unread = ref.watch(unreadNotificationsCountProvider(email));
 
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top branding title
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Copy Trading',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          letterSpacing: -1,
-                        ),
+      child: RefreshIndicator(
+        color: DexColors.primary,
+        onRefresh: () async {
+          ref.invalidate(copyTradersProvider);
+          ref.invalidate(userCopyTradesProvider(email));
+          await Future.delayed(const Duration(milliseconds: 400));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              HudScreenHeader(
+                title: 'Mirror Desk',
+                subtitle: 'Copy elite nodes · ROI rails · risk caps',
+                trailing: [
+                  IconButton(
+                    onPressed: () => NotificationInboxSheet.show(context),
+                    icon: Badge(
+                      isLabelVisible: unread > 0,
+                      label: Text('$unread'),
+                      child: const Icon(
+                        Icons.notifications_none_rounded,
+                        color: DexColors.textMuted,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Mirror institutional ledger execution nodes.',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: DexColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: DexColors.success.withOpacity(0.08),
-                    border: Border.all(
-                      color: DexColors.success.withOpacity(0.18),
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: DexColors.success,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'NET LOGS: ACTIVE',
-                        style: GoogleFonts.orbitron(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0,
-                          color: DexColors.success,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
+                ],
+              ),
+              const SizedBox(height: 16),
+              HudSegmentedControl(
+                labels: const ['All risk', 'Low', 'Med', 'High'],
+                selectedIndex: ['all', 'low', 'medium', 'high'].indexOf(_riskFilter),
+                onChanged: (i) {
+                  setState(() {
+                    _riskFilter = ['all', 'low', 'medium', 'high'][i];
+                  });
+                  ref.read(microFeaturesRepoProvider).upsertPreferences(
+                        mirrorSort: _sortMode,
+                      );
+                },
+              ),
+              const SizedBox(height: 10),
+              HudTimeframeChips(
+                timeframes: const ['ROI', 'Win %', 'Followers'],
+                selected: _sortMode == 'roi'
+                    ? 'ROI'
+                    : _sortMode == 'win_rate'
+                        ? 'Win %'
+                        : 'Followers',
+                onSelected: (v) {
+                  setState(() {
+                    _sortMode = v == 'ROI'
+                        ? 'roi'
+                        : v == 'Win %'
+                            ? 'win_rate'
+                            : 'followers';
+                  });
+                  ref.read(microFeaturesRepoProvider).upsertPreferences(
+                        mirrorSort: _sortMode,
+                      );
+                },
+                accent: DexColors.primary,
+              ),
+              const SizedBox(height: 24),
 
             tradersAsync.when(
               data: (traders) {
                 if (traders.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(48),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.people_outline_rounded,
-                            size: 48,
-                            color: Colors.white.withOpacity(0.2),
+                  return HudPanel(
+                    title: 'No nodes',
+                    subtitle: 'Seed copy_traders in Supabase',
+                    child: Column(
+                      children: [
+                        const DexShockwaveLoader(size: 80, brandLabel: 'Mirror'),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No active matching nodes in cluster.',
+                          style: GoogleFonts.spaceGrotesk(
+                            color: Colors.white30,
+                            fontSize: 14,
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No active matching nodes found in cluster.',
-                            style: GoogleFonts.spaceGrotesk(
-                              color: Colors.white30,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   );
                 }
 
+                var list = traders.where((t) {
+                  if (_riskFilter == 'all') return true;
+                  return t.riskLevel == _riskFilter;
+                }).toList();
+
+                list.sort((a, b) {
+                  switch (_sortMode) {
+                    case 'win_rate':
+                      return b.winRate.compareTo(a.winRate);
+                    case 'followers':
+                      return b.followers.compareTo(a.followers);
+                    default:
+                      return b.totalProfitPct.compareTo(a.totalProfitPct);
+                  }
+                });
+
+                final pinned = list.where((t) => _pinnedTraders.contains(t.id)).toList();
+                final rest = list.where((t) => !_pinnedTraders.contains(t.id)).toList();
+                list = [...pinned, ...rest];
+
                 return Column(
-                  children: List.generate(traders.length, (idx) {
-                    final trader = traders[idx];
+                  children: List.generate(list.length, (idx) {
+                    final trader = list[idx];
                     final activeCopies = copiesAsync.valueOrNull ?? [];
                     final activeCopy = activeCopies
                         .where((c) => c.traderId == trader.id)
@@ -551,6 +587,26 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
                                           ],
                                         ),
                                       ),
+                                      IconButton(
+                                        onPressed: () {
+                                          DexFeedback.haptic(ref);
+                                          setState(() {
+                                            if (_pinnedTraders.contains(trader.id)) {
+                                              _pinnedTraders.remove(trader.id);
+                                            } else {
+                                              _pinnedTraders.add(trader.id);
+                                            }
+                                          });
+                                        },
+                                        icon: Icon(
+                                          _pinnedTraders.contains(trader.id)
+                                              ? Icons.star_rounded
+                                              : Icons.star_border_rounded,
+                                          color: _pinnedTraders.contains(trader.id)
+                                              ? DexColors.warning
+                                              : DexColors.textMuted,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                   const SizedBox(height: 24),
@@ -697,6 +753,7 @@ class _CopyTradingScreenState extends ConsumerState<CopyTradingScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

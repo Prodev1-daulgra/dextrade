@@ -19,7 +19,11 @@ class TransactionRepository {
     return (res as List).map((e) => TransactionModel.fromJson(e)).toList();
   }
 
-  Future<TransactionModel> createDeposit(String email, double amount) async {
+  Future<TransactionModel> createDeposit(
+    String email,
+    double amount, {
+    String? network,
+  }) async {
     final res = await _client
         .from('transactions')
         .insert({
@@ -27,7 +31,9 @@ class TransactionRepository {
           'type': 'deposit',
           'amount': amount,
           'status': 'pending',
+          'network': network,
           'notes': 'Deposit request for \$${amount.toStringAsFixed(2)}',
+          'meta': {'network': network},
         })
         .select()
         .single();
