@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/providers.dart';
@@ -21,19 +22,26 @@ import '../../features/state_admin/state_admin_screen.dart';
 import '../../features/superadmin/superadmin_screen.dart';
 import '../../app_shell.dart';
 import '../../widgets/dex_page_transition.dart';
+import '../../widgets/dex_shockwave_loader.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation: authState.isAuthenticated ? '/' : '/landing',
+    initialLocation: '/boot',
     debugLogDiagnostics: false,
     redirect: (context, state) {
       final isAuth = authState.isAuthenticated;
       final isLoading = authState.isLoading;
       final path = state.matchedLocation;
 
-      if (isLoading) return null;
+      if (isLoading) {
+        return path == '/boot' ? null : '/boot';
+      }
+
+      if (path == '/boot') {
+        return isAuth ? '/' : '/landing';
+      }
 
       final publicPaths = [
         '/login',
@@ -60,6 +68,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      // Boot Screen
+      GoRoute(
+        path: '/boot',
+        pageBuilder: (_, __) => DexPageTransition(
+          child: const Scaffold(
+            backgroundColor: Colors.black,
+            body: Center(child: DexShockwaveLoader()),
+          ),
+        ),
+      ),
+
       // Auth routes (no shell — cinematic transitions)
       GoRoute(
         path: '/login',
