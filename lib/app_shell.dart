@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/dex_colors.dart';
 import 'core/theme/dex_typography.dart';
+import 'core/utils/glass_container.dart';
+import 'core/utils/neon_container.dart';
 import 'providers/providers.dart';
 import 'widgets/pulse_dot.dart';
 import 'widgets/dex_app_background.dart';
@@ -135,200 +137,170 @@ class _AppShellState extends ConsumerState<AppShell> {
     final navItems = _navItemsFor(auth);
 
     return Scaffold(
-      body: Row(
+      body: Stack(
         children: [
-          // Sidebar
-          Container(
-            width: 260,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D0D18),
-              border: const Border(
-                right: BorderSide(color: DexColors.border, width: 0.5),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                  offset: const Offset(4, 0),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                // Logo
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 12),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          gradient: const LinearGradient(
-                            colors: DexColors.primaryGradient,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: DexColors.primary.withValues(alpha: 0.3),
-                              blurRadius: 12,
-                              spreadRadius: -2,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            'D',
-                            style: GoogleFonts.spaceGrotesk(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'DEXTRADE',
-                        style: GoogleFonts.orbitron(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Status indicator
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: DexColors.success.withValues(alpha: 0.06),
-                      border: Border.all(
-                        color: DexColors.success.withValues(alpha: 0.12),
-                      ),
-                    ),
+          DexAppBackground(child: widget.child),
+          Positioned(
+            left: 16,
+            top: 16,
+            bottom: 16,
+            child: GlassContainer(
+              width: 260,
+              blur: 30,
+              borderColor: DexColors.borderLight,
+              color: DexColors.surfaceGlass.withOpacity(0.4),
+              child: Column(
+                children: [
+                  // Logo
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 12),
                     child: Row(
                       children: [
-                        const PulseDot(color: DexColors.success, size: 6),
-                        const SizedBox(width: 8),
+                        NeonContainer(
+                          isActive: true,
+                          glowColor: DexColors.primary,
+                          borderRadius: 12,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: const LinearGradient(
+                                colors: DexColors.primaryGradient,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'D',
+                                style: GoogleFonts.spaceGrotesk(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
                         Text(
-                          'SYSTEM ONLINE',
+                          'DEXTRADE',
                           style: GoogleFonts.orbitron(
-                            fontSize: 8,
+                            fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: DexColors.success,
-                            letterSpacing: 1,
+                            color: Colors.white,
+                            letterSpacing: 2.5,
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                // Nav items
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    itemCount: navItems.length,
-                    itemBuilder: (context, i) {
-                      final item = navItems[i];
-                      final isActive = _currentIndex == i;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 2),
-                        child: _WebNavButton(
-                          icon: item.icon,
-                          label: item.label,
-                          isActive: isActive,
-                          onTap: () => _onNavTap(i, auth),
+                  // Status indicator
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: DexColors.success.withOpacity(0.06),
+                        border: Border.all(color: DexColors.success.withOpacity(0.2)),
+                      ),
+                      child: Row(
+                        children: [
+                          const PulseDot(color: DexColors.successGlow, size: 6),
+                          const SizedBox(width: 8),
+                          Text(
+                            'SYSTEM ONLINE',
+                            style: GoogleFonts.orbitron(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: DexColors.successGlow,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  // Nav items
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: navItems.length,
+                      itemBuilder: (context, i) {
+                        final item = navItems[i];
+                        final isActive = _currentIndex == i;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: _WebNavButton(
+                            icon: item.icon,
+                            label: item.label,
+                            isActive: isActive,
+                            onTap: () => _onNavTap(i, auth),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // User info + logout
+                  GlassContainer(
+                    blur: 10,
+                    padding: const EdgeInsets.all(14),
+                    color: DexColors.surfaceLight.withOpacity(0.5),
+                    borderColor: DexColors.border,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: DexColors.primary.withOpacity(0.2),
+                          ),
+                          child: Center(
+                            child: Text(
+                              (auth.user?.fullName ?? auth.user?.email ?? 'U')[0].toUpperCase(),
+                              style: GoogleFonts.spaceGrotesk(
+                                color: DexColors.accent,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-                // User info + logout
-                Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: DexColors.surfaceLight,
-                    border: Border.all(color: DexColors.border),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: LinearGradient(
-                            colors: [
-                              DexColors.primary.withValues(alpha: 0.3),
-                              DexColors.primary.withValues(alpha: 0.15),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                auth.user?.fullName ?? 'User',
+                                style: DexTypography.bodySmall.copyWith(
+                                  color: DexColors.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                auth.user?.email ?? '',
+                                style: DexTypography.caption.copyWith(fontSize: 9),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ],
                           ),
                         ),
-                        child: Center(
-                          child: Text(
-                            (auth.user?.fullName ?? auth.user?.email ?? 'U')[0]
-                                .toUpperCase(),
-                            style: GoogleFonts.spaceGrotesk(
-                              color: DexColors.primary,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 14,
-                            ),
-                          ),
+                        IconButton(
+                          icon: const Icon(Icons.logout_rounded, size: 18, color: DexColors.errorGlow),
+                          onPressed: _logout,
+                          tooltip: 'Logout',
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              auth.user?.fullName ?? 'User',
-                              style: DexTypography.bodySmall.copyWith(
-                                color: DexColors.textPrimary,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              auth.user?.email ?? '',
-                              style: DexTypography.caption.copyWith(
-                                fontSize: 9,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.logout_rounded,
-                          size: 18,
-                          color: DexColors.textMuted,
-                        ),
-                        onPressed: _logout,
-                        tooltip: 'Logout',
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
-          ),
-          // Main content
-          Expanded(
-            child: DexAppBackground(child: widget.child),
           ),
         ],
       ),
@@ -513,15 +485,16 @@ class _WebNavButtonState extends State<_WebNavButton> {
             children: [
               // Active indicator bar
               AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 3,
-                height: widget.isActive ? 20 : 0,
+                duration: const Duration(milliseconds: 300),
+                width: widget.isActive ? 4 : 0,
+                height: widget.isActive ? 24 : 0,
                 margin: const EdgeInsets.only(right: 12),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(2),
-                  color: widget.isActive
-                      ? DexColors.primary
-                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(4),
+                  color: DexColors.accent,
+                  boxShadow: widget.isActive ? [
+                    BoxShadow(color: DexColors.accentGlow, blurRadius: 10, spreadRadius: 1)
+                  ] : [],
                 ),
               ),
               Icon(

@@ -1,17 +1,18 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
+import '../../core/utils/glass_container.dart';
+import '../../core/utils/neon_container.dart';
 import '../../widgets/glow_button.dart';
-import '../marketing/design/dex_shader_illustration.dart';
 import '../marketing/design/marketing_ambient_scene.dart';
 import '../marketing/design/marketing_download_cta.dart';
-import '../marketing/design/marketing_feature_panel.dart';
 import '../marketing/design/marketing_marquee.dart';
 import '../marketing/marketing_shell.dart';
 
-/// Brand-forward landing — asymmetric editorial layout, shader art, performant motion.
+/// Ultra-Premium Brand-forward landing — asymmetric editorial layout, deep glassmorphism.
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
 
@@ -23,6 +24,7 @@ class LandingScreen extends StatelessWidget {
       backgroundColor: Colors.black,
       body: MarketingAmbientScene(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -30,48 +32,8 @@ class LandingScreen extends StatelessWidget {
               _HeroSection(wide: wide),
               _TickerStrip(),
               _StatsBreak(wide: wide),
-              const MarketingFeaturePanel(
-                indexLabel: '01',
-                title: 'Mirror Protocol',
-                subtitle:
-                    'Clone elite desks without surrendering custody. Allocation rails, risk caps, and sovereign kill-switches built in.',
-                bullets: [
-                  'Sub-50ms mirror sync simulation layer',
-                  'Per-trader allocation vaults',
-                  'One-tap detach — capital returns instantly',
-                ],
-                illustration: DexIllustrationKind.mirrorCore,
-                animDelayMs: 100,
-              ),
-              const MarketingFeaturePanel(
-                indexLabel: '02',
-                title: 'Match Engine Core',
-                subtitle:
-                    'Order flow visualized as living geometry — not another three-column SaaS grid.',
-                bullets: [
-                  'Depth-aware charting in the terminal',
-                  'Batch approval for institutional desks',
-                  'Native Dex keypad for size entry',
-                ],
-                illustration: DexIllustrationKind.matchEngine,
-                flip: true,
-                animDelayMs: 200,
-              ),
-              const MarketingFeaturePanel(
-                indexLabel: '03',
-                title: 'Cold Custody Lattice',
-                subtitle:
-                    'Multi-sig policy mesh rendered as an isometric vault — security you can see.',
-                bullets: [
-                  'Segregated balance rails per strategy',
-                  'State-admin approval portal on web',
-                  'Push-style in-app alerts with custom chrome',
-                ],
-                illustration: DexIllustrationKind.vaultLattice,
-                animDelayMs: 300,
-              ),
-              _TerminalPreview(wide: wide),
-              _SocialProof(wide: wide),
+              _ProTerminalShowcase(wide: wide),
+              _FeaturesGrid(wide: wide),
               const MarketingDownloadCta(),
               _FinalCta(wide: wide),
               const MarketingFooter(),
@@ -90,13 +52,12 @@ class _HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final copy = Column(
-      crossAxisAlignment:
-          wide ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+      crossAxisAlignment: wide ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
-        _Pill('SOVEREIGN COPYTRADING TERMINAL'),
+        _Pill('NEXT-GEN SOVEREIGN TERMINAL'),
         const SizedBox(height: 28),
         Text(
-          'Liquidity',
+          'Trade the Future.',
           textAlign: wide ? TextAlign.start : TextAlign.center,
           style: GoogleFonts.spaceGrotesk(
             fontSize: wide ? 88 : 52,
@@ -108,16 +69,16 @@ class _HeroSection extends StatelessWidget {
         ),
         ShaderMask(
           shaderCallback: (b) => const LinearGradient(
-            colors: [DexColors.primaryGlow, DexColors.accent, DexColors.accentGlow],
+            colors: [DexColors.accent, DexColors.accentGlow, DexColors.primary],
           ).createShader(b),
           child: Text(
-            'without permission.',
+            'Decentralized & Limitless.',
             textAlign: wide ? TextAlign.start : TextAlign.center,
             style: GoogleFonts.spaceGrotesk(
-              fontSize: wide ? 88 : 52,
+              fontSize: wide ? 64 : 42,
               fontWeight: FontWeight.w900,
               height: 0.95,
-              letterSpacing: -3,
+              letterSpacing: -2,
               color: Colors.white,
             ),
           ),
@@ -126,61 +87,127 @@ class _HeroSection extends StatelessWidget {
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
           child: Text(
-            'Dextrade is a Web3-native execution surface — mirror desks, approve flow, and vault balances in one cinematic terminal. Not a template. A protocol brand.',
+            'Experience institutional-grade execution on a decentralized architecture. Zero latency, maximum security, and a beautiful pro trading terminal.',
             textAlign: wide ? TextAlign.start : TextAlign.center,
             style: GoogleFonts.spaceGrotesk(
-              fontSize: 17,
+              fontSize: 18,
               color: DexColors.textSecondary,
-              height: 1.55,
+              height: 1.6,
             ),
           ),
         ),
-        const SizedBox(height: 36),
+        const SizedBox(height: 40),
         Wrap(
           spacing: 16,
-          runSpacing: 12,
+          runSpacing: 16,
           alignment: wide ? WrapAlignment.start : WrapAlignment.center,
           children: [
-            GlowButton(
-              label: 'LAUNCH TERMINAL',
-              onPressed: () => context.push('/register'),
-              width: 220,
+            NeonContainer(
+              isActive: true,
+              glowColor: DexColors.primary,
+              borderRadius: 100,
+              child: GlowButton(
+                label: 'START TRADING NOW',
+                onPressed: () => context.go('/trade'),
+                width: 240,
+              ),
             ),
-            GlowButton(
-              label: 'EXPLORE PLATFORM',
-              isPrimary: false,
-              onPressed: () => context.go('/features'),
-              width: 220,
+            GlassContainer(
+              borderRadius: 100,
+              color: Colors.white.withOpacity(0.05),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(100),
+                onTap: () => context.go('/features'),
+                child: Container(
+                  width: 200,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'EXPLORE PLATFORM',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ],
     );
 
-    final art = Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Positioned(
-          right: wide ? -40 : 0,
-          top: wide ? -20 : 0,
-          child: Transform.rotate(
-            angle: -0.12,
-            child: Text(
-              'DEX',
-              style: GoogleFonts.orbitron(
-                fontSize: wide ? 200 : 120,
-                fontWeight: FontWeight.w900,
-                color: Colors.white.withValues(alpha: 0.03),
-              ),
+    final art = NeonContainer(
+      isActive: true,
+      glowColor: DexColors.accent,
+      borderRadius: 32,
+      child: GlassContainer(
+        blur: 40,
+        borderRadius: 32,
+        color: DexColors.surfaceLight.withOpacity(0.3),
+        borderColor: DexColors.borderLight,
+        child: Container(
+          height: wide ? 500 : 350,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32),
+            gradient: RadialGradient(
+              colors: [
+                DexColors.primaryGlow.withOpacity(0.2),
+                Colors.transparent,
+              ],
+              radius: 0.8,
             ),
           ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Abstract floating geometry
+              ...List.generate(3, (i) {
+                return TweenAnimationBuilder(
+                  tween: Tween<double>(begin: 0, end: 2 * pi),
+                  duration: Duration(seconds: 20 + (i * 5)),
+                  builder: (_, double angle, __) {
+                    return Transform.rotate(
+                      angle: angle,
+                      child: Container(
+                        width: 150.0 + (i * 80),
+                        height: 150.0 + (i * 80),
+                        decoration: BoxDecoration(
+                          shape: i % 2 == 0 ? BoxShape.circle : BoxShape.rectangle,
+                          borderRadius: i % 2 != 0 ? BorderRadius.circular(40) : null,
+                          border: Border.all(
+                            color: DexColors.accent.withOpacity(0.1 + (i * 0.1)),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+              Text(
+                'DEX',
+                style: GoogleFonts.orbitron(
+                  fontSize: wide ? 120 : 80,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      color: DexColors.primary,
+                      blurRadius: 40,
+                    )
+                  ],
+                ),
+              ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+                  .scaleXY(begin: 0.95, end: 1.05, duration: 2.seconds)
+                  .shimmer(duration: 3.seconds, color: DexColors.accent),
+            ],
+          ),
         ),
-        DexShaderIllustration(
-          kind: DexIllustrationKind.liquidityNexus,
-          height: wide ? 380 : 280,
-          width: wide ? 480 : double.infinity,
-        ),
-      ],
+      ),
     );
 
     return Padding(
@@ -192,12 +219,12 @@ class _HeroSection extends StatelessWidget {
               ? Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(flex: 11, child: copy),
-                    const SizedBox(width: 40),
+                    Expanded(flex: 12, child: copy),
+                    const SizedBox(width: 60),
                     Expanded(flex: 10, child: art),
                   ],
                 )
-              : Column(children: [copy, const SizedBox(height: 40), art]),
+              : Column(children: [copy, const SizedBox(height: 60), art]),
         ),
       ),
     ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.04);
@@ -208,28 +235,27 @@ class _TickerStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      margin: const EdgeInsets.symmetric(vertical: 24),
+      padding: const EdgeInsets.symmetric(vertical: 18),
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+        color: DexColors.primary.withOpacity(0.05),
+        border: Border.symmetric(
+          horizontal: BorderSide(color: DexColors.primary.withOpacity(0.2)),
         ),
       ),
       child: MarketingMarquee(
         items: const [
-          'BTC +2.4%',
-          'ETH +1.8%',
-          'SOL +5.2%',
-          'MIRROR SYNC LIVE',
-          'COLD CUSTODY ON',
-          'DEX KEYPAD v2',
+          'HYPER-LIQUID ENGINE',
+          'ZERO GAS FEES',
+          'SELF-CUSTODIAL',
+          'PRO TERMINAL UI',
+          'L2 VALIDIUM ARCHITECTURE',
         ],
         style: GoogleFonts.orbitron(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: DexColors.textMuted,
-          letterSpacing: 2,
+          fontSize: 14,
+          fontWeight: FontWeight.w800,
+          color: DexColors.accentGlow,
+          letterSpacing: 4,
         ),
       ),
     );
@@ -243,10 +269,10 @@ class _StatsBreak extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stats = [
-      ('\$2.4B+', 'Simulated mirror volume'),
-      ('<50ms', 'Sync target'),
-      ('180+', 'Curated desks'),
-      ('0', 'Template layouts'),
+      ('\$10B+', 'Quarterly Volume'),
+      ('0ms', 'Gas Latency'),
+      ('100%', 'Self-Custodial'),
+      ('24/7', 'Market Access'),
     ];
 
     return Padding(
@@ -258,17 +284,15 @@ class _StatsBreak extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: wide ? 4 : 2,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
+            mainAxisSpacing: 24,
+            crossAxisSpacing: 24,
             childAspectRatio: wide ? 1.8 : 1.4,
             children: stats.map((s) {
-              return Container(
-                padding: const EdgeInsets.all(22),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: DexColors.surface.withValues(alpha: 0.6),
-                  border: Border.all(color: DexColors.border),
-                ),
+              return GlassContainer(
+                blur: 20,
+                color: DexColors.surfaceLight.withOpacity(0.4),
+                borderColor: DexColors.borderLight,
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -276,16 +300,20 @@ class _StatsBreak extends StatelessWidget {
                     Text(
                       s.$1,
                       style: GoogleFonts.spaceGrotesk(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        fontSize: 36,
+                        fontWeight: FontWeight.w900,
+                        color: DexColors.accent,
+                        shadows: [
+                          Shadow(color: DexColors.accent.withOpacity(0.5), blurRadius: 20)
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
                       s.$2,
                       style: GoogleFonts.inter(
-                        fontSize: 12,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                         color: DexColors.textMuted,
                       ),
                     ),
@@ -300,73 +328,76 @@ class _StatsBreak extends StatelessWidget {
   }
 }
 
-class _TerminalPreview extends StatelessWidget {
+class _ProTerminalShowcase extends StatelessWidget {
   final bool wide;
-  const _TerminalPreview({required this.wide});
+  const _ProTerminalShowcase({required this.wide});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: wide ? 48 : 24, vertical: 48),
+      padding: EdgeInsets.symmetric(horizontal: wide ? 48 : 24, vertical: 60),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1100),
+          constraints: const BoxConstraints(maxWidth: 1200),
           child: Column(
             children: [
               Text(
-                'THE TERMINAL, FRAMED LIKE ART',
+                'BUILT FOR PROFESSIONALS',
                 style: GoogleFonts.orbitron(
-                  fontSize: 10,
-                  letterSpacing: 3,
-                  color: DexColors.primary,
+                  fontSize: 12,
+                  letterSpacing: 4,
+                  color: DexColors.accentGlow,
                   fontWeight: FontWeight.w900,
                 ),
               ),
-              const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: DexColors.primary.withValues(alpha: 0.35)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: DexColors.primary.withValues(alpha: 0.15),
-                      blurRadius: 60,
-                      spreadRadius: -10,
-                    ),
-                  ],
+              const SizedBox(height: 16),
+              Text(
+                'A Terminal That Feels Alive',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: wide ? 48 : 32,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(28),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
+              ),
+              const SizedBox(height: 48),
+              NeonContainer(
+                isActive: true,
+                glowColor: DexColors.primaryDark,
+                borderRadius: 24,
+                child: GlassContainer(
+                  borderRadius: 24,
+                  blur: 30,
+                  padding: const EdgeInsets.all(2),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(22),
+                    child: Container(
+                      height: wide ? 600 : 300,
+                      decoration: BoxDecoration(
+                        color: DexColors.surface,
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/terminal_mockup.png'),
+                          fit: BoxFit.cover,
+                          opacity: 0.3,
                         ),
-                        color: const Color(0xFF120A1E),
-                        child: Row(
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _dot(Colors.redAccent),
-                            _dot(Colors.amber),
-                            _dot(DexColors.success),
-                            const SizedBox(width: 16),
+                            const Icon(Icons.show_chart_rounded, size: 80, color: DexColors.accent),
+                            const SizedBox(height: 16),
                             Text(
-                              'dextrade://mirror-session',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 11,
+                              'ADVANCED CHARTING UI PLACEHOLDER',
+                              style: GoogleFonts.orbitron(
                                 color: DexColors.textMuted,
-                                letterSpacing: 0.5,
+                                fontWeight: FontWeight.w700,
                               ),
-                            ),
+                            )
                           ],
                         ),
                       ),
-                      const DexShaderIllustration(
-                        kind: DexIllustrationKind.copyStream,
-                        height: 220,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -376,71 +407,136 @@ class _TerminalPreview extends StatelessWidget {
       ),
     );
   }
-
-  Widget _dot(Color c) => Container(
-        width: 10,
-        height: 10,
-        margin: const EdgeInsets.only(right: 6),
-        decoration: BoxDecoration(color: c, shape: BoxShape.circle),
-      );
 }
 
-class _SocialProof extends StatelessWidget {
+class _FeaturesGrid extends StatelessWidget {
   final bool wide;
-  const _SocialProof({required this.wide});
+  const _FeaturesGrid({required this.wide});
 
   @override
   Widget build(BuildContext context) {
-    final quotes = [
-      ('"Feels like a Framer crypto drop, not SaaS."', 'Desk Lead, EU'),
-      ('"Mirror flow is finally readable."', 'Quant, APAC'),
-      ('"Custom push chrome sold our team."', 'Ops, US'),
-    ];
-
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: wide ? 48 : 24, vertical: 32),
+      padding: EdgeInsets.symmetric(horizontal: wide ? 48 : 24, vertical: 60),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1000),
+          constraints: const BoxConstraints(maxWidth: 1200),
           child: Column(
-            children: quotes.map((q) {
-              return Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(bottom: 14),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(28),
-                    topRight: const Radius.circular(8),
-                    bottomLeft: const Radius.circular(8),
-                    bottomRight: const Radius.circular(28),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Unrivaled Performance',
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: wide ? 48 : 36,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Built for professional traders who demand execution speed and deep liquidity without giving up custody.',
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  color: DexColors.textMuted,
+                ),
+              ),
+              const SizedBox(height: 48),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: wide ? 2 : 1,
+                mainAxisSpacing: 24,
+                crossAxisSpacing: 24,
+                childAspectRatio: wide ? 1.5 : 1.2,
+                children: [
+                  _FeatureCard(
+                    title: 'Hyper-Liquid Engine',
+                    desc: 'Access deep liquidity pools powered by our proprietary cross-chain matching engine. Execute massive orders with zero slippage.',
+                    glowColor: DexColors.primary,
                   ),
-                  color: Colors.white.withValues(alpha: 0.03),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                  _FeatureCard(
+                    title: 'Zero Gas Fees',
+                    desc: 'Gasless trades powered by our L2 validium architecture. You only pay for what you trade.',
+                    glowColor: DexColors.accent,
+                  ),
+                  _FeatureCard(
+                    title: 'Self-Custodial',
+                    desc: 'Your keys, your crypto. Dextrade never holds your assets, ensuring absolute security at all times.',
+                    glowColor: DexColors.success,
+                  ),
+                  _FeatureCard(
+                    title: 'Pro Terminal UI',
+                    desc: 'A fully customizable workspace with advanced charting, DOM, and multi-monitor support built directly into the browser.',
+                    glowColor: DexColors.accentGlow,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FeatureCard extends StatefulWidget {
+  final String title;
+  final String desc;
+  final Color glowColor;
+
+  const _FeatureCard({
+    required this.title,
+    required this.desc,
+    required this.glowColor,
+  });
+
+  @override
+  State<_FeatureCard> createState() => _FeatureCardState();
+}
+
+class _FeatureCardState extends State<_FeatureCard> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..translate(0.0, _isHovered ? -10.0 : 0.0),
+        child: NeonContainer(
+          isActive: _isHovered,
+          glowColor: widget.glowColor,
+          borderRadius: 24,
+          child: GlassContainer(
+            borderRadius: 24,
+            blur: 20,
+            padding: const EdgeInsets.all(40),
+            color: DexColors.surfaceLight.withOpacity(_isHovered ? 0.6 : 0.3),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  widget.title,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        q.$1,
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      q.$2,
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: DexColors.textMuted,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 16),
+                Text(
+                  widget.desc,
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    color: DexColors.textSecondary,
+                    height: 1.6,
+                  ),
                 ),
-              );
-            }).toList(),
+              ],
+            ),
           ),
         ),
       ),
@@ -455,12 +551,21 @@ class _FinalCta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(wide ? 48 : 24, 48, wide ? 48 : 24, 80),
+      padding: EdgeInsets.fromLTRB(wide ? 48 : 24, 80, wide ? 48 : 24, 120),
       child: Center(
-        child: GlowButton(
-          label: 'CREATE SOVEREIGN ACCOUNT',
-          onPressed: () => context.push('/register'),
-          width: wide ? 320 : double.infinity,
+        child: Column(
+          children: [
+            NeonContainer(
+              isActive: true,
+              glowColor: DexColors.primary,
+              borderRadius: 100,
+              child: GlowButton(
+                label: 'LAUNCH TERMINAL',
+                onPressed: () => context.go('/trade'),
+                width: wide ? 320 : double.infinity,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -473,20 +578,18 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        border: Border.all(color: DexColors.primary.withValues(alpha: 0.4)),
-        color: DexColors.primary.withValues(alpha: 0.08),
-      ),
+    return GlassContainer(
+      borderRadius: 100,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      color: DexColors.primary.withOpacity(0.1),
+      borderColor: DexColors.primary.withOpacity(0.4),
       child: Text(
         text,
         style: GoogleFonts.orbitron(
-          fontSize: 10,
+          fontSize: 12,
           fontWeight: FontWeight.w900,
-          letterSpacing: 2.5,
-          color: DexColors.primary,
+          letterSpacing: 3,
+          color: DexColors.primaryGlow,
         ),
       ),
     );
