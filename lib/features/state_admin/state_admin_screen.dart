@@ -12,6 +12,8 @@ import '../../widgets/pulse_dot.dart';
 import '../../widgets/shimmer_loader.dart';
 import '../../widgets/custom_toast.dart';
 import '../../data/models/transaction_model.dart';
+import '../marketing/design/marketing_ambient_scene.dart';
+import '../../core/utils/neon_container.dart';
 
 class StateAdminScreen extends ConsumerStatefulWidget {
   const StateAdminScreen({super.key});
@@ -30,12 +32,15 @@ class _StateAdminScreenState extends ConsumerState<StateAdminScreen> {
     final txAsync = ref.watch(transactionsProvider(email));
     final balAsync = ref.watch(balanceProvider(email));
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: MarketingAmbientScene(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             // Console Header
             Row(
               children: [
@@ -254,10 +259,12 @@ class _StateAdminScreenState extends ConsumerState<StateAdminScreen> {
                   ? _BalanceState(balAsync: balAsync, ref: ref)
                   : _DataSync(email: email),
             ),
+            ),
           ],
         ),
       ),
-    );
+      ),
+    )).animate().fadeIn(duration: 800.ms);
   }
 }
 

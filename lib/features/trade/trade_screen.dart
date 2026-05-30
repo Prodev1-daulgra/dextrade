@@ -14,6 +14,8 @@ import '../../widgets/hud/hud_timeframe_chips.dart';
 import '../../widgets/hud/hud_depth_ladder.dart';
 import '../../widgets/hud/notification_inbox_sheet.dart';
 import '../../core/utils/dex_feedback.dart';
+import '../marketing/design/marketing_ambient_scene.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/providers.dart';
@@ -460,18 +462,19 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
 
     return Scaffold(
       backgroundColor: Colors.black, // Dark obsidian canvas
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ─── Header: Real-Time Price Statistics Bar ───
-              _buildTerminalHeader(isDesktop, cryptosAsync.value ?? []),
-              const SizedBox(height: 16),
-
-              // ─── Main Terminal Screen Layout ───
-              Expanded(
+      body: MarketingAmbientScene(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ─── Header: Real-Time Price Statistics Bar ───
+                _buildTerminalHeader(isDesktop, cryptosAsync.value ?? []).animate().fadeIn(duration: 600.ms).slideY(begin: -0.2),
+                const SizedBox(height: 16),
+                
+                // ─── Main Terminal Screen Layout ───
+                Expanded(
                 child: isDesktop
                     ? Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -514,7 +517,7 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
                             ),
                           ),
                         ],
-                      )
+                      ).animate().fadeIn(duration: 800.ms, delay: 200.ms).slideX(begin: 0.05)
                     : SingleChildScrollView(
                         child: Column(
                           children: [
@@ -533,11 +536,12 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
                             ),
                           ],
                         ),
-                      ),
+                      ).animate().fadeIn(duration: 800.ms, delay: 200.ms).slideY(begin: 0.05),
               ),
             ],
           ),
         ),
+      ),
       ),
     );
   }
