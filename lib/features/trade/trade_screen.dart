@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/dex_colors.dart';
-import '../../widgets/glass_card.dart';
+import '../../widgets/dex_glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/custom_toast.dart';
 import '../../widgets/dex_notification.dart';
@@ -14,7 +14,7 @@ import '../../widgets/hud/hud_timeframe_chips.dart';
 import '../../widgets/hud/hud_depth_ladder.dart';
 import '../../widgets/hud/notification_inbox_sheet.dart';
 import '../../core/utils/dex_feedback.dart';
-import '../marketing/design/marketing_ambient_scene.dart';
+import '../../widgets/cortex_background.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -462,7 +462,7 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
 
     return Scaffold(
       backgroundColor: Colors.black, // Dark obsidian canvas
-      body: MarketingAmbientScene(
+      body: CortexBackground(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -737,10 +737,10 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
 
   // ─── Custom Candlestick & Volume Chart Panel ───
   Widget _buildChartPanel() {
-    return GlassCard(
+    return DexGlassCard(
       padding: const EdgeInsets.all(20),
       borderRadius: 24,
-      borderColor: Colors.white.withOpacity(0.04),
+
       child: Column(
         children: [
           // Chart Controls Topbar
@@ -811,10 +811,10 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
   // ─── BUY / SELL Order Form Console Panel ───
   Widget _buildOrderFormConsole() {
     final bool isBuy = _sideTab == 0;
-    return GlassCard(
+    return DexGlassCard(
       padding: const EdgeInsets.all(24),
       borderRadius: 24,
-      borderColor: Colors.white.withOpacity(0.04),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1123,10 +1123,10 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
 
   // ─── Live Order Book (Asks/Bids Queues) Panel ───
   Widget _buildOrderBookPanel() {
-    return GlassCard(
+    return DexGlassCard(
       padding: const EdgeInsets.all(20),
       borderRadius: 24,
-      borderColor: Colors.white.withOpacity(0.04),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1230,10 +1230,10 @@ class _TradeScreenState extends ConsumerState<TradeScreen>
 
   // ─── Bottom Position Tracker / Sync Logs Panel ───
   Widget _buildBottomTabPanel() {
-    return GlassCard(
+    return DexGlassCard(
       padding: const EdgeInsets.all(20),
       borderRadius: 24,
-      borderColor: Colors.white.withOpacity(0.04),
+
       child: Column(
         children: [
           // Panel Navigation headers
@@ -1492,9 +1492,9 @@ class _CandlestickPainter extends CustomPainter {
     final double width = size.width;
     final double height = size.height;
 
-    // 1. Draw dashed grid index lines
+    // 1. Draw minimal grid lines
     final Paint gridPaint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
+      ..color = Colors.white.withValues(alpha: 0.02)
       ..strokeWidth = 1.0;
 
     const double gridStep = 45.0;
@@ -1516,17 +1516,20 @@ class _CandlestickPainter extends CustomPainter {
       minPrice = math.min(minPrice, c.low);
       maxPrice = math.max(maxPrice, c.high);
     }
-    // Add margin buffer
     final double priceDiff = maxPrice - minPrice;
-    minPrice -= priceDiff * 0.08;
-    maxPrice += priceDiff * 0.08;
+    minPrice -= priceDiff * 0.1;
+    maxPrice += priceDiff * 0.1;
 
     double mapY(double price) {
       return height - ((price - minPrice) / (maxPrice - minPrice)) * height;
     }
 
     final Paint candlePaint = Paint()..style = PaintingStyle.fill;
-    final Paint wickPaint = Paint()..strokeWidth = 1.2;
+    final Paint wickPaint = Paint()..strokeWidth = 1.5;
+
+    // We will build a path for the glowing price line
+    final Path priceLinePath = Path();
+    final List<Offset> closePoints = [];
 
     // 3. Draw Candlesticks & Volume Bars
     for (int i = 0; i < data.length; i++) {
@@ -1534,11 +1537,21 @@ class _CandlestickPainter extends CustomPainter {
       final double left = i * candleWidth + (candleWidth * 0.15);
       final double right = (i + 1) * candleWidth - (candleWidth * 0.15);
       final double x = (left + right) / 2;
+      
+      final double closeY = mapY(c.close);
+      closePoints.add(Offset(x, closeY));
+
+      if (i == 0) {
+        priceLinePath.moveTo(x, closeY);
+      } else {
+        // Simple line chart connecting closes (can use bezier for smooth spline if desired)
+        priceLinePath.lineTo(x, closeY);
+      }
 
       final bool isUp = c.close >= c.open;
       final Color color = isUp ? DexColors.successGlow : DexColors.errorGlow;
 
-      candlePaint.color = color.withOpacity(0.85);
+      candlePaint.color = color.withValues(alpha: 0.9);
       wickPaint.color = color;
 
       // Draw high/low wicks
@@ -1553,35 +1566,64 @@ class _CandlestickPainter extends CustomPainter {
       final double bottom = mapY(math.min(c.open, c.close));
       final Rect bodyRect = Rect.fromLTRB(left, top, right, bottom);
       canvas.drawRRect(
-        RRect.fromRectAndRadius(bodyRect, const Radius.circular(3)),
+        RRect.fromRectAndRadius(bodyRect, const Radius.circular(4)),
         candlePaint,
       );
 
-      // Draw Volume Bar underneath (bottom 20% of canvas)
+      // Draw Volume Bar underneath
       final double volHeight = (c.volume / 100.0) * (height * 0.18);
-      final Rect volRect = Rect.fromLTRB(
-        left,
-        height - volHeight,
-        right,
-        height,
-      );
+      final Rect volRect = Rect.fromLTRB(left, height - volHeight, right, height);
       canvas.drawRRect(
         RRect.fromRectAndRadius(volRect, const Radius.circular(2)),
-        Paint()..color = color.withOpacity(0.12),
+        Paint()..color = color.withValues(alpha: 0.15),
       );
     }
 
-    // 4. Draw spot price horizontal neon threshold
+    // 4. Draw God-Tier glowing line overlaid on candles
+    final bool overallUp = data.last.close >= data.first.close;
+    final Color lineColor = overallUp ? DexColors.primary : DexColors.errorGlow;
+    
+    // Draw the main glowing line
+    final Paint linePaint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+      
+    // Add neon glow shadow behind the line
+    canvas.drawPath(priceLinePath, linePaint..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8)..strokeWidth = 4.0..color = lineColor.withValues(alpha: 0.5));
+    canvas.drawPath(priceLinePath, linePaint..maskFilter = null..strokeWidth = 2.5..color = lineColor);
+
+    // Draw the beautiful gradient fill under the line
+    final Path gradientPath = Path.from(priceLinePath);
+    gradientPath.lineTo(closePoints.last.dx, height);
+    gradientPath.lineTo(closePoints.first.dx, height);
+    gradientPath.close();
+
+    final Paint fillPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          lineColor.withValues(alpha: 0.3),
+          lineColor.withValues(alpha: 0.0),
+        ],
+      ).createShader(Rect.fromLTRB(0, 0, 0, height));
+      
+    canvas.drawPath(gradientPath, fillPaint);
+
+    // 5. Draw spot price horizontal neon threshold
     final double spotY = mapY(spotPrice);
     final Paint spotPaint = Paint()
-      ..color = DexColors.primary.withOpacity(0.3)
+      ..color = DexColors.primary.withValues(alpha: 0.5)
       ..strokeWidth = 1.0;
 
     canvas.drawLine(Offset(0, spotY), Offset(width, spotY), spotPaint);
 
-    // Draw small spot pill on the right
+    // Draw spot price pill
     final Paint spotPillPaint = Paint()..color = DexColors.primary;
-    final Rect spotPill = Rect.fromLTWH(width - 60, spotY - 8, 60, 16);
+    final Rect spotPill = Rect.fromLTWH(width - 60, spotY - 9, 60, 18);
     canvas.drawRRect(
       RRect.fromRectAndRadius(spotPill, const Radius.circular(4)),
       spotPillPaint,
@@ -1591,44 +1633,46 @@ class _CandlestickPainter extends CustomPainter {
       text: TextSpan(
         text: spotPrice.toStringAsFixed(1),
         style: GoogleFonts.jetBrainsMono(
-          color: Colors.white,
-          fontSize: 8.5,
-          fontWeight: FontWeight.bold,
+          color: Colors.black,
+          fontSize: 9.5,
+          fontWeight: FontWeight.w900,
         ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
     spotTP.paint(canvas, Offset(width - 55, spotY - 6.5));
 
-    // 5. Draw mouse hover crosshair coordinates
+    // 6. Draw glowing mouse hover crosshair
     if (isHovering && hoverOffset.dx < width - 60) {
       final Paint crosshairPaint = Paint()
-        ..color = Colors.white.withOpacity(0.18)
+        ..color = Colors.white.withValues(alpha: 0.3)
         ..strokeWidth = 1.0;
 
       // Draw horizontal crosshair
-      canvas.drawLine(
-        Offset(0, hoverOffset.dy),
-        Offset(width, hoverOffset.dy),
-        crosshairPaint,
-      );
+      canvas.drawLine(Offset(0, hoverOffset.dy), Offset(width, hoverOffset.dy), crosshairPaint);
       // Draw vertical crosshair
-      canvas.drawLine(
-        Offset(hoverOffset.dx, 0),
-        Offset(hoverOffset.dx, height),
-        crosshairPaint,
+      canvas.drawLine(Offset(hoverOffset.dx, 0), Offset(hoverOffset.dx, height), crosshairPaint);
+
+      // Glowing dot at intersection
+      canvas.drawCircle(
+        hoverOffset, 
+        4, 
+        Paint()..color = Colors.white..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4)
       );
+      canvas.drawCircle(hoverOffset, 2, Paint()..color = Colors.white);
 
       // Resolve price coordinates
       final double pctY = 1.0 - (hoverOffset.dy / height);
       final double hoverPrice = minPrice + pctY * (maxPrice - minPrice);
 
-      // Price indicator bubble
-      final Paint bubblePaint = Paint()..color = Colors.white24;
-      final Rect bubble = Rect.fromLTWH(width - 65, hoverOffset.dy - 8, 65, 16);
+      // Hover Price indicator bubble
+      final Paint bubblePaint = Paint()..color = DexColors.surfaceGlass;
+      final Rect bubble = Rect.fromLTWH(width - 65, hoverOffset.dy - 10, 65, 20);
+      canvas.drawRRect(RRect.fromRectAndRadius(bubble, const Radius.circular(6)), bubblePaint);
+      
       canvas.drawRRect(
-        RRect.fromRectAndRadius(bubble, const Radius.circular(4)),
-        bubblePaint,
+        RRect.fromRectAndRadius(bubble, const Radius.circular(6)),
+        Paint()..color = Colors.white.withValues(alpha: 0.1)..style = PaintingStyle.stroke,
       );
 
       final TextPainter priceTP = TextPainter(
@@ -1636,13 +1680,13 @@ class _CandlestickPainter extends CustomPainter {
           text: hoverPrice.toStringAsFixed(1),
           style: GoogleFonts.jetBrainsMono(
             color: Colors.white,
-            fontSize: 8.5,
+            fontSize: 9.5,
             fontWeight: FontWeight.bold,
           ),
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      priceTP.paint(canvas, Offset(width - 60, hoverOffset.dy - 6.5));
+      priceTP.paint(canvas, Offset(width - 58, hoverOffset.dy - 6.5));
     }
   }
 

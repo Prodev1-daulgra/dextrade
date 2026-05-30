@@ -28,73 +28,86 @@ class DexTypography {
 
   static TextStyle get _baseInter =>
       GoogleFonts.inter().copyWith(fontFamilyFallback: _fallbacks);
-  static TextStyle get _baseOutfit =>
-      GoogleFonts.outfit().copyWith(fontFamilyFallback: _fallbacks);
 
-  // ─── Display (Hero / Landing) ───
-  static TextStyle displayLarge = _baseOutfit.copyWith(
-    fontSize: 56,
+  // ─── God-Tier Display (Hero / Landing) ───
+  static TextStyle displayMassive = _baseInter.copyWith(
+    fontSize: 160,
     fontWeight: FontWeight.w900,
-    letterSpacing: -2.5,
+    fontStyle: FontStyle.italic,
+    letterSpacing: -6.0,
+    height: 0.8,
+    color: DexColors.textPrimary,
+  );
+  
+  static TextStyle displayLarge = _baseInter.copyWith(
+    fontSize: 96,
+    fontWeight: FontWeight.w900,
+    fontStyle: FontStyle.italic,
+    letterSpacing: -3.0,
     height: 0.85,
     color: DexColors.textPrimary,
   );
-  static TextStyle displayMedium = _baseOutfit.copyWith(
-    fontSize: 40,
+  
+  static TextStyle displayMedium = _baseInter.copyWith(
+    fontSize: 64,
     fontWeight: FontWeight.w900,
-    letterSpacing: -1.5,
+    fontStyle: FontStyle.italic,
+    letterSpacing: -2.0,
     height: 0.9,
     color: DexColors.textPrimary,
   );
 
   // ─── Headings ───
-  static TextStyle h1 = _baseOutfit.copyWith(
+  static TextStyle h1 = _baseInter.copyWith(
+    fontSize: 48,
+    fontWeight: FontWeight.w900,
+    fontStyle: FontStyle.italic,
+    letterSpacing: -1.5,
+    color: DexColors.textPrimary,
+  );
+  static TextStyle h2 = _baseInter.copyWith(
     fontSize: 32,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w900,
+    fontStyle: FontStyle.italic,
     letterSpacing: -1,
     color: DexColors.textPrimary,
   );
-  static TextStyle h2 = _baseOutfit.copyWith(
-    fontSize: 24,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.5,
-    color: DexColors.textPrimary,
-  );
   static TextStyle h3 = _baseInter.copyWith(
-    fontSize: 20,
-    fontWeight: FontWeight.w700,
+    fontSize: 24,
+    fontWeight: FontWeight.w800,
+    letterSpacing: -0.5,
     color: DexColors.textPrimary,
   );
 
   // ─── Body ───
   static TextStyle bodyLarge = _baseInter.copyWith(
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: FontWeight.w500,
     color: DexColors.textSecondary,
     height: 1.6,
   );
   static TextStyle bodyMedium = _baseInter.copyWith(
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: FontWeight.w500,
     color: DexColors.textSecondary,
     height: 1.5,
   );
   static TextStyle bodySmall = _baseInter.copyWith(
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: FontWeight.w500,
     color: DexColors.textMuted,
     height: 1.5,
   );
 
-  // ─── Labels & Captions ───
+  // ─── Labels & Captions (Institutional caps) ───
   static TextStyle label = _baseInter.copyWith(
-    fontSize: 10,
-    fontWeight: FontWeight.w800,
-    letterSpacing: 1.5,
+    fontSize: 11,
+    fontWeight: FontWeight.w900,
+    letterSpacing: 2.5, // Extremely wide tracking
     color: DexColors.textMuted,
   );
   static TextStyle caption = _baseInter.copyWith(
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: FontWeight.w600,
     color: DexColors.textDim,
   );
@@ -104,35 +117,37 @@ class DexTypography {
     fontSize: 14,
     fontWeight: FontWeight.w700,
     color: DexColors.textPrimary,
-    letterSpacing: -0.3,
+    letterSpacing: -0.5,
     fontFamilyFallback: _monoFallbacks,
   );
   static TextStyle monoLarge = GoogleFonts.jetBrainsMono().copyWith(
-    fontSize: 28,
-    fontWeight: FontWeight.w800,
+    fontSize: 32,
+    fontWeight: FontWeight.w900,
+    fontStyle: FontStyle.italic,
     color: DexColors.textPrimary,
-    letterSpacing: -1,
+    letterSpacing: -1.5,
     fontFamilyFallback: _monoFallbacks,
   );
   static TextStyle monoHero = GoogleFonts.jetBrainsMono().copyWith(
-    fontSize: 48,
+    fontSize: 72,
     fontWeight: FontWeight.w900,
+    fontStyle: FontStyle.italic,
     color: DexColors.textPrimary,
-    letterSpacing: -2,
+    letterSpacing: -3.0,
     fontFamilyFallback: _monoFallbacks,
   );
 
   // ─── Buttons ───
   static TextStyle button = _baseInter.copyWith(
     fontSize: 12,
-    fontWeight: FontWeight.w800,
-    letterSpacing: 1.2,
+    fontWeight: FontWeight.w900,
+    letterSpacing: 2.0,
     color: DexColors.textPrimary,
   );
   static TextStyle buttonLarge = _baseInter.copyWith(
     fontSize: 14,
-    fontWeight: FontWeight.w800,
-    letterSpacing: 1,
+    fontWeight: FontWeight.w900,
+    letterSpacing: 2.5,
     color: DexColors.background,
   );
 }

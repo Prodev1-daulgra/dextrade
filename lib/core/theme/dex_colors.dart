@@ -3,55 +3,55 @@ import 'dart:ui';
 class DexColors {
   DexColors._();
 
-  // ─── Primary Palette (Vibrant Rich Purple / Violet) ───
-  static const Color primary = Color(0xFF7C3AED); // Nice rich Violet/Purple
-  static const Color primaryGlow = Color(0xFF9F7AEA); // Glowing Purple
-  static const Color primaryDark = Color(0xFF4C1D95); // Deep Royal Purple
-  static const Color primarySurface = Color(0x1A7C3AED);
+  // ─── Primary Palette (Neon Lemon) ───
+  static const Color primary = Color(0xFFC9FF00); // Robinhood Lemon
+  static const Color primaryGlow = Color(0x66C9FF00); // Glowing Lemon
+  static const Color primaryDark = Color(0xFF7CA100); // Deep Lemon
+  static const Color primarySurface = Color(0x0DC9FF00); // 5% Lemon
 
   // ─── Background Layers ───
-  static const Color background = Color(0xFF000000); // Pitch Black
-  static const Color surface = Color(0xFF07040D); // Deep Space Purple-Black
-  static const Color surfaceLight = Color(0xFF130D22); // Dark Purple-Grey Surface
-  static const Color surfaceGlass = Color(0x7F000000); // 50% opacity pure black
-  static const Color card = Color(0xFF0C0717); // Dark Violet Card
+  static const Color background = Color(0xFF020205); // Deep Space Black
+  static const Color surface = Color(0xFF050505); // Slightly lighter black
+  static const Color surfaceLight = Color(0xFF0A0A0A); 
+  static const Color surfaceGlass = Color(0x66050505); // 40% black for blur
+  static const Color card = Color(0xFF060606); // Dark Card
 
   // ─── Semantic Colors ───
-  static const Color success = Color(0xFF10B981);
-  static const Color successGlow = Color(0xFF34D399);
-  static const Color error = Color(0xFFEF4444);
-  static const Color errorGlow = Color(0xFFF87171);
+  static const Color success = Color(0xFF00FF88); // Neon Green (up)
+  static const Color successGlow = Color(0x4D00FF88);
+  static const Color error = Color(0xFFFF3B30); // Neon Red (down)
+  static const Color errorGlow = Color(0x4DFF3B30);
   static const Color warning = Color(0xFFF59E0B);
-  static const Color info = Color(0xFF8B5CF6);
+  static const Color info = Color(0xFF00F2FE);
 
-  // ─── Accent (Electric Cyan & Neon Magenta for high contrast) ───
-  static const Color accent = Color(0xFF00F2FE); // Cyber Cyan
-  static const Color accentGlow = Color(0xFFD946EF); // Neon Fuchsia/Pink
+  // ─── Accent ───
+  static const Color accent = Color(0xFFFFFFFF); // White accent
+  static const Color accentGlow = Color(0x33FFFFFF);
 
   // ─── Text ───
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFC0BDF2); // Subtle Lavender-White
-  static const Color textMuted = Color(0xFF8A82A6); // Lavender Muted
-  static const Color textDim = Color(0xFF5B5475);
+  static const Color textPrimary = Color(0xFFFAFAFA);
+  static const Color textSecondary = Color(0xFFA3A3A3); // Muted
+  static const Color textMuted = Color(0xFF737373);
+  static const Color textDim = Color(0xFF404040);
 
   // ─── Borders ───
-  static const Color border = Color(0x1AFFFFFF);
-  static const Color borderLight = Color(0x2AFFFFFF);
-  static const Color borderActive = Color(0x337C3AED);
+  static const Color border = Color(0x0DFFFFFF); // 5% white
+  static const Color borderLight = Color(0x1AFFFFFF); // 10% white
+  static const Color borderActive = Color(0x33C9FF00); // Lemon border
 
   // ─── Gradient Presets ───
   static const List<Color> primaryGradient = [
-    Color(0xFF7C3AED), // Rich Purple
-    Color(0xFFEC4899), // Neon Pink/Fuchsia
+    Color(0xFFC9FF00),
+    Color(0xFF7CA100),
   ];
 
   static const List<Color> glassGradient = [
-    Color(0x1AFFFFFF),
-    Color(0x08FFFFFF),
+    Color(0x0DFFFFFF),
+    Color(0x03FFFFFF),
   ];
 
   static const List<Color> surfaceGradient = [
-    Color(0xFF130D22),
-    Color(0xFF07040D),
+    Color(0xFF0A0A0A),
+    Color(0xFF020205),
   ];
 }

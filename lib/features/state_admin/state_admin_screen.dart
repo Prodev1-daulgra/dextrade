@@ -5,14 +5,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/dex_colors.dart';
 import '../../core/theme/dex_typography.dart';
 import '../../providers/providers.dart';
-import '../../widgets/glass_card.dart';
+import '../../widgets/dex_glass_card.dart';
 import '../../widgets/glow_button.dart';
 import '../../widgets/status_badge.dart';
 import '../../widgets/pulse_dot.dart';
 import '../../widgets/shimmer_loader.dart';
 import '../../widgets/custom_toast.dart';
 import '../../data/models/transaction_model.dart';
-import '../marketing/design/marketing_ambient_scene.dart';
+import '../../widgets/cortex_background.dart';
 import '../../core/utils/neon_container.dart';
 
 class StateAdminScreen extends ConsumerStatefulWidget {
@@ -34,7 +34,7 @@ class _StateAdminScreenState extends ConsumerState<StateAdminScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: MarketingAmbientScene(
+      body: CortexBackground(
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -372,10 +372,10 @@ class _TransactionStates extends StatelessWidget {
               ...pending.map(
                 (tx) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: GlassCard(
+                  child: DexGlassCard(
                     borderRadius: 18,
                     padding: const EdgeInsets.all(18),
-                    borderColor: DexColors.warning.withValues(alpha: 0.2),
+
                     child: Column(
                       children: [
                         Row(
@@ -599,7 +599,7 @@ class _BalanceState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return balAsync.when(
-      data: (bal) => GlassCard(
+      data: (bal) => DexGlassCard(
         borderRadius: 22,
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -681,7 +681,7 @@ class _DataSync extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
+    return DexGlassCard(
       borderRadius: 22,
       padding: const EdgeInsets.all(24),
       child: Column(
