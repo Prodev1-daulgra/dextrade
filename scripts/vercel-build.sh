@@ -41,6 +41,14 @@ if [ -f "web/app-release.apk" ]; then
   cp -f web/app-release.apk build/web/app-release.apk
 fi
 
+echo "==> Building marketing-web..."
+cd marketing-web
+npm install
+npm run build
+cd ..
+mkdir -p build/web/landing
+cp -r marketing-web/dist/* build/web/landing/
+
 JS_SIZE=$(wc -c < build/web/main.dart.js)
 echo "==> OK main.dart.js=${JS_SIZE} bytes, version=${VERSION}"
 
