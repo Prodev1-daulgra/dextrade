@@ -259,7 +259,6 @@ class _StateAdminScreenState extends ConsumerState<StateAdminScreen> {
                   ? _BalanceState(balAsync: balAsync, ref: ref)
                   : _DataSync(email: email),
             ),
-            ),
           ],
         ),
       ),
